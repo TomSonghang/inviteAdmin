@@ -1,21 +1,13 @@
 import $axios from "./index";
 
-export function login(data) {
-  const url = "/login";
-  return $axios.post(url, data);
-}
-
-export function getInfo() {
-  const url = "/getInfo";
-  return $axios.get(url);
-}
-
 export function GetAccess_token(data) {
-  let url = "/api/ApiManage/GetAccess_token";
+  //账号登录
+  let url = "/api/Enterprise/Login";
   return $axios.post(url, data);
 }
 
-export function GetSysMenu() {
-  let url = "/api/ApiManage/GetSysMenu";
-  return $axios.get(url);
+export function GetLoginSecurityCode(data) {
+  //账号登录
+  let url = "/api/Enterprise/GetLoginSecurityCode";
+  return $axios.post(url, data);
 }

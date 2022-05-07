@@ -1,9 +1,6 @@
 <template>
   <div class="login">
-    <div
-      class="slideShadow"
-      v-show="showSlide"
-    >
+    <div class="slideShadow" v-show="showSlide">
       <transition>
         <div class="slideSty animated bounce">
           <slide-verify
@@ -14,64 +11,62 @@
             :h="175"
             ref="slideDiv"
           ></slide-verify>
-            <div class="iconBtn">
-              <i
-                class="el-icon-circle-close"
-                @click="showSlide = false"
-              ></i>
-                <i
-                  class="el-icon-refresh"
-                  @click="refresh"
-                ></i>
-            </div>
+          <div class="iconBtn">
+            <i class="el-icon-circle-close" @click="showSlide = false"></i>
+            <i class="el-icon-refresh" @click="refresh"></i>
+          </div>
         </div>
       </transition>
-  </div>
-  <!--上面是滑动人机验证-->
-  <div class="bgBox"><img
-      src="@/assets/login-bg/loginBg.png"
-      alt=""
-    /></div>
-  <div class="loginBox">
-    <!-- <h2 class="loginH2">点金台管理后台</h2> -->
-
-    <div class="loginCon">
-      <div class="titleDiv">
-        <h3>用户登录</h3>
-        <p>让世界没有不好做的生意</p>
-      </div>
-      <el-form
-        :model="ruleForm"
-        :rules="rules"
-        ref="loginForm"
-      >
-        <el-form-item prop="userId">
-          <el-input
-            placeholder="请输入账号"
-            prefix-icon="el-icon-lock"
-            v-model="ruleForm.userId"
-          ></el-input>
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            placeholder="请输入密码"
-            prefix-icon="el-icon-user"
-            v-model="ruleForm.password"
-            show-password
-          ></el-input>
-        </el-form-item>
-        <el-button
-          type="primary"
-          class="loginBtn"
-          @click="loginYz('loginForm')"
-        >登录</el-button>
-          </el-form>
     </div>
-  </div>
+    <!--上面是滑动人机验证-->
+    <div class="bgBox">
+      <img src="@/assets/login-bg/loginBg.png" alt />
+    </div>
+    <div class="loginBox">
+      <!-- <h2 class="loginH2">点金台管理后台</h2> -->
+
+      <div class="loginCon">
+        <div class="titleDiv">
+          <div class="title_box" @click="changeLoginWay">
+            <div :class="active == 0 ? 'active' : ''">账号登录</div>
+            <div :class="active == 1 ? 'active' : ''">短信登录</div>
+          </div>
+        </div>
+        <el-form :model="ruleForm" :rules="rules" ref="loginForm">
+          <template v-if="active == 0">
+            <el-form-item prop="userId">
+              <el-input placeholder="请输入账号" prefix-icon="el-icon-lock" v-model="ruleForm.userId"></el-input>
+            </el-form-item>
+            <el-form-item prop="userPwd">
+              <el-input
+                placeholder="请输入密码"
+                prefix-icon="el-icon-user"
+                v-model="ruleForm.userPwd"
+                show-password
+              ></el-input>
+            </el-form-item>
+          </template>
+          <template v-else>
+            <el-form-item prop="userId">
+              <el-input placeholder="请输入手机号" prefix-icon="el-icon-mobile" v-model="ruleForm.userId"></el-input>
+            </el-form-item>
+            <div class="vifCode">
+              <el-form-item prop="userPwd">
+                <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="ruleForm.userPwd"></el-input>
+              </el-form-item>
+              <el-button type="primary" round class="getCodeBtn" @click="getCode">获取验证码</el-button>
+            </div>
+          </template>
+          <el-button type="primary" class="loginBtn" @click="loginYz('loginForm')">登录</el-button>
+        </el-form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { GetLoginSecurityCode } from "@/api/login";
+import Code from "@/api/statusCode";
 import SlideVerify from "@/components/SlideVerify";
 import MD5 from "js-md5";
 export default {
@@ -82,22 +77,43 @@ export default {
       showSlide: false,
       ruleForm: {
         userId: "",
-        password: "",
-        logintype: 3,
+        userPwd: "",
+        loginType: ''
       },
       rules: {
         userId: [
-          { required: true, message: "请输入用户名", trigger: "blur" },
-          { min: 3, max: 15, message: "长度在3-15个字符", trigger: "blur" },
+          { required: true, message: "请输入用户名/手机号", trigger: "blur" }
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }],
+        password: [{ required: true, message: "请输入密码/验证码", trigger: "blur" }]
       },
+      active: 0  //0是账号登录  1是短信登录
     };
   },
   mounted() {
     // this.shopTip();
   },
   methods: {
+    getCode() {      //获取验证码
+      if (this.ruleForm.userId) {
+        this._GetLoginSecurityCode()
+      } else {
+        this.$message('请输入手机号');
+      }
+
+    },
+    _GetLoginSecurityCode() {
+      let data = {
+        phoneNo: this.ruleForm.userId
+      }
+      GetLoginSecurityCode(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.$message({
+            message: '验证码发送成功！',
+            type: 'success'
+          });
+        }
+      })
+    },
     loginYz(from) {
       this.$refs[from].validate(valid => {
         if (valid) {
@@ -117,11 +133,22 @@ export default {
     refresh() {
       this.$refs.slideDiv.reset();
     },
+    changeLoginWay(e) {   //选择登录模式
+      if (e.target.innerText == '账号登录') {
+        this.active = 0
+      } else if (e.target.innerText == '短信登录') {
+        this.active = 1
+      } else {
+        this.active = 0
+      }
+    },
     _login() {
-      this.ruleForm.password = MD5(this.ruleForm.password); //MD5
-      this.ruleForm.password = this.ruleForm.password.toUpperCase(); //大写
-      //this.ruleForm.password ='B3576CA3D16B433E5801D77274832478'
+      if (this.active == 0) {   //账号登录，需要加密
+        this.ruleForm.userPwd = MD5(this.ruleForm.userPwd); //MD5
+        this.ruleForm.userPwd = this.ruleForm.userPwd.toUpperCase(); //大写
+      }
       console.log(this.ruleForm);
+      this.ruleForm.loginType = this.active ? 'phonecode' : 'password';
       this.$store
         .dispatch("user/_login", this.ruleForm)
         .then(res => {
@@ -161,6 +188,16 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.title_box {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  justify-content: space-between;
+  div {
+    font-size: 16px;
+    color: #333;
+  }
+}
 .login {
   width: 100%;
   height: 100%;
@@ -184,8 +221,8 @@ export default {
 }
 .loginBox {
   height: 450px;
-  width: 550px;
-  margin-left: -275px;
+  width: 450px;
+  margin-left: -225px;
   position: absolute;
   top: 25%;
   left: 50%;
@@ -202,10 +239,9 @@ export default {
   border-radius: 4px;
   box-shadow: #2fd1ce 0px 3px 10px;
   .titleDiv {
-    padding: 0 28px;
+    padding: 25px 25px 0 25px;
     background: #fff;
     position: relative;
-    height: 120px;
     text-align: center;
     border-radius: 4px 4px 0 0;
     h3 {
@@ -269,6 +305,24 @@ export default {
   }
   i:last-child {
     margin-left: 7px;
+  }
+}
+.active {
+  color: #13b5b1 !important;
+}
+.vifCode {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.getCodeBtn {
+  height: 50px;
+  margin-bottom: 22px;
+  background-color: #13b5b1;
+  border-radius: 50px;
+  border: 1px solid #13b5b1;
+  &:hover {
+    background-color: #1dc9c6;
   }
 }
 </style>

@@ -26,7 +26,7 @@
   padding: 0 !important;
 }
 #app .sideBar {
-  width: 200px;
+  width: 165px;
   height: calc(100% - 50px);
   background-color: #3a3f51;
   position: fixed;
@@ -54,7 +54,7 @@
   z-index: 999;
 }
 .header_l {
-  width: 200px;
+  width: 165px;
   height: 100%;
   float: left;
   background-color: #3a3f51;
@@ -65,7 +65,7 @@
 }
 .header_r {
   height: 100%;
-  margin-left: 200px;
+  margin-left: 165px;
   background-color: #ffffff;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
@@ -223,7 +223,11 @@ a:hover {
   text-decoration: none;
   color: #409eff;
 }
+html {
+  background-color: #F8FAFB;
+}
 #app {
+  background-color: #F8FAFB;
   height: 100vh;
 }
 .point {
@@ -326,4 +330,43 @@ input::-webkit-inner-spin-button {
   height: 100%;
   z-index: 9;
   background: rgba(255, 255, 255, 0.5);
+}
+.contextWrap {
+  width: 1200px;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+.flex-between-align {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#app ::-webkit-scrollbar {
+  width: 7px;
+  /*滚动条宽度*/
+  height: 7px;
+}
+#app ::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  /*滚动条圆角*/
+  -webkit-border-radius: 3px;
+  /*兼容圆角属性*/
+  background-color: #c3c3c3;
+  /*滚动条颜色*/
+}
+#app ::-webkit-scrollbar-track {
+  background-color: transparent;
+  /*滚动条的背景颜色*/
+}
+.fyDiv {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-top: 20px;
+}
+.companyBg {
+  background-color: #13b5b1;
+  border-color: #13b5b1;
+}
+.companyBg:hover {
+  background-color: #1cc9c6;
 }

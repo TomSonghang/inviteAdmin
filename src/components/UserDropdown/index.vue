@@ -6,7 +6,7 @@
           {{ userName }}
           <i class="el-icon-caret-bottom"></i>
         </span>
-        <img src="@/assets/user/user01.jpg" alt="头像" />
+        <img :src="headPath" alt="头像" />
       </div>
       <el-dropdown-menu solt="dropdown">
         <el-dropdown-item>
@@ -29,7 +29,7 @@
 import { mapGetters } from "vuex";
 export default {
   computed: {
-    ...mapGetters(["userName"])
+    ...mapGetters(["userName","headPath"])
   },
   methods: {
     _loginOut() {

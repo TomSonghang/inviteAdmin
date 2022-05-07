@@ -86,13 +86,16 @@ $axios.interceptors.response.use(
 
 //get,post请求方法
 export default {
-  post(url, data) {
+  post(url, data, config) {
     return $axios({
       method: "post",
       url,
-      data: Qs.stringify(data),
+      data: config ? data : Qs.stringify(data),
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        //上传图片时需要切换Content-Type
+        "Content-Type": config
+          ? config
+          : "application/x-www-form-urlencoded; charset=UTF-8",
       },
     });
   },

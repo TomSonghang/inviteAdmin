@@ -8,6 +8,7 @@ import {
   Input,
   Select,
   Option,
+  OptionGroup,
   Message,
   MessageBox,
   Scrollbar,
@@ -39,7 +40,17 @@ import {
   Upload,
   Carousel,
   CarouselItem,
-  Drawer
+  Drawer,
+  Cascader,
+  Collapse,
+  CollapseItem,
+  Calendar,
+  Popconfirm,
+  Popover,
+  TimePicker,
+  InputNumber,
+  Radio,
+  Switch,
 } from "element-ui";
 
 Message.install = () => {
@@ -87,8 +98,19 @@ Vue.use(Dialog);
 Vue.use(DatePicker);
 Vue.use(Select);
 Vue.use(Option);
+Vue.use(OptionGroup);
 Vue.use(Tree);
 Vue.use(Upload);
 Vue.use(Carousel);
 Vue.use(CarouselItem);
 Vue.use(Drawer);
+Vue.use(Cascader);
+Vue.use(Collapse);
+Vue.use(CollapseItem);
+Vue.use(Calendar);
+Vue.use(Popconfirm);
+Vue.use(Popover);
+Vue.use(TimePicker);
+Vue.use(InputNumber);
+Vue.use(Radio);
+Vue.use(Switch);

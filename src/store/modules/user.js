@@ -4,9 +4,14 @@ import router, { resetRouter } from "@/router";
 import Code from "@/api/statusCode";
 const state = {
   token: localStorage.getItem("token") ? localStorage.getItem("token") : "", //认证凭证
-  userName: "",
+  userName: localStorage.getItem("userName")
+    ? localStorage.getItem("userName")
+    : "",
   userId: "",
-  roles: []
+  roles: [],
+  headPath: localStorage.getItem("headPath")
+    ? localStorage.getItem("headPath")
+    : "",
 };
 
 const mutations = {
@@ -15,7 +20,6 @@ const mutations = {
     localStorage.setItem("token", val);
   },
   DEL_TOKEN(state) {
-  
     state.token = "";
     state.userName = "";
     state.userId = "";
@@ -27,27 +31,35 @@ const mutations = {
   },
   SET_NAME(state, payload) {
     state.userName = payload;
+    localStorage.setItem("userName", payload);
   },
   SET_USERID(state, payload) {
     state.userId = payload;
-  }
+  },
+  SET_HEADPATH(state, payload) {
+    state.headPath = payload;
+    localStorage.setItem("headPath", payload);
+  },
 };
 
 const actions = {
-  _login({ commit }, formdatas) {
+  _login({ commit },  formdatas) {
     //登录
     return new Promise((resolve, reject) => {
       GetAccess_token(formdatas)
-        .then(res => {
+        .then((res) => {
           if (res.status === Code.SUCCESS_CODE) {
             Message.success("登陆成功");
             commit("SET_TOKEN", res.data.access_token); //登录成功,修改全局TOKEN状态
+            commit("SET_NAME", res.data.companyName);
+            commit("SET_USERID", res.data.companyId);
+            commit("SET_HEADPATH", res.data.headPath);
           } else {
             Message.error(res.message);
           }
           resolve(res);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
@@ -58,14 +70,14 @@ const actions = {
     router.push({
       path: "/login",
       query: {
-        redirect: "/"
-      }
+        redirect: "/",
+      },
     });
   },
   _getInfo({ commit }) {
     return new Promise((resolve, reject) => {
       GetSysMenu()
-        .then(res => {
+        .then((res) => {
           if (res.status === Code.SUCCESS_CODE) {
             const { userName, userId } = res.data.userInfo;
 
@@ -74,7 +86,7 @@ const actions = {
             // console.log(`menu:${rolseList.toString()}`);
             let roles = [];
             if (rolseList.length > 0) {
-              rolseList.forEach(item => {
+              rolseList.forEach((item) => {
                 switch (item.pageName) {
                   case "Dashbord":
                     roles.push("Home"); //首页
@@ -113,16 +125,16 @@ const actions = {
           //resolve(res.data);
           resolve(state.roles);
         })
-        .catch(error => {
+        .catch((error) => {
           reject(error);
         });
     });
-  }
+  },
 };
 
 export default {
   namespaced: true,
   state,
   mutations,
-  actions
+  actions,
 };

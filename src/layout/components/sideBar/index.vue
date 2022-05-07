@@ -26,13 +26,20 @@
 <script>
 import SidebarItem from "./SideBarItem";
 import { mapGetters } from "vuex";
+import {  currencyRoutes } from "@/router";
 export default {
   components: {
     SidebarItem
   },
+  data(){
+    return {
+      routes:currencyRoutes
+    }
+  },
   mounted() {},
   computed: {
-    ...mapGetters(["routes", "opened"]),
+    //...mapGetters(["routes", "opened"]),
+    ...mapGetters(["opened"]),
     activeMenu() {
       return this.$route.path;
     }

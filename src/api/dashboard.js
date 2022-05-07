@@ -1,6 +1,13 @@
 import $axios from "./index";
 
-export function GetHomePage() {
-  const url = "/api/ApiManage/GetHomePage";
+export function EnterpriseWorkStand() {
+  //工作台
+  const url = "/api/Enterprise/EnterpriseWorkStand";
+  return $axios.get(url);
+}
+
+export function InterviewMore() {
+  //获取更多日历
+  const url = "/api/Enterprise/InterviewMore";
   return $axios.get(url);
 }

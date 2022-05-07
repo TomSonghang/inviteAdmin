@@ -2,104 +2,132 @@
 @import 'layout';
 @import 'transition';
 
-ul,li,p{
+ul,
+li,
+p {
   list-style: none;
-  margin:0;
-  padding: 0;
+  margin    : 0;
+  padding   : 0;
 }
+
 a {
-  color: inherit;
+  color          : inherit;
   text-decoration: none;
-  color: #606266;
+  color          : #606266;
+
   &:hover {
     text-decoration: none;
-    color: #409eff;
+    color          : #409eff;
   }
 }
 
-#app{
-    height: 100vh;
+html {
+  background-color: #F8FAFB;
 }
-.point{
+
+#app {
+  background-color: #F8FAFB;
+  height          : 100vh;
+
+}
+
+.point {
   cursor: pointer;
 }
-.companyColor{
-  color:@bg-green;
-}
-.companyBtn{
-  background: @bg-green;
-  border:1px solid @borderColor;
+
+.companyColor {
+  color: @bg-green;
 }
 
-.mtop{
-    margin-top:@px30
+.companyBtn {
+  background: @bg-green;
+  border    : 1px solid @borderColor;
 }
-.fontBold{
-    font-weight: bold;
+
+.mtop {
+  margin-top: @px30
 }
-.mright20{
-    margin-right: @px20;
+
+.fontBold {
+  font-weight: bold;
 }
+
+.mright20 {
+  margin-right: @px20;
+}
+
 .wid300 {
-    width: 300px !important;
+  width: 300px !important;
+}
+
+.btnStyle1 {
+  padding: 11px 20px !important;
+}
+
+.header i[class^='el-icon'] {
+  color: @text-color;
+}
+
+#app .clearFixed:after {
+  content   : '';
+  display   : block;
+  width     : 0;
+  height    : 0;
+  clear     : both;
+  visibility: hidden;
+}
+
+.loginCon .el-input__inner {
+  // background: rgba(0, 0, 0, 0.1);
+  background: #fff;
+  height    : 50px;
+  outline   : none;
+  color     : @text-color;
+  border    : none;
+}
+
+.loginCon .el-form-item {
+  // border: 1px solid hsla(0, 0%, 100%, 0.1);
+  border       : 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.marginLeft {
+  margin-left: 64px !important;
+}
+
+.pTitle {
+  font-size: 14px;
+  color    : #666;
+  padding  : 10px 0;
+
+  code {
+    background-color: #f9fafc;
+    padding         : 0 4px;
+    border          : 1px solid #eaeefb;
+    border-radius   : 4px;
   }
-  .btnStyle1 {
-    padding: 11px 20px !important;
+
+  span {
+    font-size: 12px;
   }
-  .header i[class^='el-icon'] {
-    color: @text-color;
+
+  i {
+    margin-right: 5px;
+    color       : #ffc107;
+    font-size   : 18px;
   }
-  #app .clearFixed:after {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    clear: both;
-    visibility: hidden;
+}
+
+.el-notification {
+  .el-icon-s-opportunity {
+    color     : #ffc107;
+    font-size : 22px;
+    margin-top: 2px;
   }
-  .loginCon .el-input__inner {
-    // background: rgba(0, 0, 0, 0.1);
-    background: #fff;
-    height: 50px;
-    outline: none;
-    color: @text-color;
-    border: none;
-  }
-  .loginCon .el-form-item {
-    // border: 1px solid hsla(0, 0%, 100%, 0.1);
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  .marginLeft {
-    margin-left: 64px !important;
-  }
-  .pTitle {
-    font-size: 14px;
-    color: #666;
-    padding: 10px 0;
-    code {
-      background-color: #f9fafc;
-      padding: 0 4px;
-      border: 1px solid #eaeefb;
-      border-radius: 4px;
-    }
-    span {
-      font-size: 12px;
-    }
-    i {
-      margin-right: 5px;
-      color: #ffc107;
-      font-size: 18px;
-    }
-  }
-  .el-notification {
-    .el-icon-s-opportunity {
-      color: #ffc107;
-      font-size: 22px;
-      margin-top: 2px;
-    }
-  }
-  .el-table th {
+}
+
+.el-table th {
   display: table-cell !important;
 }
 
@@ -109,6 +137,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none !important;
   margin            : 0;
 }
+
 /**全局自定义指定 按钮权限控制*/
 
 .permission-disable {
@@ -127,5 +156,63 @@ input::-webkit-inner-spin-button {
     height    : 100%;
     z-index   : 9;
     background: rgba(255, 255, 255, 0.5);
+  }
+}
+
+.contextWrap {
+  width     : 1200px;
+  margin    : 0 auto;
+  margin-top: 20px;
+}
+
+.flex-between-align {
+  display        : flex;
+  justify-content: space-between;
+  align-items    : center;
+}
+
+//修改滚动条
+#app ::-webkit-scrollbar {
+
+  width: 7px;
+  /*滚动条宽度*/
+
+  height: 7px;
+
+}
+
+#app ::-webkit-scrollbar-thumb {
+
+  border-radius: 3px;
+  /*滚动条圆角*/
+
+  -webkit-border-radius: 3px;
+  /*兼容圆角属性*/
+
+  background-color: #c3c3c3;
+  /*滚动条颜色*/
+
+}
+
+#app ::-webkit-scrollbar-track {
+
+  background-color: transparent;
+  /*滚动条的背景颜色*/
+
+}
+
+.fyDiv {
+  text-align: center;
+  padding-bottom: 20px;
+  margin-top: 20px;
+}
+
+.companyBg {
+  background-color: #13b5b1;
+
+  border-color: #13b5b1;
+
+  &:hover {
+    background-color: #1cc9c6;
   }
 }

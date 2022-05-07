@@ -26,7 +26,7 @@
   padding: 0 !important;
 }
 #app .sideBar {
-  width: 200px;
+  width: 165px;
   height: calc(100% - 50px);
   background-color: #3a3f51;
   position: fixed;
@@ -54,7 +54,7 @@
   z-index: 999;
 }
 .header_l {
-  width: 200px;
+  width: 165px;
   height: 100%;
   float: left;
   background-color: #3a3f51;
@@ -65,7 +65,7 @@
 }
 .header_r {
   height: 100%;
-  margin-left: 200px;
+  margin-left: 165px;
   background-color: #ffffff;
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.05), 0 1px 0 rgba(0, 0, 0, 0.05);
   transition: all 0.3s;
