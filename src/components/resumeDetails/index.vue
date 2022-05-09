@@ -44,7 +44,13 @@
           </template>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
+      <el-button
+        v-if="interviewTag"
+        type="primary"
+        class="companyBg mar120"
+        @click="handleChangeTime"
+      >确定修改</el-button>
+      <el-button v-else type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
 
       <el-dialog width="30%" title="新增面试时间" :visible.sync="innerVisible" append-to-body>
         <el-form :model="formInfoInner" class="demo-form-inline">
@@ -220,10 +226,11 @@
       <div class="btns_bottom_sh">
         <div class="auto_btns_box">
           <ul class="btns_left_sh ul_sh">
-            <li class="btns_sh" @click="handleMore({ title: '举报', id: detailsData.resumeId })">举报</li>
+            <li class="btns_sh" @click="handleMore({ title: '举报', id: detailsData.userId })">举报</li>
             <li
+              v-show="type == 1"
               class="btns_sh"
-              @click="handleMore({ title: '不合适', id: detailsData.resumeId, statu: detailsData.status, positionId: detailsData.positionId })"
+              @click="handleMore({ title: '不合适', id: detailsData.resumeId, statu: '', positionId: detailsData.positionId })"
             >不合适</li>
             <li
               class="btns_sh"
@@ -237,7 +244,7 @@
             >取消收藏</li>
             <li
               class="btns_sh"
-              v-show="detailsData.status == 4"
+              v-show="detailsData.status == 4 && type == 1"
               @click="handleMore({ title: '修改面试时间', id: detailsData.resumeId })"
             >修改面试时间</li>
           </ul>
@@ -270,6 +277,10 @@ export default {
     maskClose: {
       type: Boolean,
       default: false
+    },
+    type: {    //1：简历管理 2：人才搜索
+      type: Number,
+      default: 1
     },
     detailsData: {
       type: Object,

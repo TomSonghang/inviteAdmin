@@ -337,7 +337,7 @@ export default {
         { name: '公司资质', tab: 3 },
         { name: '团队风采', tab: 4 },
       ],
-      active: 4,
+      active: 0,
       token: "",  //上传图片需要token
 
       isOpenBusines: false,    //业务是否公开
@@ -811,7 +811,7 @@ export default {
   display: block;
 }
 .casClass {
-  max-height: 300px;
+  height: 300px;
   overflow-y: auto;
 }
 .certificateBox {

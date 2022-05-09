@@ -44,7 +44,14 @@
           </template>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
+
+      <el-button
+        v-if="interviewTag"
+        type="primary"
+        class="companyBg mar120"
+        @click="handleChangeTime"
+      >确定修改</el-button>
+      <el-button v-else type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
 
       <el-dialog width="30%" title="新增面试时间" :visible.sync="innerVisible" append-to-body>
         <el-form :model="formInfoInner" class="demo-form-inline">
@@ -214,7 +221,7 @@
               <div class="btnsBox">
                 <span
                   v-show="scope.row.status == 4"
-                  @click="handleHire({ id: scope.row.resumeId, statu: scope.row.status, positionId: scope.row.positionId })"
+                  @click="handleHire({ id: scope.row.resumeId, statu: '', positionId: scope.row.positionId })"
                 >录用</span>
                 <el-tooltip class="item" effect="dark" content="邀请TA来面试" placement="top-start">
                   <span
@@ -225,11 +232,11 @@
 
                 <span
                   v-show="scope.row.status == 5 || scope.row.status == 6"
-                  @click="handleReport"
+                  @click="handleReport(scope.row.userId)"
                 >举报</span>
                 <el-tooltip class="item" effect="dark" content="简历状态改为待处理" placement="top-start">
                   <span
-                    @click="handleReturn({ id: scope.row.resumeId, statu: scope.row.status, positionId: scope.row.positionId })"
+                    @click="handleReturn({ id: scope.row.resumeId, statu: '', positionId: scope.row.positionId })"
                     v-show="scope.row.status == 7 || scope.row.status == 8 | scope.row.status == 9"
                   >待定</span>
                 </el-tooltip>
@@ -242,7 +249,7 @@
                     <el-dropdown-item
                       :command="{ title: '不合适', id: scope.row.resumeId, statu: scope.row.status, positionId: scope.row.positionId }"
                     >不合适</el-dropdown-item>
-                    <el-dropdown-item :command="{ title: '举报', id: scope.row.resumeId }">举报</el-dropdown-item>
+                    <el-dropdown-item :command="{ title: '举报', id: scope.row.userId }">举报</el-dropdown-item>
                     <el-dropdown-item
                       v-show="scope.row.isCollection == 0"
                       :command="{ title: '收藏', id: scope.row.userId }"
@@ -253,7 +260,7 @@
                     >取消收藏</el-dropdown-item>
                     <el-dropdown-item
                       v-show="scope.row.status == 4"
-                      :command="{ title: '修改面试时间', id: scope.row.resumeId }"
+                      :command="{ title: '修改面试时间', id: scope.row.resumeId, positionId: scope.row.positionId }"
                     >修改面试时间</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
@@ -275,7 +282,7 @@
       :maskClose="show"
       @closedView="closedView"
       @nextPrv="nextPrv"
-      :detailsData="detailsData"
+      :detailsData="detailsDataObj"
     ></resume-details>
   </div>
 </template>
@@ -320,7 +327,7 @@ export default {
       total: 0,
 
 
-      postTypeArray: [],   //应聘岗位
+
 
       tableData: [],  //列表数据
       resumeType: 3,    //简历状态：1待处理，2面试，3简历库,4新简历,5录用,6不合适

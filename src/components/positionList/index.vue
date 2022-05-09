@@ -125,20 +125,25 @@
         </template>
       </div>
     </div>
+    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay">
+      <pay-buy :paydata="paydata" :type="flag ? 1 : 3" :groupId="groupId"></pay-buy>
+    </el-dialog>
   </div>
+  <!--我只是想-->
 </template>
 <script>
+import payBuy from '@/components/payBuy/index'
 import {
   UpdateJobStatus,
   CommonConvertBoutiqueJob,
   RefreshJob,
   GetPostNum
 } from '@/api/positionManagement'
-
 import {
   WithGroupPtaway,
   FinishRecruit,
-  CloseWithGroup
+  CloseWithGroup,
+  ServicePayInit,
 } from '@/api/timeJob'
 //import { Loading, Message } from "element-ui"; // 引用element-ui的加载和消息提示组件
 import Code from "@/api/statusCode";
@@ -152,6 +157,8 @@ export default {
       title: "",   //弹窗提示
       dialogType: 0,   //弹窗类型，如果为1，代表是开启职位时，可选精品和普通
       groupId: "",   //炒更ID
+      dialogTableVisiblePay: false,
+      paydata: {},  //支付信息
     }
   },
   props: {
@@ -166,15 +173,17 @@ export default {
       default: true
     }
   },
+  components: { payBuy },
   mounted() {
     console.log(this.arrayData);
   },
   methods: {
+
     handlePartClosed(id) {     //关闭招募
       this.groupId = id
       this._CloseWithGroup()
     },
-    _CloseWithGroup() {
+    _CloseWithGroup() {     //关闭团
       let data = {
         groupId: this.groupId
       }
@@ -196,9 +205,10 @@ export default {
     },
     handlePartUp(id) {     //上架炒更
       this.groupId = id
-      this._WithGroupPtaway()
+      this._ServicePayInit();
+
     },
-    _WithGroupPtaway() {
+    _WithGroupPtaway() {  //上架炒更接口
       let data = {
         groupId: this.groupId
       }
@@ -218,6 +228,20 @@ export default {
         }
       })
     },
+    _ServicePayInit() {
+      let data = {
+        businesstype: this.flag ? 'Service' : 'WithGroup',
+        serviceCode: '',    //服务码(1001普通职位；1002精品职位)
+        groupId: this.groupId,
+      }
+      ServicePayInit(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.dialogTableVisiblePay = true
+          this.paydata = res.data
+        }
+      })
+    },
+
     handlePartOver(id) {   //完成招募
       this.groupId = id
       this._FinishRecruit()

@@ -30,8 +30,32 @@ export function CloseWithGroup(data) {
   return $axios.post(url, data);
 }
 
-export function HireResume(data) {
-  //关闭招募
-  const url = "/api/Enterprise/HireResume";
+export function SetApplyStatus(data) {
+  //录用，淘汰
+  const url = "/api/Enterprise/SetApplyStatus";
+  return $axios.post(url, data);
+}
+
+export function ReplyEstimate(data) {
+  //评价
+  const url = "/api/Enterprise/ReplyEstimate";
+  return $axios.post(url, data);
+}
+
+export function GetFeedBackDataBase(data) {
+  //获取评价数据
+  const url = "/api/Enterprise/GetFeedBackDataBase";
+  return $axios.post(url, data);
+}
+
+export function ServicePayInit(data) {
+  //炒更初始化内容
+  const url = "/api/Enterprise/ServicePayInit";
+  return $axios.get(url, data);
+}
+
+export function PartTimePayment(data) {
+  //兼职支付(预支付)
+  const url = "/api/Enterprise/PartTimePayment";
   return $axios.post(url, data);
 }

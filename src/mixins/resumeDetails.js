@@ -8,7 +8,7 @@ export default {
   data() {
     return {
       show: false, //详情是否显示
-      detailsData: {}, //简历详情
+      detailsDataObj: {}, //简历详情
       userId: "", //以后可能需要打开详情
       activeIndex: 1, //行标
       flag: "", //详情左右标识
@@ -21,6 +21,7 @@ export default {
       orderby: "",
       postType: "",
       cityName: "全国",
+      postTypeArray: [], //应聘岗位
     };
   },
   mounted() {
@@ -107,10 +108,14 @@ export default {
         jobStatus: this.statusStr || "", //求职状态(只有简历管理才需要传递)
         resumeId: this.flag ? "" : this.resumeId, //简历ID(只有简历管理才需要传递)
       };
-      debugger;
       ResumeUpOrDownDetails(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
-          this.detailsData = res.data;
+          this.detailsDataObj = res.data;
+        } else {
+          this.$message({
+            message: res.message,
+            type: "warning",
+          });
         }
       });
     },

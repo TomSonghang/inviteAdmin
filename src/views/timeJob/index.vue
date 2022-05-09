@@ -28,7 +28,27 @@
         @current-change="handlePage"
       ></el-pagination>
     </div>
-    <el-dialog title="评价" :visible.sync="dialogReply"></el-dialog>
+    <el-dialog title="评价" :visible.sync="dialogReply">
+      <el-form :model="reportInfo" class="demo-form-inline">
+        <el-form-item label="回复评分" style="display: flex;align-items: center;">
+          <el-rate v-model="replayNum" show-text></el-rate>
+        </el-form-item>
+        <el-form-item label="评价项目">
+          <ul class="reportItem">
+            <li
+              @click="handleItem(index)"
+              v-for="(item, index) in replyData"
+              :key="item.id"
+              :class="active === index ? 'active' : ''"
+            >{{ item.content }}</li>
+          </ul>
+        </el-form-item>
+        <el-form-item label="评价内容">
+          <el-input v-model="reportInfo.value" placeholder="请输入内容"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-button type="primary" class="companyBg mar120" @click="handleReportTure">确定</el-button>
+    </el-dialog>
     <el-dialog title="炒更详情" :visible.sync="dialogTableVisible">
       <div class="partDetails">
         <div class="partL">
@@ -131,17 +151,17 @@
                     <p class="btnsBox">
                       <span
                         v-show="detailsData.status != '招募完成'"
-                        @click="handleHire({ status: 1, applyid: item.applyUserId, withGroupId: detailsData.id })"
+                        @click="handleHire({ status: 1, applyid: item.id, withGroupId: detailsData.id })"
                       >录用</span>
                       <span
                         v-show="detailsData.status != '招募完成'"
                         style="color: #b52613;"
-                        @click="handleHire({ status: 2, applyid: item.applyUserId, withGroupId: detailsData.id })"
+                        @click="handleHire({ status: 2, applyid: item.id, withGroupId: detailsData.id })"
                       >不合适</span>
                       <span
                         style="color: #b55c13;"
                         v-show="detailsData.status == '招募完成'"
-                        @click="handleReplay({ withGroupId: detailsData.id })"
+                        @click="handleReplay({ withGroupId: detailsData.id, estimateId: item.applyList.applyUserId })"
                       >评价</span>
                     </p>
                   </div>
@@ -158,13 +178,16 @@
 import positionList from '@/components/positionList/index'
 import tabItem from '@/components/tabItem/index'
 import Code from "@/api/statusCode";
-import { WithGroupList, GetWithGroupDetails, SetApplyStatus, ReplyEstimate } from '@/api/timeJob'
+import { WithGroupList, GetWithGroupDetails, SetApplyStatus, ReplyEstimate, GetFeedBackDataBase } from '@/api/timeJob'
 export default {
   name: "Position",
   data: () => {
     return {
       dialogTableVisible: false,    //详情
       dialogReply: false,    //评价
+      reportInfo: {
+        value: ""
+      },
       key: "",
       pageNo: 1,
       statusText: '',
@@ -191,7 +214,13 @@ export default {
         name: "已关闭",
       }],
       groupId: "",  //兼职详情id
+
+      estimateId: "",    //企业ID
       detailsData: {},    //兼职数据
+      replyData: [],
+      active: '',
+      replayNum: 0,//评分
+
     }
   },
   components: {
@@ -200,37 +229,78 @@ export default {
   },
   mounted() {
     this._WithGroupList()
+    this._GetFeedBackDataBase()
   },
   methods: {
-    handleReplay() {
+    handleReportTure() {     //确认评价
+      this._ReplyEstimate()
+    },
+    handleItem(index) {     //切换评价选项
+      this.active = index
+    },
+    _GetFeedBackDataBase() {     //获取评价项目
+      let data = {
+        dataType: 6
+      }
+      GetFeedBackDataBase(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.replyData = res.data
+        }
+      })
+    },
+    handleReplay(data) {    //评价
+      let { withGroupId, estimateId } = data;
+      this.groupId = withGroupId;
+      this.estimateId = estimateId
       this.dialogReply = true
     },
     _ReplyEstimate() {
       let data = {
-        withGroupId: "",
-        estimateId: "",
-        grade: "",
-        estimateContent: "",
-        optionContent: "",
+        withGroupId: this.groupId,
+        estimateId: this.estimateId,
+        grade: this.replayNum,
+        estimateContent: this.reportInfo.value,
+        optionContent: this.replyData[this.active].content || '',
       }
       ReplyEstimate(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
-          debugger
+          this.dialogReply = false;
+          this.replayNum = 0;
+          this.reportInfo.value = '';
+          this.active = '';
+          this.$message({
+            message: '评价成功',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          });
         }
       })
     },
-    handleHire() {     //录用
-      this._HireResume()
+    handleHire(arg) {     //录用
+      this._SetApplyStatus(arg)
     },
-    _SetApplyStatus() {
+    _SetApplyStatus(arg) {
+      let { status, applyid, withGroupId } = arg
       let data = {
-        status: "",
-        applyid: "",
-        withGroupId: ""
+        status,
+        applyid,
+        withGroupId
       }
       SetApplyStatus(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
-          debugger
+          this.$message({
+            message: '操作成功',
+            type: 'success'
+          });
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          });
         }
       })
     },
@@ -423,5 +493,25 @@ export default {
     color: #13b5b1;
     cursor: pointer;
   }
+}
+.reportItem {
+  display: flex;
+  align-items: center;
+  li {
+    margin-right: 10px;
+    padding: 0 20px;
+    border: 1px solid #f5f5f5;
+    color: #333;
+    border-radius: 50px;
+    cursor: pointer;
+    &:hover {
+      color: #13b5b1;
+      border: 1px solid #13b5b1;
+    }
+  }
+}
+.active {
+  color: #13b5b1 !important;
+  border: 1px solid #13b5b1 !important;
 }
 </style>

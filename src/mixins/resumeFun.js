@@ -11,6 +11,7 @@ import {
   HireResume,
   UpdateInterviewTime,
   GetInterviewInfo,
+  ReturnPending,
 } from "@/api/resume";
 import Code from "@/api/statusCode";
 
@@ -46,7 +47,7 @@ export default {
       },
 
       radio: "", //面试信息选中ID
-      userId: "", //简历的ID
+      userId: "", //简历用户的ID
       interviewData: [], //面试信息
 
       resumeId: "", //简历ID
@@ -81,7 +82,9 @@ export default {
     handleRefresh() {
       this._GetResumemanagement && this._GetResumemanagement();
     },
-    handleReport() {
+    handleReport(id) {
+      debugger;
+      this.userId = id;
       this.reportVisible = true;
     },
     handlePass() {
@@ -107,14 +110,14 @@ export default {
       debugger;
       console.log(command);
       if (command.title == "不合适") {
-        debugger
+        debugger;
         this.dialogVisible = true; //不合适弹窗
         this.resumeId = command.id;
         this.statusStr = command.statu;
         this.positionId = command.positionId;
       } else if (command.title == "举报") {
-        this.resumeId = command.id;
-        this.handleReport();
+        this.userId = command.id;
+        this.handleReport(command.id);
       } else if (command.title == "收藏") {
         this.userId = command.id;
         this._CollectResume();
@@ -124,6 +127,7 @@ export default {
       } else if ((command.title = "修改面试时间")) {
         this.interviewTag = 1;
         this.resumeId = command.id;
+        this.positionId = command.positionId;
         this.outerVisible = true;
         this._GetInterviewInfo();
       }
@@ -149,9 +153,40 @@ export default {
       //选择面试信息
       this.radio = e;
     },
+    handleChangeTime() {
+      //修改面试时间
+      this._UpdateInterviewTime();
+    },
+    _UpdateInterviewTime() {
+      let data = {
+        type: this.type === 1 ? "jlgl" : "",
+        resumeId: this.resumeId,
+        time: this.formInfo.time,
+        statusStr: "",
+        positionId: this.positionId,
+      };
+      UpdateInterviewTime(data).then((res) => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.$message({
+            message: res.message,
+            type: "success",
+          });
+          this.userId = "";
+          this.formInfo = {
+            post: "",
+            time: "",
+          };
+          this.outerVisible = false;
+        } else {
+          this.$message({
+            message: res.message,
+            type: "warning",
+          });
+        }
+      });
+    },
     handleInvited() {
       //确认邀请面试
-
       this._Invited();
     },
     _Invited() {
@@ -238,7 +273,7 @@ export default {
     _ResumeDetailsFeedback() {
       //确认举报
       let data = {
-        objectId: this.resumeId,
+        objectId: this.userId,
         content: this.reportInfo.value,
         optionContent: this.reportInfo.itemId,
       };
@@ -266,7 +301,7 @@ export default {
       //不合适
       let data = {
         resumeId: this.resumeId,
-        statusStr: this.statusStr, //简历状态,新简历(1)待处理(2,3)面试(4)录用(6)不合适(5,7,8,9),注意需要带上小括号
+        statusStr: "", //简历状态,新简历(1)待处理(2,3)面试(4)录用(6)不合适(5,7,8,9),注意需要带上小括号
         positionId: this.positionId,
       };
       OutResume(data).then((res) => {
@@ -385,7 +420,8 @@ export default {
         }
       });
     },
-    handleReturn() {
+    handleReturn(data) {
+      debugger;
       let { id, statu, positionId } = data;
       this.resumeId = id;
       this.statusStr = statu;
@@ -395,9 +431,23 @@ export default {
     _ReturnPending() {
       let data = {
         resumeId: this.resumeId,
-        statusStr: "",
+        statusStr: this.statusStr,
         positionId: this.positionId,
       };
+      ReturnPending(data).then((res) => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.$message({
+            message: "操作成功",
+            type: "success",
+          });
+          this.handleRefresh();
+        } else {
+          this.$message({
+            message: res.message,
+            type: "warning",
+          });
+        }
+      });
     },
   },
 

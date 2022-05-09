@@ -1,16 +1,30 @@
 <template>
   <div class="buyBox">
     <div class="buyL">
-      <p class="buyT" v-if="paydata.ServiceData">{{ paydata.ServiceData.serviceName }}</p>
-      <div class="buyDescript">
-        <div v-for="(item, index) in descriptData" :key="index">{{ item }}</div>
-      </div>
+      <template>
+        <p
+          class="buyT"
+          v-if="paydata.ServiceData && type == 2"
+        >{{ paydata.ServiceData.serviceName }}</p>
 
-      <div class="buyNumber">
+        <p class="buyT" v-else="type == 3">{{ paydata.serviceName }}</p>
+      </template>
+      <template>
+        <div class="buyDescript" v-if="type == 3">
+          <div>您购买的炒更团职位{{ paydata.serviceName }}需要{{ paydata.serviceCost }}金币。</div>
+          <div>或者使用支付宝或微信付款{{ paydata.serviceRMB }}RMB;</div>
+          <div>购买金币付款更优惠</div>
+        </div>
+        <div class="buyDescript" v-if="type != 3">
+          <div v-for="(item, index) in descriptData" :key="index">{{ item }}</div>
+        </div>
+      </template>
+
+      <div class="buyNumber" v-if="type != 3">
         <span>购买数量</span>
         <el-input-number v-model="num" @change="handleChange" :min="1" :max="10" label="描述文字"></el-input-number>
       </div>
-      <div class="buyCard">
+      <div class="buyCard" v-if="type != 3">
         <div v-for="item in cardData" :key="item.id" class="cardItemBox cardActive">
           <discount-card :cardData="item"></discount-card>
         </div>
@@ -50,12 +64,12 @@
         <p>请确认左侧信息后支付</p>
         <p>
           还需支付：
-          <span>500元/5000金币</span>
+          <span v-if="type == 3">{{ paydata.serviceRMB }}元/{{ paydata.serviceCost }}金币</span>
         </p>
       </div>
       <div class="QRbox" v-show="zfActive != 'gold'">
         <div class="vscode">
-          <div id="qrcode"></div>
+          <div id="qrcode" ref="qrCodeUrl"></div>
         </div>
         <div class="wayDes">
           <div class="payWabImg">
@@ -83,14 +97,19 @@ import Code from "@/api/statusCode";
 import QRCode from 'qrcodejs2'
 import discountCard from '@/components/discountCard/index'
 import { GetCardTicketList, ServiceOrGoldPayment } from '@/api/serve'
+import {
+  PartTimePayment
+} from '@/api/timeJob'
 export default {
   name: "PayBuy",
   data() {
     return {
       num: 1,
-      zfActive: 'zfb',
       moneyOff: 2980,  //实付价格\
       cardData: [], //可用优惠券数据
+      zfActive: 'zfb',
+      codeUrl: "",      //付款码链接
+      codeNum: ""   //付款码订单号
     }
   },
   props: {
@@ -99,6 +118,14 @@ export default {
       default: function () {
         return {}
       }
+    },
+    type: {
+      type: Number,
+      default: 1   //1是职位 2是套餐 3是炒更
+    },
+    groupId: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
@@ -108,18 +135,41 @@ export default {
   },
   methods: {
     handleWay(e) {
-      this.zfActive = e
+      this.zfActive = e;
+      if (this.type === 3) {   //兼职
+        this._PartTimePayment()  //兼职二维码
+      } else if (this.type === 2) {   //套餐
+        this._ServiceOrGoldPayment()  //服务的二维码
+      }
     },
-    _ServiceOrGoldPayment() {     //获取二维码信息
+    _ServiceOrGoldPayment() {     //服务获取二维码信息
       let data = {
         payMethod: this.zfActive == 'zfb' ? 'AliPay' : this.zfActive == 'wx' ? 'WxPay' : 'GoldPay',
         entrustType: this.zfActive == 'zfb' ? 4 : 2,
         gold: "",
-        serviceId:'7',// this.paydata.ServiceData.serviceId,
+        serviceId: '7',// this.paydata.ServiceData.serviceId,
         serviceCount: this.num,
       }
       ServiceOrGoldPayment(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
+        }
+      })
+    },
+    _PartTimePayment() { //获取兼职二维码
+      let data = {
+        groupId: this.groupId,
+        payMethod: this.zfActive == 'zfb' ? 'AliPay' : this.zfActive == 'wx' ? 'WxPay' : 'GoldPay'
+      }
+      PartTimePayment(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.codeUrl = res.data.code_url
+          this.codeNum = res.data.out_trade_no
+          this.qrcode();
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          });
         }
       })
     },
@@ -138,25 +188,37 @@ export default {
       console.log(value);
     },
     qrcode() {
-      let qrcode = new QRCode('qrcode', {
+      let that = this;
+      document.getElementById("qrcode").innerHTML = "";   //生成之前清空
+      let qrcode = new QRCode(this.$refs.qrCodeUrl, {
         width: 140,
         height: 140, // 高度
-        text: '56663159' // 二维码内容
+        text: that.codeUrl, // 二维码内容
+        background: '#13b5b1'
         // render: 'canvas' // 设置渲染方式（有两种方式 table和canvas，默认是canvas）
-        // background: '#f0f'
         // foreground: '#ff0'
       })
       console.log(qrcode)
+    },
+    refreshCode() {    //刷新付款码
+      if (this.type === 3) {   //兼职
+        this._PartTimePayment()  //兼职二维码
+      } else if (this.type === 2) {   //套餐
+        this._ServiceOrGoldPayment()  //服务的二维码
+      }
     }
   },
   components: {
     discountCard
   },
   mounted() {
-    debugger
-    this.qrcode();
-    this._GetCardTicketList();
-    this._ServiceOrGoldPayment()
+    this.refreshCode()  //获取付款码
+    if (this.type === 3) {   //兼职
+
+    } else if (this.type === 2) {   //套餐
+      this._GetCardTicketList();    //显示优惠券
+    }
+
   }
 }
 </script>

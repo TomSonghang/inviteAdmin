@@ -139,13 +139,13 @@
         </div>
 
         <div class="btnsBox">
-          <el-button type="primary" v-if="item.isSecrecy" class="companyBg">拨打电话</el-button>
+          <!-- <el-button type="primary" v-if="item.isSecrecy" class="companyBg">拨打电话</el-button> -->
           <el-button
             type="primary"
-            v-else
+            :disabled="item.isSecrecy"
             class="companyBg"
             @click="handleView({ id: item.fromUserId, row: item.row })"
-          >查看简历</el-button>
+          >{{ item.isSecrecy ? '简历保密' : '查看简历' }}</el-button>
         </div>
       </div>
 
@@ -162,7 +162,8 @@
       :maskClose="show"
       @closedView="closedView"
       @nextPrv="nextPrv"
-      :detailsData="detailsData"
+      :detailsData="detailsDataObj"
+      :type="type"
     ></resume-details>
   </div>
 </template>
@@ -201,7 +202,12 @@ export default {
 
     }
   },
-
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.cityName = to.query.name
+      vm._ResumeSearch()
+    })
+  },
   mounted() {
     this._ResumeSearch();
   },
@@ -274,6 +280,7 @@ export default {
       } else {
         this.active = '1'
       }
+      this._ResumeSearch()
     },
     _ResumeSearch() {
       let data = {

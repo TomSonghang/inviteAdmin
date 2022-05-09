@@ -51,6 +51,7 @@ import {
   InputNumber,
   Radio,
   Switch,
+  Rate,
 } from "element-ui";
 
 Message.install = () => {
@@ -114,3 +115,4 @@ Vue.use(TimePicker);
 Vue.use(InputNumber);
 Vue.use(Radio);
 Vue.use(Switch);
+Vue.use(Rate);
