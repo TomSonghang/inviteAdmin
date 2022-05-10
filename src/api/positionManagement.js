@@ -29,3 +29,9 @@ export function GetPostNum(data) {
   const url = "/api/Enterprise/GetPostNum";
   return $axios.get(url, data);
 }
+
+export function ServiceOrGoldPayment(data) {
+  //服务或金币支付(预支付获取二维码)
+  const url = "/api/Enterprise/ServiceOrGoldPayment";
+  return $axios.post(url, data);
+}

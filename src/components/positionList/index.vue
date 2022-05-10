@@ -4,12 +4,13 @@
       <span>{{ title }}</span>
       <span slot="footer" class="dialog-footer">
         <template v-if="dialogType">
-          <el-button @click="dialogVisible = false">开启普通职位</el-button>
-          <el-button type="primary" @click="confirmReturn">开启精品职位</el-button>
+          <el-button @click="_UpdateJobStatus('pt')">开启普通职位</el-button>
+          <el-button type="primary" @click="_UpdateJobStatus('jp')">开启精品职位</el-button>
         </template>
         <template v-else>
           <el-button @click="dialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="confirmReturn">确 定</el-button>
+          <el-button type="primary" v-if="dialogTag === 1" @click="confirmPay">确 定</el-button>
+          <el-button type="primary" v-else @click="confirmReturn">确 定</el-button>
         </template>
       </span>
     </el-dialog>
@@ -80,7 +81,7 @@
           <el-popconfirm
             v-if="item.postStatus == '1'"
             title="关闭职位后再次启用时，将扣减职位发布数，是否继续？"
-            @confirm="handleDown(item.id, item.serviceCode, item.postStatus)"
+            @confirm="handleDownUp(item.id, item.serviceCode, item.postStatus)"
           >
             <span slot="reference">下线</span>
           </el-popconfirm>
@@ -112,7 +113,7 @@
             title="确定此炒更团完成招募吗？"
             @confirm="handlePartOver(item.groupId)"
           >
-            <span slot="reference">完成招募</span>
+            <span slot="reference">完成</span>
           </el-popconfirm>
           <el-popconfirm
             v-if="item.status == 3 || item.status == 2"
@@ -126,7 +127,7 @@
       </div>
     </div>
     <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay">
-      <pay-buy :paydata="paydata" :type="flag ? 1 : 3" :groupId="groupId"></pay-buy>
+      <pay-buy :paydata="paydata" :type="flag ? 1 : 3" :groupId="groupId" @closedShow="closedShow"></pay-buy>
     </el-dialog>
   </div>
   <!--我只是想-->
@@ -155,10 +156,14 @@ export default {
       dialogVisible: false,      //转精品弹窗
       command: {},     //当前职位的参数对象
       title: "",   //弹窗提示
+      dialogTag: 0,//0代表点击确认是开启精品职位按钮，1代表付费购买
       dialogType: 0,   //弹窗类型，如果为1，代表是开启职位时，可选精品和普通
-      groupId: "",   //炒更ID
+      groupId: 0,   //炒更ID
       dialogTableVisiblePay: false,
       paydata: {},  //支付信息
+      positionId: "",  //职位ID
+      curPositionStatus: "",  //招聘职位状态码，注意改状态为当前状态，不是修改后的状态(1:开启招聘，2：关闭招聘)
+      serviceCode: ""
     }
   },
   props: {
@@ -178,7 +183,6 @@ export default {
     console.log(this.arrayData);
   },
   methods: {
-
     handlePartClosed(id) {     //关闭招募
       this.groupId = id
       this._CloseWithGroup()
@@ -203,11 +207,12 @@ export default {
         }
       })
     },
+
     handlePartUp(id) {     //上架炒更
       this.groupId = id
       this._ServicePayInit();
-
     },
+
     _WithGroupPtaway() {  //上架炒更接口
       let data = {
         groupId: this.groupId
@@ -225,19 +230,6 @@ export default {
             message: res.message,
             type: 'warning'
           });
-        }
-      })
-    },
-    _ServicePayInit() {
-      let data = {
-        businesstype: this.flag ? 'Service' : 'WithGroup',
-        serviceCode: '',    //服务码(1001普通职位；1002精品职位)
-        groupId: this.groupId,
-      }
-      ServicePayInit(data).then(res => {
-        if (res.status === Code.SUCCESS_CODE) {
-          this.dialogTableVisiblePay = true
-          this.paydata = res.data
         }
       })
     },
@@ -266,12 +258,39 @@ export default {
         }
       })
     },
-    handleUnknow() {     //职位未阅读 
-      this.$router.push({ name: "Resume" })
-    },
     handlejz(id) {   //兼职
       this.$emit('openJz', id)
     },
+    /*--------------------------------------炒更团方法--------------------------------------*/
+    _ServicePayInit() {     //炒更，职位初始化数据
+      let data = {
+        businesstype: this.flag ? 'Service' : 'WithGroup',
+        serviceCode: this.flag ? this.serviceCode : '',    //服务码(1001普通职位；1002精品职位)
+        groupId: this.groupId || 0,
+      }
+      ServicePayInit(data).then(res => {
+        debugger
+        if (res.status === Code.SUCCESS_CODE) {
+
+          if (this.flag) {   //职位
+            this.paydata = res.data[0]
+          } else {    //炒更
+            this.paydata = res.data
+          }
+          this.dialogVisible = false;
+          this.dialogTableVisiblePay = true
+        }
+      })
+    },
+    closedShow() {      //关闭支付弹窗
+      this.dialogTableVisiblePay = false
+    },
+    /*--------------------------------------职位炒更共用方法--------------------------------------*/
+
+    handleUnknow() {     //职位未阅读 
+      this.$router.push({ name: "Resume" })
+    },
+
     handleMore(command) {   //点击了更多
       if (command instanceof Object && command.flag == 'refresh') {   //刷新
         let data = {
@@ -289,23 +308,24 @@ export default {
       } else if (command instanceof Object && command.flag == 'return') {    //转精品
         GetPostNum({}).then(res => {
           if (res.status === Code.SUCCESS_CODE) {
+            this.serviceCode = '1002'
             this.serviceSurplus1001 = res.data.serviceSurplus1001;
             this.serviceSurplus1002 = res.data.serviceSurplus1002;
             if (res.data.serviceSurplus1002 == 0) {     //代表没有转精品的资格
               this.title = `您的精品职位额度不足，可购买后继续~`
+              this.dialogTag = 1;
             } else {
               this.title = `您的精品职位还剩${this.serviceSurplus1002}次,此操作会扣减1次额度,确认继续?`
-              this.command = command
+              this.command = command;
+              this.dialogTag = 0;
             }
             this.dialogType = 0
             this.dialogVisible = true;
           }
         })
-
       }
-
-
     },
+
     confirmReturn() {      //确认转精品
       let data = {
         jobId: this.command.id
@@ -319,17 +339,35 @@ export default {
           this.dialogVisible = false;    //刷新弹窗内容
           this.command = {}
           this.$emit('refresh')
+        } else {
+          this.$message({     //转精品失败
+            message: res.message,
+            type: 'warning'
+          });
         }
       })
     },
+
     handleEdit(e) {   //编辑职位
       this.$router.push({ name: "PostJob", query: { id: e } })
     },
-    handleDown(e, s, t) {//下线职位
+
+    handleDownUp(e, s, t) {//下线职位   //上线也可以
+      this.positionId = e;
+      this.curPositionStatus = t;
+      this.serviceCode = s;
+      this._UpdateJobStatus()
+    },
+    _UpdateJobStatus(e) {   //e如果有值，代表是开启的普通职位或者精品
+      if (e == 'pt') {
+        this.serviceCode = '1001'
+      } else if (e == 'jp') {
+        this.serviceCode = '1002'
+      }
       let data = {
-        id: e,
-        curPositionStatus: t == '1' ? 1 : 2,      //状态为1的时候是上线
-        serviceCode: s
+        id: this.positionId,
+        curPositionStatus: this.curPositionStatus,      //状态为1的时候是上线
+        serviceCode: this.serviceCode
       }
       UpdateJobStatus(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
@@ -338,25 +376,52 @@ export default {
             type: 'success'
           });
           this.$emit('refresh')
+        } else {    //操作失败则支付
+          this._ServicePayInit()
         }
       })
     },
-    handleUp(e, s, t) {   //开启职位
+
+    handleUp(e, s, t) {   //上线职位
+
+      this.positionId = e;
+      this.curPositionStatus = t;
+      this.serviceCode = s;
+      this._GetPostNum()
+    },
+    _GetPostNum() {
       GetPostNum({}).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
+
           this.serviceSurplus1001 = res.data.serviceSurplus1001;
           this.serviceSurplus1002 = res.data.serviceSurplus1002;
           if (res.data.serviceSurplus1002 == 0 && this.serviceSurplus1001 == 0) {     //代表没有服务
+
             this.title = `您的精品职位和普通职位额度不足，可购买后继续~`
+            this.dialogType = 1
+            this.dialogTag = 0
+          } else if (res.data.serviceSurplus1002 == 0 && this.serviceCode == '1002') {    //精品职位
+            //还剩普通职位
+            this.title = `您的精品职位额度不足，可购买后继续~`
+            this.dialogTag = 1
+          } else if (res.data.serviceSurplus1001 == 0 && this.serviceCode == '1001') {    //普通职位
+            //还剩普通职位
+            this.title = `您的普通职位额度不足，可购买后继续~`
+            this.dialogTag = 1
           } else {
+            this.dialogTag = 0
             this.dialogType = 1
             this.title = `您目前还剩${this.serviceSurplus1002}个精品职位,${this.serviceSurplus1001}个普通职位,请选择开启普通职位还是精品职位`
           }
           this.dialogVisible = true;
         }
       })
+    },
+    confirmPay() {     //服务不足时弹支付
+      this._ServicePayInit()
+    },
+    /*--------------------------------------职位方法--------------------------------------*/
 
-    }
   },
   filters: {
     sliceCity(str) {

@@ -17,7 +17,11 @@ let loading = null;
 
 $axios.interceptors.request.use(
   (config) => {
-    loading = Loading.service({ text: "拼命加载中" });
+    if (config.url != "/api/Enterprise/PayStatus") {
+      //支付不需要提示
+      loading = Loading.service({ text: "拼命加载中" });
+    }
+
     const token = store.getters.token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`; //请求头添加TOKEN

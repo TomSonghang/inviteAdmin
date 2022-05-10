@@ -47,3 +47,9 @@ export function GetCardTicketList(data) {
   const url = "/api/Enterprise/GetCardTicketList";
   return $axios.get(url, data);
 }
+
+export function BuyGoldIntroduce(data) {
+  //购买金币介绍
+  const url = "/api/Enterprise/BuyGoldIntroduce";
+  return $axios.get(url, data);
+}

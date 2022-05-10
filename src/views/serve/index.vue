@@ -18,11 +18,15 @@
 
     <el-dialog title="购买记录" :visible.sync="dialogTableVisible1">
       <el-table :data="buyData">
-        <el-table-column property="createDateTime" label="类型"></el-table-column>
-        <el-table-column property="goldType" label="时间"></el-table-column>
-        <el-table-column property="inOrOut" label="方式"></el-table-column>
-        <el-table-column property="goldType" label="金额"></el-table-column>
-        <el-table-column property="inOrOut" label="数量"></el-table-column>
+        <el-table-column property="codeName" label="类型"></el-table-column>
+        <el-table-column property="createDateTime" label="时间" width="250"></el-table-column>
+        <el-table-column property="type" label="方式">
+          <template slot-scope="scope">
+            <span>{{ scope.row.type | typeWay }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column property="buyRMB" label="金额"></el-table-column>
+        <el-table-column property="purchases" label="数量"></el-table-column>
       </el-table>
       <el-pagination
         background
@@ -34,14 +38,24 @@
       ></el-pagination>
     </el-dialog>
 
-    <el-dialog title="优惠券" :visible.sync="dialogTableVisible2">
+    <el-dialog title="优惠券" :visible.sync="dialogTableVisibleCard">
       <div class="cardBox">
-        <discount-card></discount-card>
+        <div v-for="item in cardList">
+          <discount-card :cardData="item"></discount-card>
+        </div>
+        <el-pagination
+          background
+          layout="total, prev, pager, next"
+          :current-page="pageNoCard"
+          :total="cardTotal"
+          class="fyDiv"
+          @current-change="handlePageCard"
+        ></el-pagination>
       </div>
     </el-dialog>
 
-    <el-dialog title="支付购买" :visible.sync="dialogTableVisible5">
-      <pay-buy :paydata="paydata"></pay-buy>
+    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" destroy-on-close>
+      <pay-buy :paydata="paydata" :type="tag ? 2 : 4" @closedShow="closedShow"></pay-buy>
     </el-dialog>
     <tab-item :liItem="liItem" @checkStatu="checkStatu"></tab-item>
     <div class="main">
@@ -70,7 +84,7 @@
               <div class="checkItem">{{ item.codeName }}VIP套餐</div>
               <el-button
                 type="danger"
-                @click="handleBuy({ code: 1, moneyOff: item.rmb, cardTicketId: 0, servicecode: item.code, type: 1 })"
+                @click="handleBuy({ code: item.code, moneyOff: item.rmb, servicecode: item.code, type: 1 })"
               >购买套餐</el-button>
               <div class="oldPrice">总价值 {{ item.firstRMB }}元/{{ item.firstCost }}金币</div>
               <div class="newPrice">现价 {{ item.rmb }}元/{{ item.cost }}金币</div>
@@ -87,7 +101,11 @@
               </div>
               <div class="list_r">
                 <div class="newPrice">{{ item.rmb }}元/{{ item.cost }}金币</div>
-                <el-button type="primary" class="companyBg">购买</el-button>
+                <el-button
+                  type="primary"
+                  class="companyBg"
+                  @click="handleBuy({ code: item.code, moneyOff: item.rmb, servicecode: item.code, type: 2 })"
+                >购买</el-button>
               </div>
             </div>
           </div>
@@ -102,7 +120,11 @@
               </div>
               <div class="list_r">
                 <div class="newPrice">{{ item.rmb }}元/{{ item.cost }}金币</div>
-                <el-button type="primary" class="companyBg">购买</el-button>
+                <el-button
+                  type="primary"
+                  class="companyBg"
+                  @click="handleBuy({ code: item.code, moneyOff: item.rmb, servicecode: item.code, type: 2 })"
+                >购买</el-button>
               </div>
             </div>
           </div>
@@ -118,28 +140,20 @@
             </div>
           </div>
           <div class="goldBox">
-            <div>
-              <i class="el-icon-arrow-right"></i>
-              <span>521</span>
+            <div class="goldContent">
+              <div class="gold">
+                <img src="@/assets/images/goldIcon.png" />
+              </div>
+              <span>{{ wealth }}</span>
             </div>
-            <el-button type="danger">购买金币</el-button>
+            <el-button type="danger" @click="handleBuyGold">购买金币</el-button>
           </div>
         </div>
 
         <div class="userServe">
           <p class="userP">可用服务</p>
-
-          <!-- <div class="tcPrice">
-            <span>招聘套餐</span>
-            <div>
-              <span class="autoText">
-                银牌套餐
-                <i class="el-icon-arrow-right"></i>
-              </span>
-            </div>
-          </div>-->
           <el-collapse v-model="activeNames" @change="handleChange" accordion>
-            <el-collapse-item title="招聘套餐" :name="1">
+            <el-collapse-item title="剩余服务" :name="1">
               <div v-for="item in useServe1">{{ item.surplus }}{{ item.unit }}{{ item.codeName }}</div>
             </el-collapse-item>
             <el-collapse-item title="招聘服务" :name="2">
@@ -181,7 +195,7 @@ import payBuy from '@/components/payBuy/index'
 import discountCard from '@/components/discountCard/index'
 import tabItem from '@/components/tabItem/index'
 import Code from "@/api/statusCode";
-import { GetPackageService, GetMyGoldInfo, GetMyPackageService, BuyServiceRecord, GetMyCardTicketList, GetServiceInitData } from '@/api/serve'
+import { GetPackageService, GetMyGoldInfo, GetMyPackageService, BuyServiceRecord, GetMyCardTicketList, GetServiceInitData, BuyGoldIntroduce } from '@/api/serve'
 export default {
   name: "Serve",
   data() {
@@ -207,6 +221,9 @@ export default {
       goldData: [],
       pageNo: 1,
       total: 0,
+      cardList: [],    //优惠券
+      cardTotal: 0,   //优惠券总数量
+      pageNoCard: 1,//分页
 
       serviceType1: 2,  //可用服务
       useServe1: [],
@@ -215,70 +232,109 @@ export default {
 
       dialogTableVisible1: false,
       buyData: [],
-      pageNo1: 1,
+      pageNo1: 1,   //购买记录
       total1: 0,
 
-      dialogTableVisible2: false,   //优惠券
+      dialogTableVisibleCard: false,   //优惠券
 
-      dialogTableVisible5: false,
-      paydata: {}  //支付数据
+      dialogTableVisiblePay: false,
+      paydata: {},  //支付数据
+
+      code: "",//（注： 1、0表示通用券 2、某个服务券对应相应的code 3、-1表示金币券 4、-2表示炒更团券）
+      moneyOff: "",
+      cardTicketId: 0,//券ID 选了优惠券之后的操作需要传券ID，否则传0给后台
+      servicecode: "",//套餐编码
+      type: 1,//1：套餐 2：单独服务 3：套餐下的子服务
+      tag: true,  //true等于套餐，false等于金币
+      wealth: 0   //可用金币
+
     }
   },
   mounted() {
-    this._GetPackageService();
-    // for (let i = 1; i < 4; i++) {
-    //   this.serviceType1 = i
-    //   this._GetMyPackageService()
-    // }
-    this._GetMyPackageService()
+    this._GetPackageService();//套餐服务
+
+    this._GetMyPackageService(1)   //剩余服务
+    this._GetMyPackageService(2)   //剩余服务
+    this._GetMyPackageService(3)   //剩余服务
   },
   methods: {
-    handleBuy(data) {    //购买
-
-      this._GetServiceInitData(data);
-      this.dialogTableVisible5 = true
+    handleBuyGold() {    //购买金币
+      this.tag = false
+      this._BuyGoldIntroduce()
     },
-    _GetServiceInitData(data) {
-      let {
-        code, moneyOff, cardTicketId, servicecode, type
-      } = data
-      let datas = {
-        code,
-        moneyOff,
-        cardTicketId,
-        servicecode,
-        type
-      }
-      GetServiceInitData(datas).then(res => {
-        debugger
-        this.paydata = res.data
+    _BuyGoldIntroduce() {
+      BuyGoldIntroduce({}).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.paydata = res.data[0];
+          this.dialogTableVisiblePay = true
+        }
       })
     },
-    handlePage1() {    //购买记录分页
+    closedShow() {
+      this.dialogTableVisiblePay = false
+    },
+    handleBuy(data) {    //购买
+      let {
+        code, moneyOff, servicecode, type
+      } = data;
+      this.code = code;
+      this.moneyOff = moneyOff;
+      this.servicecode = servicecode;
+      this.type = type;
+      this.tag = true  //打开的支付为套餐
+
+      this._GetServiceInitData();
 
     },
+    _GetServiceInitData() {
+      let data = {
+        code: this.code,    //券code 服务code （注： 1、0表示通用券 2、某个服务券对应相应的code 3、-1表示金币券 4、-2表示炒更团券
+        moneyOff: this.moneyOff,
+        cardTicketId: this.cardTicketId,
+        servicecode: this.servicecode,
+        type: this.type
+      }
+      GetServiceInitData(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.paydata = res.data;
+          this.dialogTableVisiblePay = true
+        }
+
+      })
+    },
+    handlePage1(e) {    //购买记录分页
+      this.pageNo1 = e;
+      this._BuyServiceRecord();
+    },
+    handlePageCard(e) {   //优惠券分页
+      this.pageNoCard = e;
+      this._GetMyCardTicketList();
+    },
     getPriceCard() {     //获取优惠券
-      this.dialogTableVisible2 = true;
+      this.dialogTableVisibleCard = true;
       this._GetMyCardTicketList()
     },
     _GetMyCardTicketList() {
       let data = {
-        pageNo: 1
+        pageNo: this.pageNoCard
       }
       GetMyCardTicketList(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
-          debugger
+          this.cardList = res.data.datas;
+          this.cardTotal = res.data.totalCount
         }
       })
     },
-    _GetPackageService() {
+    _GetPackageService() {    //获取套餐服务
       let data = {
         serviceType: this.serviceType,
         pageIndex: 1
       }
       if ((this.serviceType == 1 && this.serve1.length == 0) || (this.serviceType == 2 && this.serve2.length == 0) || (this.serviceType == 3 && this.serve3.length == 0)) {
         GetPackageService(data).then(res => {
+
           if (res.status === Code.SUCCESS_CODE) {
+            this.wealth = res.data.wealth
             if (this.serviceType === 1) {
               this.serve1 = res.data.datas
             } else if (this.serviceType === 2) {
@@ -310,34 +366,36 @@ export default {
 
       })
     },
-    _GetMyPackageService() {   //可用服务
+    _GetMyPackageService(type) {   //可用服务
       let data = {
         pageNo: 1,
-        serviceType: this.serviceType1
+        serviceType: type
       }
       GetMyPackageService(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
           console.log(this)
-          debugger
-          if (this.serviceType1 === 1) {
+          if (type === 1) {
             this.useServe1 = res.data.datas;
-          } else if (this.serviceType1 === 2) {
+          } else if (type === 2) {
             this.useServe2 = res.data.datas;
+          } else if (type === 3) {
+            this.useServe3 = res.data.datas;
           }
         }
       })
     },
-    handleBuyMore() {
+    handleBuyMore() {     //购买记录
       this.dialogTableVisible1 = true;
       this._BuyServiceRecord()
     },
     _BuyServiceRecord() {    //服务记录
       let data = {
-        pageIndex: 1
+        pageIndex: this.pageNo1
       }
       BuyServiceRecord(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
-          debugger
+          this.buyData = res.data.datas;
+          this.total1 = res.data.recordCount
           this.dialogTableVisible1 = true;
         }
       })
@@ -351,7 +409,29 @@ export default {
       this._GetMyGoldInfo();
     },
   },
-  components: { tabItem, discountCard, payBuy }
+  components: { tabItem, discountCard, payBuy },
+  filters: {
+    typeWay(val) {
+      switch (val) {
+        case "1":
+          return "微信购买金币";
+        case "2":
+          return "微信购买服务";
+        case "3":
+          return "支付宝购买金币";
+        case "4":
+          return "支付宝购买服务";
+        case "5":
+          return "系统赠送金币";
+        case "6":
+          return "系统赠送服务";
+        case "7":
+          return "金币购买服务";
+        default:
+          return "未知状态";
+      }
+    }
+  }
 }
 </script>
 
@@ -457,8 +537,9 @@ export default {
       align-items: center;
       padding: 50px 0 10px;
       font-size: 40px;
+      line-height: 40px;
       color: #fa6b46;
-      font-weight: bold;
+
     }
   }
   .userServe {
@@ -525,5 +606,21 @@ export default {
 .cardBox {
   background-color: #f8f9fb;
   padding: 20px;
+}
+.goldContent {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+.gold {
+  margin-right: 5px;
+  padding-bottom: 5px;
+  width: 20px;
+  height: 20px;
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

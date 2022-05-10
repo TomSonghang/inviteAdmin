@@ -59,3 +59,9 @@ export function PartTimePayment(data) {
   const url = "/api/Enterprise/PartTimePayment";
   return $axios.post(url, data);
 }
+
+export function PayStatus(data) {
+  //订单支付状态查询
+  const url = "/api/Enterprise/PayStatus";
+  return $axios.post(url, data);
+}

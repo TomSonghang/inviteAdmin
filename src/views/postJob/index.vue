@@ -158,8 +158,33 @@
         <div class="itemBox">
           <div class="itemTitle">详细地点</div>
           <div class="inputWidth">
-            <el-input v-model="postCity" placeholder="详细地点"></el-input>
+            <el-input v-model="postCity" placeholder="详细地点" @blur="changeAddress"></el-input>
           </div>
+        </div>
+        <div class="itemBox">
+          <div class="itemTitle">地图标注</div>
+          <template>
+            <baidu-map
+              @ready="handler"
+              class="bm-view"
+              :center="center"
+              :zoom="zoom"
+              :scroll-wheel-zoom="true"
+            >
+              <bm-marker
+                :position="{ lng: center.lng, lat: center.lat }"
+                :dragging="true"
+                animation="BMAP_ANIMATION_BOUNCE"
+                @dragend="dragend"
+              >
+                <bm-label
+                  content="职位的工作地址"
+                  :labelStyle="{ color: 'red', fontSize: '24px' }"
+                  :offset="{ width: -35, height: 30 }"
+                />
+              </bm-marker>
+            </baidu-map>
+          </template>
         </div>
         <el-button type="primary" class="companyBg mar120" @click="handleCreate">发布职位</el-button>
       </div>
@@ -191,7 +216,7 @@ export default {
       requirements: "",//任职要求
       academicRequirements: "",//学历要求
       postCity: "",//就职城市
-      postCitys: ['北京','通州'],//省市区
+      postCitys: [],//省市区
       longitude: "",//经度
       latitude: "",//纬度
       //serviceCode: "",//服务编号:1001=普通职位,1002=精品职位
@@ -208,7 +233,10 @@ export default {
       ],
       postTypeOption: ['普通职位', '精品职位'],
       jobTypeOption: ['全职', '兼职', '实习'],
-      cityData: cityData
+      cityData: cityData,
+
+      center: { lng: 117.063035, lat: 36.672767 },//经纬度
+      zoom: 15, //地图展示级别
     }
   },
   mixins: [fixData],
@@ -226,9 +254,51 @@ export default {
       let data = JSON.stringify(this.fixJobtypeList)
       data = data.replace(/name/g, 'label').replace(/dataId/g, 'value').replace(/jobtype/g, 'children')
       return JSON.parse(data)
+    },
+    address() {
+      let postCitys = '';
+      if (this.postCitys.length > 0) {  //地址
+        postCitys = this.postCitys.join('-')
+      }
+      return `${postCitys} ${this.postCity}`
     }
   },
   methods: {
+    handler({ BMap, map }) {   //地图
+      let that = this;
+      console.log(BMap, map)
+      let myGeo = new BMap.Geocoder();
+      myGeo.getPoint(that.address, function (point) {
+        if (point) {
+          that.center = {
+            lng: point.lng,
+            lat: point.lat
+          }
+        } else {
+          alert('您选择的地址没有解析到结果！');
+        }
+      })
+
+      /*
+      let _this = this;	// 设置一个临时变量指向vue实例，因为在百度地图回调里使用this，指向的不是vue实例；
+      var geolocation = new BMap.Geolocation();
+      geolocation.getCurrentPosition(function (r) {
+        //console.log(r);
+        _this.center = { lng: r.longitude, lat: r.latitude };		// 设置center属性值
+        _this.autoLocationPoint = { lng: r.longitude, lat: r.latitude };		// 自定义覆盖物
+        _this.initLocation = true;
+      }, { enableHighAccuracy: true })
+
+      window.map = map
+*/
+
+    },
+    dragend(event) {
+      debugger
+    },
+    changeAddress() {
+      this.handler()
+    },
     handleCreate() {     //发布职位
       this._SaveJobOffers()
     },
@@ -372,5 +442,9 @@ export default {
 }
 .mar120 {
   margin-left: 120px;
+}
+.bm-view {
+  width: 500px;
+  height: 500px;
 }
 </style>

@@ -84,7 +84,9 @@
       <div class="listWrap" v-for="item in tableData" :key="item.fromUserId">
         <div class="imgBox">
           <div class="imgUrl">
-            <el-image :src="item.headPortraitPath" height="46px" width="46px"></el-image>
+            <img src="@/assets/images/boy.png" class="gander" v-if="item.gender == '1'" />
+            <img src="@/assets/images/girl.png" class="gander" v-else />
+            <el-image :src="item.headPortraitPath" height="46px" width="46px" class="imgPath"></el-image>
           </div>
           <div class="payment">{{ item.salary }}</div>
         </div>
@@ -448,8 +450,16 @@ export default {
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    overflow: hidden;
+
     background-color: #333;
+    position: relative;
+    .imgPath {
+      width: 46px;
+      height: 46px;
+      overflow: hidden;
+      display: block;
+      border-radius: 50px;
+    }
   }
   .payment {
     margin-top: 9px;
@@ -498,5 +508,14 @@ export default {
     font-size: 14px;
     color: #333;
   }
+}
+.gander {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  width: 16px;
+  background-color: #fff;
+  border-radius: 50px;
 }
 </style>

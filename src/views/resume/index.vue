@@ -184,7 +184,9 @@
                 @click="handleView({ id: scope.row.userId, row: scope.row.row, status: scope.row.status, resumeId: scope.row.resumeId })"
               >
                 <div class="heardImg">
-                  <el-image :src="scope.row.path" width="46px" height="46px"></el-image>
+                  <img src="@/assets/images/boy.png" class="gander" v-if="scope.row.gender == '1'" />
+                  <img src="@/assets/images/girl.png" class="gander" v-else />
+                  <el-image :src="scope.row.path" width="46px" height="46px" class="imgPath"></el-image>
                 </div>
                 <div>{{ scope.row.realName }}</div>
               </div>
@@ -463,8 +465,15 @@ export default {
   width: 46px;
   height: 46px;
   border-radius: 100%;
-  overflow: hidden;
   margin-right: 5px;
+  position: relative;
+  .imgPath {
+    width: 46px;
+    height: 46px;
+    overflow: hidden;
+    display: block;
+    border-radius: 50px;
+  }
 }
 .realText {
   display: flex;
@@ -541,5 +550,14 @@ export default {
 }
 .pointer {
   cursor: pointer;
+}
+.gander {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  width: 16px;
+  background-color: #fff;
+  border-radius: 50px;
 }
 </style>
