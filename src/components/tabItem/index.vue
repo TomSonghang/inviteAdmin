@@ -10,21 +10,22 @@
 </template>
 <script>
 export default {
-  data: function () {
-    return {
-      active: 0
-    }
-  },
+
   props: {
     liItem: {
       type: Array,
       default: () => {
         return []
       }
+    },
+    active: {
+      type: Number,
+      default: 0
     }
   },
   methods: {
     handleChange(e, index) {
+      debugger
       this.active = index
       this.$emit('checkStatu', e)
     }

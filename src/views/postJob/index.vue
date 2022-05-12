@@ -1,5 +1,5 @@
 <template>
-  <div class="contextWrap">
+  <div class="contextWrap postWrap">
     <div>
       <div class="titleBox">
         <div class="title">基本信息</div>
@@ -9,10 +9,16 @@
         <div class="itemBox">
           <div class="itemTitle">发布类型</div>
           <div>
-            <el-select v-model="postType" placeholder="请选择" class="inputWidth">
+            <el-select
+              v-model="serviceCode"
+              placeholder="请选择"
+              class="inputWidth"
+              :disabled="action == 'edit' && serviceCode == '精品职位'"
+            >
               <el-option v-for="item in postTypeOption" :key="item" :label="item" :value="item"></el-option>
             </el-select>
           </div>
+          <p v-show="action == 'edit' && serviceCode == '精品职位'">编辑时，精品职位不能转普通职位哦</p>
         </div>
 
         <div class="itemBox">
@@ -27,7 +33,11 @@
         <div class="itemBox">
           <div class="itemTitle">职位名称</div>
           <div class="inputWidth">
-            <el-input v-model="postName" placeholder="请输入职位名称"></el-input>
+            <el-input
+              v-model="postName"
+              placeholder="请输入职位名称"
+              :disabled="action == 'add' ? false : true"
+            ></el-input>
           </div>
         </div>
 
@@ -41,7 +51,17 @@
         <div class="itemBox">
           <div class="itemTitle">职位类型</div>
           <div>
-            <el-cascader class="inputWidth" placeholder="职位分类，可搜索" :options="postArray" filterable></el-cascader>
+            <el-cascader
+              v-model="postType"
+              class="inputWidth"
+              :disabled="action == 'add' ? false : true"
+              placeholder="职位分类，可搜索"
+              :options="postArray"
+              :props="{
+                value: 'label'
+              }"
+              filterable
+            ></el-cascader>
           </div>
         </div>
 
@@ -179,32 +199,46 @@
               >
                 <bm-label
                   content="职位的工作地址"
-                  :labelStyle="{ color: 'red', fontSize: '24px' }"
+                  :labelStyle="{ color: '#13b5b1', fontSize: '14px' }"
                   :offset="{ width: -35, height: 30 }"
                 />
               </bm-marker>
             </baidu-map>
           </template>
         </div>
+        <div class="itemBox">
+          <div class="itemTitle">经纬度</div>
+          <div class="inputWidth1">
+            <el-input v-model="center.lng" placeholder="经度"></el-input>
+          </div>
+          <div class="inputWidth1">
+            <el-input v-model="center.lat" placeholder="纬度"></el-input>
+          </div>
+        </div>
         <el-button type="primary" class="companyBg mar120" @click="handleCreate">发布职位</el-button>
       </div>
     </div>
+    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay">
+      <pay-buy :paydata="paydata" :type="1" @closedShow="closedShow" :otherPosition="otherPosition"></pay-buy>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import payBuy from '@/components/payBuy/index'
 import cityData from '@/utils/city'
 import fixData from '@/mixins/getfixData'
 import Code from "@/api/statusCode";
 import { SaveJobOffers, JobAddOrEditInit } from '@/api/postJob'
+import { ServicePayInit } from '@/api/timeJob'
 export default {
   name: "PostJob",
   data() {
     return {
       positionId: 0,
       action: "add",//edit=编辑；add=新增
-      postType: "普通职位",//职位类型
-      jobType: "全职",//职位类型（全职，兼职，实习
+      postType: "",//职位类型
+      jobType: "全职",//招聘类型（全职，兼职，实习
       postName: "",//岗位名称
       hiring: "",//招聘人数
       payroll: "",//薪资(如："8-10K")
@@ -217,9 +251,8 @@ export default {
       academicRequirements: "",//学历要求
       postCity: "",//就职城市
       postCitys: [],//省市区
-      longitude: "",//经度
-      latitude: "",//纬度
-      //serviceCode: "",//服务编号:1001=普通职位,1002=精品职位
+
+      serviceCode: '普通职位',//服务编号:1001=普通职位,1002=精品职位
 
       minPrice: "",
       maxPrice: "",
@@ -235,8 +268,12 @@ export default {
       jobTypeOption: ['全职', '兼职', '实习'],
       cityData: cityData,
 
-      center: { lng: 117.063035, lat: 36.672767 },//经纬度
-      zoom: 15, //地图展示级别
+      center: { lng: 114.132542, lat: 22.579092 },//经纬度
+      zoom: 18, //地图展示级别
+      dialogTableVisiblePay: false,
+      paydata: {},
+      BMap: null,
+      otherPosition: {}   //纯粹为了调接口
     }
   },
   mixins: [fixData],
@@ -260,13 +297,41 @@ export default {
       if (this.postCitys.length > 0) {  //地址
         postCitys = this.postCitys.join('-')
       }
-      return `${postCitys} ${this.postCity}`
+      return `${postCitys} ${this.postCity}`  //'深圳市罗湖区水贝金座大厦'
     }
   },
+  components: { payBuy },
   methods: {
+    _ServicePayInit() {     //职位初始化数据
+
+      let data = {
+        businesstype: 'Service',
+        serviceCode: this.serviceCode == '精品职位' ? 1002 : 1001,    //服务码(1001普通职位；1002精品职位)
+        groupId: 0,
+      }
+      ServicePayInit(data).then(res => {
+
+        if (res.status === Code.SUCCESS_CODE) {
+          this.paydata = res.data[0]
+          this.dialogTableVisiblePay = true
+        }
+      })
+    },
+    closedShow() {
+      this.dialogTableVisiblePay = false
+    },
     handler({ BMap, map }) {   //地图
+      this.BMap = BMap;
+    },
+    dragend({ point }) {
+      this.center = {
+        lng: point.lng,
+        lat: point.lat
+      }
+    },
+    changeAddress() {
       let that = this;
-      console.log(BMap, map)
+      let BMap = this.BMap
       let myGeo = new BMap.Geocoder();
       myGeo.getPoint(that.address, function (point) {
         if (point) {
@@ -278,29 +343,20 @@ export default {
           alert('您选择的地址没有解析到结果！');
         }
       })
-
-      /*
-      let _this = this;	// 设置一个临时变量指向vue实例，因为在百度地图回调里使用this，指向的不是vue实例；
-      var geolocation = new BMap.Geolocation();
-      geolocation.getCurrentPosition(function (r) {
-        //console.log(r);
-        _this.center = { lng: r.longitude, lat: r.latitude };		// 设置center属性值
-        _this.autoLocationPoint = { lng: r.longitude, lat: r.latitude };		// 自定义覆盖物
-        _this.initLocation = true;
-      }, { enableHighAccuracy: true })
-
-      window.map = map
-*/
-
-    },
-    dragend(event) {
-      debugger
-    },
-    changeAddress() {
-      this.handler()
     },
     handleCreate() {     //发布职位
-      this._SaveJobOffers()
+      this.$confirm('职位发布后，职位名称和职位类型将不能修改，并扣减一次发布额度，请确认后发布?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this._SaveJobOffers()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消发布'
+        });
+      });
     },
     _SaveJobOffers() {      //保存职位
       let welfare = '';
@@ -311,11 +367,18 @@ export default {
       if (this.postCitys.length > 0) {  //地址
         postCitys = this.postCitys.join('-')
       }
+
+      let postType = '';
+      if (this.postType.length > 0 && this.postType instanceof Array) {
+        postType = this.postType[1]
+      } else {
+        postType = this.postType
+      }
       this.payroll = `${this.minPrice}-${this.maxPrice}${this.checkPrice}`
       let data = {
         positionId: this.positionId,
         action: this.action,//edit=编辑；add=新增
-        postType: this.postType,//岗位类型
+        postType: postType,//岗位类型
         jobType: this.jobType,//职位类型（全职，兼职，实习
         postName: this.postName,//岗位名称
         hiring: this.hiring,//招聘人数
@@ -329,18 +392,43 @@ export default {
         requirements: this.requirements,//任职要求
         academicRequirements: this.academicRequirements,//学历要求
         postCity: `${postCitys} ${this.postCity}`,//就职城市
-        longitude: this.longitude,//经度
-        latitude: this.latitude,//纬度
+        longitude: this.center.lng,//经度
+        latitude: this.center.lat,//纬度
         serviceCode: this.serviceCode == '普通职位' ? 1001 : 1002,//服务编号:1001=普通职位,1002=精品职位
+      }
+      if (!this.action || !postType || !this.postName || !this.jobType || !this.hiring || !welfare || !this.payroll || !this.experienceYear || !this.requirements || !this.postPhone || !postCitys || !this.postCity || !this.jobDescription || !this.academicRequirements) {
+        this.$message({
+          message: '请检查输入信息是否完整~',
+          type: 'warning'
+        });
+        return
       }
       SaveJobOffers(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
+          this.positionId = res.data.positionId
           this.$message({
-            showClose: true,
             message: '发布成功',
             type: 'success'
           });
           this.$router.back()
+        } else if (res.status === 1007) {     //职位已经用完了
+          this.$confirm('您的服务余量已经用完，请续费或支付成功后使用此服务哦', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this._ServicePayInit();
+            this.otherPosition = {
+              positionId: this.positionId,
+              serviceCode: this.serviceCode,
+              postStatus: 1//(1开启，2关闭)
+            }
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '已取消发布'
+            });
+          });
         } else {
           this.$message({
             message: res.message,
@@ -357,12 +445,13 @@ export default {
       }
       JobAddOrEditInit(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
-          let { welfare, postType, postName, hiring, experienceYear, jobType,
+          let { serviceCode, welfare, postType, postName, hiring, experienceYear, jobType,
             postEmail, postPhone, jobDescription, requirements, academicRequirements,
-            minPayroll, maxPayroll, payrollUnit, provinceName, cityName, areaName, detailAddress } = res.data
+            minPayroll, maxPayroll, payrollUnit, provinceName, cityName, areaName, detailAddress, latitude, longitude } = res.data
           if (welfare) {
             this.welfare = welfare.split(',')
           }
+          this.serviceCode = serviceCode == '1001' ? '普通职位' : '精品职位'
           this.action = 'edit';
           this.postType = postType;
           this.jobType = jobType;
@@ -377,20 +466,28 @@ export default {
           this.minPrice = minPayroll;
           this.maxPrice = maxPayroll;
           this.checkPrice = payrollUnit;
-          this.postCitys = areaName ? [provinceName, cityName] : [provinceName, cityName, areaName];
-          this.postCity = detailAddress
+          this.postCitys = areaName ? [provinceName, cityName, areaName] : [provinceName, cityName];
+          this.postCity = detailAddress,
+            this.center = {
+              lng: longitude,
+              lat: latitude
+            }
         }
       })
     },
+
   }
 }
 </script>
 
-<style>
+<style lang="less">
 .contextWrap {
   width: 1200px;
   margin: 0 auto;
   background-color: #fff;
+}
+.postWrap {
+  background-color: #fff !important;
 }
 .title {
   font-size: 16px;
@@ -412,6 +509,11 @@ export default {
   align-items: center;
   color: #999;
   font-size: 14px;
+  p {
+    margin-left: 10px;
+    color: #999;
+    font-size: 12px;
+  }
 }
 .itemTitle {
   flex-basis: 100px;
@@ -433,6 +535,10 @@ export default {
 .inputWidth2 {
   width: 500px;
 }
+.inputWidth1 {
+  width: 170px;
+  margin-right: 20px;
+}
 .partTwo {
   margin-top: 50px;
 }
@@ -445,6 +551,6 @@ export default {
 }
 .bm-view {
   width: 500px;
-  height: 500px;
+  height: 300px;
 }
 </style>

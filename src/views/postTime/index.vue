@@ -1,5 +1,16 @@
 <template>
-  <div class="contextWrap">
+  <div class="contextWrap postWrap">
+    <el-dialog title="选择职位" :visible.sync="dialogVisible" width="50%">
+      <div class="radioContext">
+        <div v-for="item in positionList" class="radioBox">
+          <el-radio v-model="radio" :label="item.postName">{{ item.postName }}</el-radio>
+        </div>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleRadio">确 定</el-button>
+      </span>
+    </el-dialog>
     <div>
       <div class="titleBox">
         <div class="title">基本信息</div>
@@ -9,7 +20,11 @@
         <div class="itemBox">
           <div class="itemTitle">炒更名称</div>
           <div class="inputWidth">
-            <el-input v-model="hiringPost" placeholder="请输入炒更名称"></el-input>
+            <el-input v-model="hiringPost" placeholder="请输入炒更名称">
+              <template slot="append">
+                <i class="el-icon-arrow-down" @click="checkPosition"></i>
+              </template>
+            </el-input>
           </div>
         </div>
 
@@ -79,26 +94,6 @@
             </div>
           </div>
         </div>
-
-        <div class="itemBox">
-          <div class="itemTitle">省市区</div>
-          <div>
-            <el-cascader
-              popper-class="casClass"
-              class="inputWidth"
-              placeholder="省市区，可搜索"
-              :options="cityData"
-              filterable
-            ></el-cascader>
-          </div>
-        </div>
-
-        <div class="itemBox">
-          <div class="itemTitle">详细地点</div>
-          <div class="inputWidth">
-            <el-input v-model="detailedAddress" placeholder="详细地点"></el-input>
-          </div>
-        </div>
         <div class="itemBox">
           <div class="itemTitle">用工要求</div>
           <div class="inputWidth2">
@@ -110,8 +105,74 @@
             ></el-input>
           </div>
         </div>
+        <div class="itemBox">
+          <div class="itemTitle">省市区</div>
+          <div>
+            <el-cascader
+              v-model="postCitys"
+              popper-class="casClass"
+              class="inputWidth"
+              placeholder="省市区，可搜索"
+              :options="cityData"
+              :props="{ value: 'label' }"
+              filterable
+            ></el-cascader>
+          </div>
+        </div>
 
-        <el-button type="primary" class="companyBg mar120" @click="handleCreate">发布兼职</el-button>
+        <div class="itemBox">
+          <div class="itemTitle">详细地点</div>
+          <div class="inputWidth">
+            <el-input v-model="detailedAddress" placeholder="详细地点" @blur="changeAddress"></el-input>
+          </div>
+        </div>
+
+        <div class="itemBox">
+          <div class="itemTitle">地图标注</div>
+          <template>
+            <baidu-map
+              @ready="handler"
+              class="bm-view"
+              :center="center"
+              :zoom="zoom"
+              :scroll-wheel-zoom="true"
+            >
+              <bm-marker
+                :position="{ lng: center.lng, lat: center.lat }"
+                :dragging="true"
+                animation="BMAP_ANIMATION_BOUNCE"
+                @dragend="dragend"
+              >
+                <bm-label
+                  content="职位的工作地址"
+                  :labelStyle="{ color: '#13b5b1', fontSize: '14px' }"
+                  :offset="{ width: -35, height: 30 }"
+                />
+              </bm-marker>
+            </baidu-map>
+          </template>
+        </div>
+        <div class="itemBox">
+          <div class="itemTitle">经纬度</div>
+          <div class="inputWidth1">
+            <el-input v-model="center.lng" placeholder="经度"></el-input>
+          </div>
+          <div class="inputWidth1">
+            <el-input v-model="center.lat" placeholder="纬度"></el-input>
+          </div>
+        </div>
+        <div class="mar120">
+          <el-button type="primary" class="companyBg" @click="handleCreate">发布兼职</el-button>
+          <p v-show="coldPrice.RMBPrice" class="titlePrice">
+            该兼职根据您选择的截止时间，需要支付人民币
+            <span>
+              {{
+                coldPrice.RMBPrice
+              }}
+            </span> 元或者
+            <span>{{ coldPrice.GoldPrice }}</span>金币
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -121,7 +182,7 @@
 import cityData from '@/utils/city'
 import fixData from '@/mixins/getfixData'
 import Code from "@/api/statusCode";
-import { CreateWithGroup } from '@/api/postTime'
+import { CreateWithGroup, GetJobOffers, GetWithGroupPriceByEndDateTime } from '@/api/postTime'
 export default {
   name: "PostJob",
   data() {
@@ -129,9 +190,9 @@ export default {
       userTime: [],   //用工周期
       endDateTime: '',//截止日期
 
+      hiringPost: "",  //炒更名称
 
 
-      hiringPost: "",//岗位名称
       hiringNumber: "",//招聘人数
       minPay: '',   //最小薪资
       maxPay: "",   //最大薪资
@@ -139,9 +200,9 @@ export default {
       jobTypeOption: ['日结', '周结', '月结', '完工结'],
 
       phone: "",//电话
-      longitude: 116.408,//经度
-      latitude: 39.9141,//纬度
 
+
+      postCitys: [],//省市区
       detailedAddress: "",//详细地址
       laborRequire: "",  //用工需求
 
@@ -153,24 +214,127 @@ export default {
         '元/年'
       ],
 
-
-      cityData: cityData
+      positionList: [],   //职位列表
+      dialogVisible: false,
+      radio: "",
+      coldPrice: {
+        RMBPrice: "",
+        GoldPrice: ""
+      },
+      cityData: cityData,
+      center: { lng: 114.132542, lat: 22.579092 },//经纬度
+      zoom: 18, //地图展示级别
+      BMap: null
     }
   },
   mixins: [fixData],
   mounted() { },
+  watch: {
+    endDateTime() {
+      this._GetWithGroupPriceByEndDateTime()
+    }
+  },
   computed: {
+
     postArray() {
       let data = JSON.stringify(this.fixJobtypeList)
       data = data.replace(/name/g, 'label').replace(/dataId/g, 'value').replace(/jobtype/g, 'children')
       return JSON.parse(data)
+    },
+    address() {
+      let postCitys = '';
+      if (this.postCitys.length > 0) {  //地址
+        postCitys = this.postCitys.join('-')
+      }
+      return `${postCitys} ${this.detailedAddress}`  //'深圳市罗湖区水贝金座大厦'
     }
   },
   methods: {
+    _GetWithGroupPriceByEndDateTime() {
+      let data = {
+        endDateTime: this.endDateTime
+      }
+      GetWithGroupPriceByEndDateTime(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.coldPrice = res.data
+        }
+      })
+    },
+    checkPosition() {
+      this._GetJobOffers()
+    },
+    _GetJobOffers() {
+      let data = {
+        PostStatus: "",
+        PageIndex: 1,
+      }
+      GetJobOffers(data).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.positionList = res.data.datas;
+          this.dialogVisible = true
+        }
+      })
+    },
+    handleRadio() {
+      //确认选择职位
+      this.hiringPost = this.radio;
+      this.positionList.forEach(item => {
+        if (item.postName == this.radio) {
+
+          let arr = item.postCity.split(' ')
+          let city = arr[0].split('-')
+          this.postCitys = city;
+          this.detailedAddress = arr[1];
+          this.hiringNumber = item.hiring;
+          this.phone = item.postPhone
+          this.changeAddress()
+        }
+      })
+      this.dialogVisible = false
+    },
+    handler({ BMap }) {   //地图
+      this.BMap = BMap
+    },
+    dragend({ point }) {
+      this.center = {
+        lng: point.lng,
+        lat: point.lat
+      }
+    },
+    changeAddress() {
+      let that = this;
+      let BMap = this.BMap
+      let myGeo = new BMap.Geocoder();
+      myGeo.getPoint(that.address, function (point) {
+        if (point) {
+          that.center = {
+            lng: point.lng,
+            lat: point.lat
+          }
+        } else {
+          alert('您选择的地址没有解析到结果！');
+        }
+      })
+    },
     handleCreate() {
-      this._CreateWithGroup()
+      this.$confirm('兼职炒更创建成功审核通过后，需要您执行上架操作之后才能成功发布哦~', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this._CreateWithGroup()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消发布'
+        });
+      });
     },
     _CreateWithGroup() {
+      let postCitys = '';
+      if (this.postCitys.length > 0) {  //地址
+        postCitys = this.postCitys.join('-')
+      }
       let data = {
         hiringPost: this.hiringPost, //招聘职位
         hiringNumber: this.hiringNumber,//招聘数量
@@ -178,9 +342,9 @@ export default {
         maxPay: this.maxPay || 0,//最大
         wageType: this.wageType,//工资类型
         clearingForm: this.clearingForm,//结算方式
-        detailedAddress: this.detailedAddress,//详细地址
-        longitude: this.longitude,//福利待遇
-        latitude: this.latitude,//工作经验（如："1-3年经验"
+        detailedAddress: `${postCitys} ${this.detailedAddress}`,//详细地址
+        longitude: this.center.lng,//福利待遇
+        latitude: this.center.lat,//工作经验（如："1-3年经验"
 
         phone: this.phone,//公司招聘邮箱
         startRecruitmentCycle: this.userTime[0],//开始招聘周期
@@ -189,12 +353,20 @@ export default {
         laborRequire: this.laborRequire,//用工要求
 
       }
+      if (!this.hiringPost || !this.hiringNumber || !this.wageType || !this.maxPay || !this.minPay || !this.clearingForm || !postCitys || !this.detailedAddress || !this.center.lng || !this.center.lat || !this.phone || !this.userTime[0] || !this.userTime[1] || !this.endDateTime || !this.laborRequire) {
+        this.$message({
+          message: '请检查输入信息是否完整~',
+          type: 'warning'
+        });
+        return
+      }
       CreateWithGroup(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
           this.$message({
             message: res.message,
             type: "success",
           });
+          this.$router.back()
         } else {
           this.$message({
             message: res.message,
@@ -207,7 +379,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less">
 .contextWrap {
   width: 1200px;
   margin: 0 auto;
@@ -263,5 +435,36 @@ export default {
 }
 .mar120 {
   margin-left: 120px;
+}
+.bm-view {
+  width: 500px;
+  height: 300px;
+}
+.inputWidth1 {
+  width: 170px;
+  margin-right: 20px;
+}
+.postWrap {
+  background-color: #fff !important;
+}
+.radioContext {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+.radioBox {
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+.titlePrice {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+  span {
+    font-size: 14 px;
+    color: #ff7606;
+    font-weight: bold;
+    margin: 0 4px;
+  }
 }
 </style>

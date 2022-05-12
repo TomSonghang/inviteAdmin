@@ -86,7 +86,7 @@
         </p>
         <p v-else-if="type == 4">
           还需支付：
-          <span>{{ paydata.oneGoldPrice * num }}元</span>
+          <span>{{ (paydata.oneGoldPrice * num).toFixed(1) }}元</span>
         </p>
       </div>
       <div class="QRbox" v-show="zfActive != 'gold'">
@@ -152,6 +152,12 @@ export default {
     groupId: {
       type: Number,
       default: 0
+    },
+    otherPosition: {
+      type: Object,
+      default: function () {
+        return {}
+      }
     }
   },
   computed: {
@@ -163,7 +169,8 @@ export default {
     },
     realityRmb() {   //使用优惠券之后的实际价格
       if (this.cardActive != 100 && this.cardData[this.cardActive].ticketType == '1') {//满减券
-        return Math.floor((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) - Number(this.cardData[this.cardActive].finalReduceRMB))
+
+        return Math.floor((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) - Number(this.cardData[this.cardActive].reduceRMB))
       } else if (this.cardActive != 100 && this.cardData[this.cardActive].ticketType == '2') {//折扣券
         return Math.floor((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) * (0.1 * Number(this.cardData[this.cardActive].discount)))
       } else {
@@ -223,6 +230,7 @@ export default {
       } else {
         gold = ''
       }
+      debugger
       //console.log(`${this.type}-${this.paydata.serviceId}|${this.paydata.ServiceData.serviceId}`)
       let data = {
         payMethod: this.zfActive == 'zfb' ? 'AliPay' : this.zfActive == 'wx' ? 'WxPay' : 'GoldPay',
@@ -230,6 +238,10 @@ export default {
         gold: gold,
         serviceId: this.type == 1 ? this.paydata.serviceId : this.type == 2 ? this.paydata.ServiceData.serviceId : "",// this.paydata.ServiceData.serviceId,
         serviceCount: this.num,
+        //下面三个只有职位才需要
+        positionId: this.otherPosition.positionId || '',
+        serviceCode: this.otherPosition.serviceCode || '',
+        postStatus: this.otherPosition.postStatus || '',
       }
       ServiceOrGoldPayment(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
@@ -239,6 +251,7 @@ export default {
               message: '支付成功',
               type: 'success'
             });
+            clearInterval(this.timer)     //清除定时器
             this.$emit('closedShow')
           } else {
             this.codeUrl = res.data.code_url
@@ -266,6 +279,7 @@ export default {
               message: '支付成功',
               type: 'success'
             });
+            clearInterval(this.timer)     //清除定时器
             this.$emit('closedShow')
           } else {
             this.codeUrl = res.data.code_url
@@ -283,7 +297,7 @@ export default {
     },
 
     _GetCardTicketList() {   //可以用优惠券
-      debugger
+
       let data = {
         code: this.type === 2 ? 0 : -1,
         moneyOff: this.type === 2 ? `${(Number(this.paydata.ServiceData.serviceRMB) * Number(this.num))}` : Number(this.num)

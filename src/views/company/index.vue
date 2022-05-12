@@ -473,6 +473,13 @@ export default {
         latitude: "",
         businessCircle: ""   //商业圈
       }
+      if (!this.companyName || !this.companyType || !this.tel || !address) {
+        this.$message({
+          message: '请检查企业名称、企业性质、联系电话、地址信息是否完整~',
+          type: 'warning'
+        });
+        return
+      }
       UpdateCompanyIntroduction(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
           this.$message({
@@ -538,6 +545,13 @@ export default {
         mainProductId: str || '',
         isOpenBusines: this.isOpenBusines,
       }
+      if (!this.businesTel || !businessModel || !mainProduct) {
+        this.$message({
+          message: '请检查业务电话、经营模式、主营产品、信息是否完整~',
+          type: 'warning'
+        });
+        return
+      }
       Object.keys(data).forEach(key => {
         this.formDate.append(key, data[key]);
       })
@@ -584,10 +598,11 @@ export default {
     },
     handleAvatarSuccessHeard(res) {     //上传头像
       if (res.status === Code.SUCCESS_CODE) {
-        this.path = res.data.args.HeadPortraitPath
+        this.path = res.data.args.HeadPortraitPath;
+        store.dispatch('user/set_headpath', res.data.args.HeadPortraitPath)
       }
     },
-    handleDes() {
+    handleDes() {   //保存基本信息
       this._UpdateCompanyInformation();
     },
     _UpdateCompanyInformation() {

@@ -4,9 +4,13 @@
       <el-calendar>
         <!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
         <template slot="dateCell" slot-scope="{date, data}">
-          <p
-            :class="data.isSelected ? 'is-selected' : ''"
-          >{{ data.day.split('-').slice(1).join('-') }} {{ data.isSelected ? '✔️ 今日有面试' : '' }}</p>
+          <p>{{ data.day.split('-').slice(1).join('-') }} </p>
+          <div v-for="item in dateArr" :key="item">
+            <div v-if="item.indexOf(data.day) != -1">
+              <p class="is-selected">今日有面试 ✔️</p>
+              <el-button size="mini" round @click="hanldeInviewMore">查看详情</el-button>
+            </div>
+          </div>
         </template>
       </el-calendar>
     </el-dialog>
@@ -81,9 +85,9 @@
       </div>
     </div>
     <div class="right">
-      <div class="resume" v-if="newResume">
+      <div class="resume">
         <div class="resumeTitle">新投递简历({{ newResume.count }})</div>
-        <div class="user_list">
+        <div class="user_list" v-if="newResume.count != 0">
           <div v-for="(item, index) in newResume.datas" class="userBox">
             <div class="u_left">
               <div class="userImg">
@@ -96,6 +100,9 @@
             </div>
             <el-button round plain size="small" @click="handleDoit(item.id)">去处理</el-button>
           </div>
+        </div>
+        <div class="user_list">
+          <span>今天没有新投递简历可处理哦</span>
         </div>
       </div>
       <div class="interview" v-if="todayInterview.count > 0">
@@ -145,7 +152,25 @@ export default {
       moreInterview: [],   //面试安排
     }
   },
+  computed: {
+    dateArr() {
+      return this.moreInterview.reduce((a, b) => {
+        if (!a.includes(b.interviewTime)) {
+          a.push(b.interviewTime)
+        }
+        return a
+      }, [])
+    }
+  },
   methods: {
+    hanldeInviewMore() {
+      this.dialogTableVisible = false
+      this.$router.push({
+        name: "Resume", query: {
+          status: 3
+        }
+      })
+    },
     handleOpen(e) {      //跳转
 
       if (e === 1) {      //岗位招聘
@@ -244,6 +269,10 @@ export default {
   }
   .user_list {
     max-height: 280px;
+    span {
+      font-size: 14px;
+      color: #999;
+    }
   }
   .table-name {
     color: #4d586a;
@@ -297,6 +326,7 @@ export default {
   }
   .is-selected {
     color: #13b5b1;
+    padding: 5px 0;
   }
   .cursor {
     cursor: pointer;
@@ -310,6 +340,11 @@ export default {
     color: #333;
     padding-bottom: 10px;
   }
+}
+.dateBox {
+  width: 100%;
+  height: 100%;
+  background: #13b5b1;
 }
 </style>
 

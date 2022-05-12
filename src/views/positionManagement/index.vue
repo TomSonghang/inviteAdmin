@@ -80,7 +80,9 @@ export default {
       this.$router.push({ name: "PostJob" })
     },
     checkStatu(e) { //切换TAB
+      debugger
       this.postStatus = e;
+      this.pageNo = 1
       this._PositionManagementList()
     },
     handlePage(e) {   //分页

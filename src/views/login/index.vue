@@ -23,7 +23,7 @@
       <img src="@/assets/login-bg/loginBg.png" alt />
     </div>
     <div class="loginBox">
-      <!-- <h2 class="loginH2">点金台管理后台</h2> -->
+      <div class="loginH2">点金台招聘后台</div>
 
       <div class="loginCon">
         <div class="titleDiv">
@@ -60,6 +60,7 @@
           <el-button type="primary" class="loginBtn" @click="loginYz('loginForm')">登录</el-button>
         </el-form>
       </div>
+      <div class="titleBox">温馨提示：下载点金台APP并成功注册企业用户后方可使用。</div>
     </div>
   </div>
 </template>
@@ -91,6 +92,7 @@ export default {
   },
   mounted() {
     // this.shopTip();
+    debugger
   },
   methods: {
     getCode() {      //获取验证码
@@ -141,6 +143,7 @@ export default {
       } else {
         this.active = 0
       }
+      this.ruleForm.userPwd = ''
     },
     _login() {
       if (this.active == 0) {   //账号登录，需要加密
@@ -200,7 +203,7 @@ export default {
 }
 .login {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   overflow: hidden;
   background: #fff;
   position: relative;
@@ -229,9 +232,10 @@ export default {
   // margin-top: -150px;
 }
 .loginH2 {
-  font-size: 38px;
-  color: #13b5b1;
+  font-size: 30px;
+  color: #fff;
   text-align: center;
+  font-weight: bold;
 }
 .loginCon {
   margin-top: 30px;
@@ -336,5 +340,11 @@ export default {
 }
 .slideSty .slide-verify-refresh-icon {
   display: none;
+}
+.titleBox {
+  font-size: 14px;
+  color: #999;
+  padding-top: 20px;
+  text-align: center;
 }
 </style>

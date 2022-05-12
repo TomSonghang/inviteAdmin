@@ -5,7 +5,7 @@
         <div class="priceMain">
           <span
             class="saleNum"
-          >{{ cardData.ticketType == '2' ? cardData.discount : cardData.finalReduceRMB }}</span>
+          >{{ cardData.ticketType == '2' ? cardData.discount : cardData.reduceRMB }}</span>
           <span class="saleUnit">{{ cardData.ticketType == '2' ? '折' : '元' }}</span>
         </div>
         <div

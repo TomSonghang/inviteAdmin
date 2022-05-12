@@ -25,6 +25,9 @@ const mutations = {
     state.userId = "";
     state.roles = "";
     localStorage.removeItem("token");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("roles");
   },
   SET_ROLES(state, payload) {
     state.roles = payload;
@@ -43,7 +46,10 @@ const mutations = {
 };
 
 const actions = {
-  _login({ commit },  formdatas) {
+  set_headpath({ commit }, payload) {
+    commit("SET_HEADPATH", payload);
+  },
+  _login({ commit }, formdatas) {
     //登录
     return new Promise((resolve, reject) => {
       GetAccess_token(formdatas)

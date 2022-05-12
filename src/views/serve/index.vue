@@ -18,7 +18,7 @@
 
     <el-dialog title="购买记录" :visible.sync="dialogTableVisible1">
       <el-table :data="buyData">
-        <el-table-column property="codeName" label="类型"></el-table-column>
+        <el-table-column property="codeName" label="类型" width="300"></el-table-column>
         <el-table-column property="createDateTime" label="时间" width="250"></el-table-column>
         <el-table-column property="type" label="方式">
           <template slot-scope="scope">
@@ -40,18 +40,18 @@
 
     <el-dialog title="优惠券" :visible.sync="dialogTableVisibleCard">
       <div class="cardBox">
-        <div v-for="item in cardList">
+        <div v-for="item in cardList" class="cardContent">
           <discount-card :cardData="item"></discount-card>
         </div>
-        <el-pagination
-          background
-          layout="total, prev, pager, next"
-          :current-page="pageNoCard"
-          :total="cardTotal"
-          class="fyDiv"
-          @current-change="handlePageCard"
-        ></el-pagination>
       </div>
+      <el-pagination
+        background
+        layout="total, prev, pager, next"
+        :current-page="pageNoCard"
+        :total="cardTotal"
+        class="fyDiv"
+        @current-change="handlePageCard"
+      ></el-pagination>
     </el-dialog>
 
     <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" destroy-on-close>
@@ -539,7 +539,6 @@ export default {
       font-size: 40px;
       line-height: 40px;
       color: #fa6b46;
-
     }
   }
   .userServe {
@@ -606,6 +605,9 @@ export default {
 .cardBox {
   background-color: #f8f9fb;
   padding: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 .goldContent {
   display: flex;
@@ -622,5 +624,9 @@ export default {
     width: 100%;
     height: 100%;
   }
+}
+.cardContent {
+  margin-right: 20px;
+  margin-bottom: 20px;
 }
 </style>

@@ -161,7 +161,7 @@
                       <span
                         style="color: #b55c13;"
                         v-show="detailsData.status == '招募完成'"
-                        @click="handleReplay({ withGroupId: detailsData.id, estimateId: item.applyList.applyUserId })"
+                        @click="handleReplay({ withGroupId: detailsData.id, estimateId: item.applyUserId })"
                       >评价</span>
                     </p>
                   </div>
@@ -249,6 +249,7 @@ export default {
       })
     },
     handleReplay(data) {    //评价
+
       let { withGroupId, estimateId } = data;
       this.groupId = withGroupId;
       this.estimateId = estimateId
@@ -344,7 +345,7 @@ export default {
           break;
       }
       this.statusText = e;
-
+      this.pageNo = 1
       this._WithGroupList()
     },
     handlePage(e) {

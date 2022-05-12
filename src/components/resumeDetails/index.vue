@@ -122,7 +122,7 @@
       <div class="d_top_wrap_sh">
         <div class="d_img_box_sh">
           <img :src="detailsData.headPath" alt="头像" class="img_box_sh" />
-          <img src="auth_icon.png" class="auth_img_sh" alt="认证" />
+          <img src="@/assets/images/auth_icon.png" class="auth_img_sh" alt="认证" v-show="detailsData.isAuthenticate" />
         </div>
         <!--头部左-->
         <div class="d_main_box_sh">
@@ -395,6 +395,7 @@ export default {
 
 .img_box_sh {
   width: 100%;
+  height: 100%;
   border-radius: 100%;
   display: block;
 }
@@ -402,7 +403,11 @@ export default {
 .auth_img_sh {
   position: absolute;
   bottom: 0;
-  right: 10px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-radius: 50px;
 }
 
 .d_main_box_sh {

@@ -192,7 +192,7 @@ export default {
 
 
       pageNo: 1,
-
+      cityName: "全国",
 
       tableData: [],
       total: 0,
@@ -206,7 +206,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      vm.cityName = to.query.name
+      vm.cityName = to.query.name || '全国'
       vm._ResumeSearch()
     })
   },

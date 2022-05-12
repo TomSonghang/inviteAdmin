@@ -100,7 +100,7 @@
     </el-dialog>
 
     <!--不合适-->
-    <tab-item :liItem="liItem" @checkStatu="checkStatu"></tab-item>
+    <tab-item :liItem="liItem" @checkStatu="checkStatu" :active="activeItem"></tab-item>
     <div class="main">
       <div class="filter">
         <div class="left">
@@ -325,6 +325,7 @@ export default {
         id: 6,
         name: "不合适",
       }],
+      activeItem: 0,      //顶部切换
 
       total: 0,
 
@@ -341,12 +342,6 @@ export default {
       jobType: '求职状态',
       jobStatus: '工作类型',
 
-
-
-
-
-
-
       type: 1,//1：表示简历管理的面试邀请 2：表示海量搜索简历的面试邀请
 
       searchType: 1,   //(1简历搜索，2人才搜索)
@@ -356,6 +351,12 @@ export default {
   components: {
     tabItem,
     resumeDetails
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+
+      vm.activeItem = Number(to.query.status) || 0
+    })
   },
   mounted() {
 
@@ -407,6 +408,7 @@ export default {
       this._GetResumemanagement();
     },
     checkStatu(e) {   //切换TAB
+      this.pageIndex = 1;
       this.resumeType = e;
       this._GetResumemanagement()
     },

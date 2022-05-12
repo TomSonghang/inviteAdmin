@@ -102,7 +102,7 @@
         </template>
         <template v-else>
           <el-popconfirm
-            v-if="item.status == 2"
+            v-if="item.status == 2 && item.isPastDue"
             title="确定上架此炒更团吗？"
             @confirm="handlePartUp(item.groupId)"
           >
@@ -127,7 +127,13 @@
       </div>
     </div>
     <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay">
-      <pay-buy :paydata="paydata" :type="flag ? 1 : 3" :groupId="groupId" @closedShow="closedShow"></pay-buy>
+      <pay-buy
+        :paydata="paydata"
+        :type="flag ? 1 : 3"
+        :groupId="groupId"
+        @closedShow="closedShow"
+        :otherPosition="otherPosition"
+      ></pay-buy>
     </el-dialog>
   </div>
   <!--我只是想-->
@@ -163,7 +169,8 @@ export default {
       paydata: {},  //支付信息
       positionId: "",  //职位ID
       curPositionStatus: "",  //招聘职位状态码，注意改状态为当前状态，不是修改后的状态(1:开启招聘，2：关闭招聘)
-      serviceCode: ""
+      serviceCode: "",
+      otherPosition: {}   //纯粹为了调接口
     }
   },
   props: {
@@ -209,8 +216,9 @@ export default {
     },
 
     handlePartUp(id) {     //上架炒更
-      this.groupId = id
-      this._ServicePayInit();
+      this.groupId = id;
+      this._WithGroupPtaway()
+
     },
 
     _WithGroupPtaway() {  //上架炒更接口
@@ -218,13 +226,18 @@ export default {
         groupId: this.groupId
       }
       WithGroupPtaway(data).then(res => {
-        this.groupId = ''
+
+
         if (res.status === Code.SUCCESS_CODE) {
           this.$emit('refresh')
+          this.groupId = ''
           this.$message({
             message: '上架成功',
             type: 'success'
           });
+        } else if (res.status === 1007) {     //去支付
+
+          this._ServicePayInit();
         } else {
           this.$message({
             message: res.message,
@@ -269,7 +282,6 @@ export default {
         groupId: this.groupId || 0,
       }
       ServicePayInit(data).then(res => {
-        debugger
         if (res.status === Code.SUCCESS_CODE) {
 
           if (this.flag) {   //职位
@@ -279,11 +291,17 @@ export default {
           }
           this.dialogVisible = false;
           this.dialogTableVisiblePay = true
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning'
+          });
         }
       })
     },
     closedShow() {      //关闭支付弹窗
-      this.dialogTableVisiblePay = false
+      this.dialogTableVisiblePay = false;
+      this.$emit('refresh')
     },
     /*--------------------------------------职位炒更共用方法--------------------------------------*/
 
@@ -356,7 +374,14 @@ export default {
       this.positionId = e;
       this.curPositionStatus = t;
       this.serviceCode = s;
+      this.otherPosition = {
+        positionId: this.positionId,
+        serviceCode: this.serviceCode,
+        postStatus: 1//(1开启，2关闭)
+      }
+      debugger
       this._UpdateJobStatus()
+
     },
     _UpdateJobStatus(e) {   //e如果有值，代表是开启的普通职位或者精品
       if (e == 'pt') {
