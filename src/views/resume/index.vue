@@ -275,6 +275,7 @@
           layout="total, prev, pager, next"
           :current-page="pageIndex"
           :total="total"
+          :page-size="8"
           class="fyDiv"
           @current-change="handlePage"
         ></el-pagination>
@@ -407,9 +408,10 @@ export default {
       this.jobStatus = e;
       this._GetResumemanagement();
     },
-    checkStatu(e) {   //切换TAB
+    checkStatu({ inx, id }) {   //切换TAB
       this.pageIndex = 1;
-      this.resumeType = e;
+      this.activeItem = inx;
+      this.resumeType = id;
       this._GetResumemanagement()
     },
 

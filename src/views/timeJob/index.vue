@@ -25,6 +25,7 @@
         :current-page="pageNo"
         :total="total"
         class="fyDiv"
+        :page-size="5"
         @current-change="handlePage"
       ></el-pagination>
     </div>
@@ -194,7 +195,7 @@ export default {
       total: 0,  //总数据
       listData: [],
       liItem: [{
-        id: '',
+        id: 0,
         name: "全部兼职",
       },
       {
@@ -326,9 +327,10 @@ export default {
         }
       })
     },
-    checkStatu(e) {
-      switch (e) {
-        case -1:
+    checkStatu({ inx, id }) {
+      let e;
+      switch (id) {
+        case 0:
           e = '';
           break;
         case 1:

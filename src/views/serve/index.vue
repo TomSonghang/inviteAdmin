@@ -11,6 +11,7 @@
         layout="total, prev, pager, next"
         :current-page="pageNo"
         :total="total"
+        :page-size="5"
         class="fyDiv"
         @current-change="handlePage"
       ></el-pagination>
@@ -346,8 +347,8 @@ export default {
         })
       }
     },
-    checkStatu(e) {   //切换TAB
-      this.serviceType = e;
+    checkStatu({ inx, id }) {   //切换TAB
+      this.serviceType = id;
       this._GetPackageService()
     },
     handleChange(val) {   //手风琴可用服务

@@ -170,7 +170,6 @@ export default {
       positionId: "",  //职位ID
       curPositionStatus: "",  //招聘职位状态码，注意改状态为当前状态，不是修改后的状态(1:开启招聘，2：关闭招聘)
       serviceCode: "",
-      otherPosition: {}   //纯粹为了调接口
     }
   },
   props: {
@@ -374,12 +373,7 @@ export default {
       this.positionId = e;
       this.curPositionStatus = t;
       this.serviceCode = s;
-      this.otherPosition = {
-        positionId: this.positionId,
-        serviceCode: this.serviceCode,
-        postStatus: 1//(1开启，2关闭)
-      }
-      debugger
+
       this._UpdateJobStatus()
 
     },
@@ -447,6 +441,15 @@ export default {
     },
     /*--------------------------------------职位方法--------------------------------------*/
 
+  },
+  computed: {
+    otherPosition() {
+      return {
+        positionId: this.positionId,
+        serviceCode: this.serviceCode,
+        postStatus: 1//(1开启，2关闭)
+      }
+    },   //纯粹为了调接口
   },
   filters: {
     sliceCity(str) {

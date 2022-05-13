@@ -273,7 +273,7 @@ export default {
       dialogTableVisiblePay: false,
       paydata: {},
       BMap: null,
-      otherPosition: {}   //纯粹为了调接口
+
     }
   },
   mixins: [fixData],
@@ -287,6 +287,13 @@ export default {
   },
   mounted() { },
   computed: {
+    otherPosition() {
+      return {
+        positionId: this.positionId,
+        serviceCode: this.serviceCode == '精品职位' ? 1002 : 1001,
+        postStatus: 1//(1开启，2关闭)
+      }
+    },   //纯粹为了调接口
     postArray() {
       let data = JSON.stringify(this.fixJobtypeList)
       data = data.replace(/name/g, 'label').replace(/dataId/g, 'value').replace(/jobtype/g, 'children')
@@ -404,6 +411,7 @@ export default {
         return
       }
       SaveJobOffers(data).then(res => {
+        debugger
         if (res.status === Code.SUCCESS_CODE) {
           this.positionId = res.data.positionId
           this.$message({
@@ -412,17 +420,17 @@ export default {
           });
           this.$router.back()
         } else if (res.status === 1007) {     //职位已经用完了
+          console.log(res)
+          debugger
+
+          this.positionId = res.data.positionId
           this.$confirm('您的服务余量已经用完，请续费或支付成功后使用此服务哦', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
             this._ServicePayInit();
-            this.otherPosition = {
-              positionId: this.positionId,
-              serviceCode: this.serviceCode,
-              postStatus: 1//(1开启，2关闭)
-            }
+
           }).catch(() => {
             this.$message({
               type: 'info',

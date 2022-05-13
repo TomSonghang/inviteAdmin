@@ -25,6 +25,7 @@
         layout="total, prev, pager, next"
         :current-page="pageNo"
         :total="total"
+        :page-size="5"
         class="fyDiv"
         @current-change="handlePage"
       ></el-pagination>
@@ -79,9 +80,9 @@ export default {
     handlePost() {      //发布职位
       this.$router.push({ name: "PostJob" })
     },
-    checkStatu(e) { //切换TAB
-      debugger
-      this.postStatus = e;
+    checkStatu({ inx, id }) { //切换TAB
+
+      this.postStatus = id;
       this.pageNo = 1
       this._PositionManagementList()
     },

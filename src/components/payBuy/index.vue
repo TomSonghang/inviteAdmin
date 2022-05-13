@@ -156,7 +156,11 @@ export default {
     otherPosition: {
       type: Object,
       default: function () {
-        return {}
+        return {
+          positionId: "",
+          serviceCode: "",
+          postStatus: ""
+        }
       }
     }
   },
@@ -230,8 +234,7 @@ export default {
       } else {
         gold = ''
       }
-      debugger
-      //console.log(`${this.type}-${this.paydata.serviceId}|${this.paydata.ServiceData.serviceId}`)
+
       let data = {
         payMethod: this.zfActive == 'zfb' ? 'AliPay' : this.zfActive == 'wx' ? 'WxPay' : 'GoldPay',
         entrustType: type,//购买类型 1：微信购买金币2：微信购买服务3：支付宝购买金币 4：支付宝购买服务
@@ -241,8 +244,10 @@ export default {
         //下面三个只有职位才需要
         positionId: this.otherPosition.positionId || '',
         serviceCode: this.otherPosition.serviceCode || '',
-        postStatus: this.otherPosition.postStatus || '',
+        postStatus: this.otherPosition.postStatus || 1,
       }
+      console.log(data)
+      debugger
       ServiceOrGoldPayment(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
 
