@@ -91,8 +91,6 @@ export default {
     };
   },
   mounted() {
-    // this.shopTip();
-    debugger
   },
   methods: {
     getCode() {      //获取验证码

@@ -41,15 +41,15 @@
       </div>
 
       <div class="informationBox">
-        <div class="itemBoxs" @click="flag ? handleUnknow : handlejz(item.groupId)">
+        <div class="itemBoxs" @click="flag ? handleUnknow(1) : handlejz(item.groupId)">
           <div>{{ flag ? item.noReadCount : item.applyCount }}</div>
           <div class="inforTitle">{{ flag ? '未阅读' : '已报名' }}</div>
         </div>
-        <div class="itemBoxs" @click="flag ? handleUnknow : handlejz(item.groupId)">
+        <div class="itemBoxs" @click="flag ? handleUnknow(3) : handlejz(item.groupId)">
           <div>{{ flag ? item.interviewCount : item.canApplyCount }}</div>
           <div class="inforTitle">{{ flag ? '面试' : '可报名' }}</div>
         </div>
-        <div class="itemBoxs" @click="flag ? handleUnknow : handlejz(item.groupId)">
+        <div class="itemBoxs" @click="flag ? handleUnknow(4) : handlejz(item.groupId)">
           <div>{{ flag ? item.candidateCount : item.hiringNumber }}</div>
           <div class="inforTitle">{{ flag ? '候选人' : '招聘人数' }}</div>
         </div>
@@ -167,7 +167,7 @@ export default {
       groupId: 0,   //炒更ID
       dialogTableVisiblePay: false,
       paydata: {},  //支付信息
-      positionId: "",  //职位ID
+      positionId: 0,  //职位ID
       curPositionStatus: "",  //招聘职位状态码，注意改状态为当前状态，不是修改后的状态(1:开启招聘，2：关闭招聘)
       serviceCode: "",
     }
@@ -304,8 +304,13 @@ export default {
     },
     /*--------------------------------------职位炒更共用方法--------------------------------------*/
 
-    handleUnknow() {     //职位未阅读 
-      this.$router.push({ name: "Resume" })
+    handleUnknow(e) {     //职位未阅读 
+      
+      this.$router.push({
+        name: "Resume", query: {
+          status: e
+        }
+      })
     },
 
     handleMore(command) {   //点击了更多

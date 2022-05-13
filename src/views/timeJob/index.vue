@@ -1,10 +1,16 @@
 <template>
   <div class="contextWrap">
-    <tab-item :liItem="liItem" @checkStatu="checkStatu"></tab-item>
+    <tab-item :liItem="liItem" @checkStatu="checkStatu" :active="activeItem"></tab-item>
     <div class="search">
       <div class="searchBox">
-        <el-input placeholder="请输入内容" v-model="key" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search"></el-button>
+        <el-input
+          placeholder="请输入内容"
+          v-model="key"
+          class="input-with-select"
+          clearable
+          @clear="clearSearch"
+        >
+          <el-button slot="append" icon="el-icon-search" @click="confirmSearch"></el-button>
         </el-input>
       </div>
       <div>
@@ -214,6 +220,7 @@ export default {
         id: 4,
         name: "已关闭",
       }],
+      activeItem: 0,
       groupId: "",  //兼职详情id
 
       estimateId: "",    //企业ID
@@ -233,6 +240,12 @@ export default {
     this._GetFeedBackDataBase()
   },
   methods: {
+    confirmSearch() {     //确认搜索
+      this._WithGroupList()
+    },
+    clearSearch() {   //清空搜索
+      this._WithGroupList()
+    },
     handleReportTure() {     //确认评价
       this._ReplyEstimate()
     },
@@ -346,6 +359,7 @@ export default {
           e = '已关闭';
           break;
       }
+      this.activeItem = inx
       this.statusText = e;
       this.pageNo = 1
       this._WithGroupList()

@@ -43,36 +43,44 @@
             </div>
           </template>
         </el-form-item>
+        <el-button
+          v-if="interviewTag"
+          type="primary"
+          class="companyBg mar120"
+          @click="handleChangeTime"
+        >确定修改</el-button>
+        <el-button v-else type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
       </el-form>
 
-      <el-button
-        v-if="interviewTag"
-        type="primary"
-        class="companyBg mar120"
-        @click="handleChangeTime"
-      >确定修改</el-button>
-      <el-button v-else type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
-
-      <el-dialog width="30%" title="新增面试时间" :visible.sync="innerVisible" append-to-body>
-        <el-form :model="formInfoInner" class="demo-form-inline">
-          <el-form-item label="联系人">
-            <el-input v-model="formInfoInner.interViewContact" placeholder="请输入内容"></el-input>
+      <el-dialog width="30%" title="新增面试信息" :visible.sync="innerVisible" append-to-body>
+        <el-form
+          :model="formInfoInner"
+          class="demo-form-inline"
+          :rules="rulesInner"
+          ref="formInfoInner"
+        >
+          <el-form-item label="联系人" prop="interViewContact">
+            <el-input v-model="formInfoInner.interViewContact" placeholder="请输入联系人"></el-input>
           </el-form-item>
-          <el-form-item label="联系方式">
-            <el-input v-model="formInfoInner.interViewContactPhone" placeholder="请输入内容"></el-input>
+          <el-form-item label="联系手机" prop="interViewContactPhone">
+            <el-input
+              v-model="formInfoInner.interViewContactPhone"
+              type="number"
+              placeholder="请输入手机号"
+            ></el-input>
           </el-form-item>
-          <el-form-item label="联系地址">
-            <el-input v-model="formInfoInner.interViewAddress" placeholder="请输入内容"></el-input>
+          <el-form-item label="联系地址" prop="interViewAddress">
+            <el-input v-model="formInfoInner.interViewAddress" placeholder="请输入联系地址"></el-input>
           </el-form-item>
+          <el-button type="primary" class="companyBg mar120" @click="handleTrue">确定</el-button>
         </el-form>
-        <el-button type="primary" class="companyBg mar120" @click="handleTrue">确定</el-button>
       </el-dialog>
     </el-dialog>
 
     <!--邀请面试-->
 
     <el-dialog title="举报" :visible.sync="reportVisible">
-      <el-form :model="reportInfo" class="demo-form-inline">
+      <el-form :model="reportInfo" class="demo-form-inline" :rules="rulesReport" ref="reportInfo">
         <el-form-item label="举报项目">
           <ul class="reportItem">
             <li
@@ -83,11 +91,11 @@
             >{{ item.content }}</li>
           </ul>
         </el-form-item>
-        <el-form-item label="举报内容">
+        <el-form-item label="举报内容" prop="value">
           <el-input v-model="reportInfo.value" placeholder="请输入内容"></el-input>
         </el-form-item>
+        <el-button type="primary" class="companyBg mar120" @click="handleReportTure">确定</el-button>
       </el-form>
-      <el-button type="primary" class="companyBg mar120" @click="handleReportTure">确定</el-button>
     </el-dialog>
     <!--举报-->
 
@@ -355,8 +363,9 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-
+      //debugger
       vm.activeItem = Number(to.query.status) || 0
+      vm.resumeType = vm.liItem[vm.activeItem].id
     })
   },
   mounted() {

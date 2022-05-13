@@ -9,7 +9,7 @@
           :class="index == active ? 'active' : ''"
           @click="handleItem"
         >
-          <span>{{ item.name }}</span>
+          <span :datatab="item.tab">{{ item.name }}</span>
           <i class="el-icon-arrow-right"></i>
         </li>
       </ul>
@@ -705,7 +705,8 @@ export default {
       })
     },
     handleItem(e) {     //左侧tab
-      this.active = Number(e.target.attributes['datatab'].value)
+      debugger
+      this.active = Number(e.target.attributes['datatab']?.value)
     },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw);

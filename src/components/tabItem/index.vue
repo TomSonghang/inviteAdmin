@@ -4,17 +4,13 @@
       v-for="(item, index) in liItem"
       :key="item.id"
       @click="handleChange(index, item.id)"
-      :class="index == checkActive ? 'active' : ''"
+      :class="index == active ? 'active' : ''"
     >{{ item.name }}</li>
   </ul>
 </template>
 <script>
 export default {
-  data: function () {
-    return {
-      checkActive: this.active
-    }
-  },
+ 
   props: {
     liItem: {
       type: Array,
@@ -27,10 +23,21 @@ export default {
       default: 0
     }
   },
+  // computed: {
+  //   checkActive: {
+  //     get() {
+  //       return this.active
+  //     },
+  //     set(val) {
+  //       debugger
+  //       this.checkActive = val
+  //     }
+  //   }
+  // },
 
   methods: {
     handleChange(e, id) {
-      this.checkActive = e
+      //this.checkActive = e
       this.$emit('checkStatu', { inx: e, id })
     }
   }

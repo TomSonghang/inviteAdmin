@@ -22,6 +22,25 @@ export default {
       postType: "",
       cityName: "全国",
       postTypeArray: [], //应聘岗位
+
+      //验证
+      rulesReport: {
+        //举报
+        value: [{ required: true, message: "请输入举报内容", trigger: "blur" }],
+      },
+      rulesInner: {
+        //添加面试信息
+        interViewContact: [
+          { required: true, message: "请输入联系人", trigger: "blur" },
+        ],
+        interViewContactPhone: [
+          { required: true, message: "请输入联系方式", trigger: "blur" },
+          { min: 11, max: 11, message: "11位的手机号哦", trigger: "blur" },
+        ],
+        interViewAddress: [
+          { required: true, message: "请输入联系地址", trigger: "blur" },
+        ],
+      },
     };
   },
   mounted() {
@@ -69,7 +88,7 @@ export default {
     },
     handleView(data) {
       let { id, row, status, resumeId } = data;
-      debugger;
+
       //查看简历
       this.resumeId = resumeId || ""; //简历ID
       this.statusStr = status || ""; //简历状态

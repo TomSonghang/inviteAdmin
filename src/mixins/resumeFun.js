@@ -83,7 +83,6 @@ export default {
       this._GetResumemanagement && this._GetResumemanagement();
     },
     handleReport(id) {
-      debugger;
       this.userId = id;
       this.reportVisible = true;
     },
@@ -93,13 +92,11 @@ export default {
     },
 
     handleInterviewInfo() {
-      debugger;
       //新增面试信息
       this.innerVisible = true;
     },
 
     handleInterview(id) {
-      debugger;
       //面试
       this.userId = id;
       this.outerVisible = true;
@@ -107,10 +104,9 @@ export default {
     },
     handleMore(command) {
       //点击更多
-      debugger;
+
       console.log(command);
       if (command.title == "不合适") {
-        debugger;
         this.dialogVisible = true; //不合适弹窗
         this.resumeId = command.id;
         this.statusStr = command.statu;
@@ -155,6 +151,13 @@ export default {
     },
     handleChangeTime() {
       //修改面试时间
+      if (!this.formInfo.time) {
+        this.$message({
+          message: "修改面试时间未选择哦",
+          type: "warning",
+        });
+        return;
+      }
       this._UpdateInterviewTime();
     },
     _UpdateInterviewTime() {
@@ -187,10 +190,16 @@ export default {
     },
     handleInvited() {
       //确认邀请面试
+      if (!this.radio || !this.formInfo.time || !this.formInfo.post) {
+        this.$message({
+          message: "必选项未选择哦",
+          type: "warning",
+        });
+        return;
+      }
       this._Invited();
     },
     _Invited() {
-      debugger;
       let interViewContact, interViewAddress, interViewContactPhone;
       this.interviewData.forEach((item) => {
         if (item.id == this.radio) {
@@ -231,6 +240,17 @@ export default {
     },
     handleTrue() {
       //保存面试信息
+      if (
+        !this.formInfoInner.interViewContact ||
+        !this.formInfoInner.interViewAddress ||
+        !this.formInfoInner.interViewContactPhone
+      ) {
+        this.$message({
+          message: "必填项需要输入内容",
+          type: "warning",
+        });
+        return;
+      }
       this._SaveIVInfo();
     },
     _SaveIVInfo() {
@@ -289,12 +309,22 @@ export default {
             type: "warning",
           });
         }
+        this.reportInfo.value = "";
+        this.active = 88;
         this.reportVisible = false;
         this.resumeId = "";
       });
     },
     handleReportTure() {
       //确认举报
+      if (!this.reportInfo.value || this.active === 88) {
+        this.$message({
+          message: "必填项未输入内容或选择举报项目哦",
+          type: "warning",
+        });
+        return;
+      }
+
       this._ResumeDetailsFeedback();
     },
     _OutResume() {

@@ -232,7 +232,7 @@ export default {
     },
     handlePage(e) {   //分页
       this.pageNo = e;
-      this._ResumeSearch();
+      this._ResumeSearch(true);
     },
     clearSearch() {   //清空搜索
       this._ResumeSearch()
@@ -284,7 +284,7 @@ export default {
       }
       this._ResumeSearch()
     },
-    _ResumeSearch() {
+    _ResumeSearch(reset) {
       let data = {
         key: this.key,
         gender: this.gender,
@@ -293,7 +293,7 @@ export default {
         jobType: this.jobType == '不限' ? "" : this.jobType,
         orderby: this.orderby,
         postType: this.postType,
-        pageNo: this.pageNo,
+        pageNo: reset ? this.pageNo : 1,
         cityName: this.cityName == '全国' ? '' : this.cityName
       }
       ResumeSearch(data).then(res => {

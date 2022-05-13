@@ -157,7 +157,7 @@ export default {
       type: Object,
       default: function () {
         return {
-          positionId: "",
+          positionId: 0,
           serviceCode: "",
           postStatus: ""
         }
@@ -242,12 +242,11 @@ export default {
         serviceId: this.type == 1 ? this.paydata.serviceId : this.type == 2 ? this.paydata.ServiceData.serviceId : "",// this.paydata.ServiceData.serviceId,
         serviceCount: this.num,
         //下面三个只有职位才需要
-        positionId: this.otherPosition.positionId || '',
+        positionId: this.otherPosition.positionId || 0,
         serviceCode: this.otherPosition.serviceCode || '',
         postStatus: this.otherPosition.postStatus || 1,
       }
-      console.log(data)
-      debugger
+
       ServiceOrGoldPayment(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
 

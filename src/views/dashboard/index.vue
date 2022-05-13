@@ -4,11 +4,11 @@
       <el-calendar>
         <!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
         <template slot="dateCell" slot-scope="{date, data}">
-          <p>{{ data.day.split('-').slice(1).join('-') }} </p>
+          <p>{{ data.day.split('-').slice(1).join('-') }}</p>
           <div v-for="item in dateArr" :key="item">
             <div v-if="item.indexOf(data.day) != -1">
               <p class="is-selected">今日有面试 ✔️</p>
-              <el-button size="mini" round @click="hanldeInviewMore">查看详情</el-button>
+              <el-button size="mini" round @click="hanldeInviewMore(3)">查看详情</el-button>
             </div>
           </div>
         </template>
@@ -34,7 +34,7 @@
           >
             <el-table-column align="center" prop="postName">
               <template slot="header">
-                <div @click="handleOpen(1)" class="cursor">
+                <div @click="handleOpen(0)" class="cursor">
                   <p class="table-name">在招岗位</p>
                   <p>{{ publishPosition.publishCount }}</p>
                 </div>
@@ -42,7 +42,7 @@
             </el-table-column>
             <el-table-column align="center" prop="newresumeCount">
               <template slot="header">
-                <div @click="handleOpen(2)" class="cursor">
+                <div @click="handleOpen(1)" class="cursor">
                   <p class="table-name">新简历</p>
                   <p>{{ publishPosition.newresumeCount }}</p>
                 </div>
@@ -50,7 +50,7 @@
             </el-table-column>
             <el-table-column align="center" prop="undisposedCount">
               <template slot="header">
-                <div @click="handleOpen(3)" class="cursor">
+                <div @click="handleOpen(2)" class="cursor">
                   <p class="table-name">待处理</p>
                   <p>{{ publishPosition.undisposedCount }}</p>
                 </div>
@@ -58,7 +58,7 @@
             </el-table-column>
             <el-table-column align="center" prop="intervieCount">
               <template slot="header">
-                <div @click="handleOpen(4)" class="cursor">
+                <div @click="handleOpen(3)" class="cursor">
                   <p class="table-name">面试</p>
                   <p>{{ publishPosition.intervieCount }}</p>
                 </div>
@@ -66,7 +66,7 @@
             </el-table-column>
             <el-table-column align="center" prop="hireCount">
               <template slot="header">
-                <div @click="handleOpen(5)" class="cursor">
+                <div @click="handleOpen(4)" class="cursor">
                   <p class="table-name">录用</p>
                   <p>{{ publishPosition.hireCount }}</p>
                 </div>
@@ -74,7 +74,7 @@
             </el-table-column>
             <el-table-column align="center" prop="notSuitableCount">
               <template slot="header">
-                <div @click="handleOpen(6)" class="cursor">
+                <div @click="handleOpen(5)" class="cursor">
                   <p class="table-name">不合适</p>
                   <p>{{ publishPosition.notSuitableCount }}</p>
                 </div>
@@ -173,10 +173,14 @@ export default {
     },
     handleOpen(e) {      //跳转
 
-      if (e === 1) {      //岗位招聘
+      if (e === 0) {      //岗位招聘
         this.$router.push({ name: "Position" })
       } else {
-        this.$router.push({ name: "Resume" })
+        this.$router.push({
+          name: "Resume", query: {
+            status: e
+          }
+        })
       }
     },
     handleBanner() {     //点击广告图

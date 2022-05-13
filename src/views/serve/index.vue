@@ -58,7 +58,7 @@
     <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" destroy-on-close>
       <pay-buy :paydata="paydata" :type="tag ? 2 : 4" @closedShow="closedShow"></pay-buy>
     </el-dialog>
-    <tab-item :liItem="liItem" @checkStatu="checkStatu"></tab-item>
+    <tab-item :liItem="liItem" @checkStatu="checkStatu" :active="activeItem"></tab-item>
     <div class="main">
       <div class="left">
         <template v-if="serviceType === 1">
@@ -214,6 +214,7 @@ export default {
         id: 3,
         name: "广告服务",
       }],
+      activeItem: 0,
       serviceType: 1,
       serve1: [],     //套餐
       serve2: [],   //招聘服务
@@ -348,6 +349,7 @@ export default {
       }
     },
     checkStatu({ inx, id }) {   //切换TAB
+      this.activeItem = inx
       this.serviceType = id;
       this._GetPackageService()
     },

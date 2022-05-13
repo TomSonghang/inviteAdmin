@@ -1,6 +1,6 @@
 <template>
   <div class="contextWrap">
-    <tab-item :liItem="liItem" @checkStatu="checkStatu"></tab-item>
+    <tab-item :liItem="liItem" @checkStatu="checkStatu" :active="activeItem"></tab-item>
     <div class="search">
       <div class="searchBox">
         <el-input
@@ -57,7 +57,8 @@ export default {
       {
         id: 2,
         name: "已下线",
-      }]
+      }],
+      activeItem: 0
     }
   },
   components: {
@@ -81,7 +82,7 @@ export default {
       this.$router.push({ name: "PostJob" })
     },
     checkStatu({ inx, id }) { //切换TAB
-
+      this.activeItem = inx
       this.postStatus = id;
       this.pageNo = 1
       this._PositionManagementList()
