@@ -36,7 +36,7 @@
       ></el-pagination>
     </div>
     <el-dialog title="评价" :visible.sync="dialogReply">
-      <el-form :model="reportInfo" class="demo-form-inline">
+      <el-form :model="reportInfo" class="demo-form-inline" ref="reportInfo" :rules="rulesReply">
         <el-form-item label="回复评分" style="display: flex;align-items: center;">
           <el-rate v-model="replayNum" show-text></el-rate>
         </el-form-item>
@@ -50,7 +50,7 @@
             >{{ item.content }}</li>
           </ul>
         </el-form-item>
-        <el-form-item label="评价内容">
+        <el-form-item label="评价内容" prop="value">
           <el-input v-model="reportInfo.value" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
@@ -228,7 +228,9 @@ export default {
       replyData: [],
       active: '',
       replayNum: 0,//评分
-
+      rulesReply: {
+        value: [{ required: true, message: "请输入评价内容", trigger: "blur" },]
+      }
     }
   },
   components: {
@@ -247,6 +249,14 @@ export default {
       this._WithGroupList()
     },
     handleReportTure() {     //确认评价
+
+      if ((this.replayNum === 0 && this.active === '') || this.reportInfo.value == '') {
+        this.$message({
+          message: '评分和评价项目必选一个且评价内容不能为空哦',
+          type: 'warning'
+        });
+        return
+      }
       this._ReplyEstimate()
     },
     handleItem(index) {     //切换评价选项

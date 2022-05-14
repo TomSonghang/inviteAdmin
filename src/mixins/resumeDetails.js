@@ -96,27 +96,26 @@ export default {
       this.activeIndex = row;
       this.flag = ""; //初始化
       this._ResumeUpOrDownDetails();
-      this.show = true;
-      document.documentElement.style.overflow = "hidden"; //禁止背面滚动
     },
     _ResumeUpOrDownDetails() {
       //获取简历详情
+
       let data = {
         //为什么写了很多 || ，那是因为搜索人才和建立人才共用方法
         userId: this.flag ? "" : this.userId, //flag有值代表是点击了左右键
         key: this.key, //推荐关键字        //cnm
         strGender: this.gender, //strGender
         strEducationalBackground:
-          this.educationalBackground == "不限" ||
-          this.educationalBackground == "学历"
+          this.educationalBackground == "学历" ||
+          this.educationalBackground == "不限"
             ? ""
             : this.educationalBackground, //学历要求
         strWorkYears:
-          this.workYears == "不限" || this.workYears == "工作经验"
+          this.workYears == "工作经验" || this.workYears == "不限"
             ? ""
             : this.workYears, //工作经验
         strJobType:
-          this.jobType == "不限" || this.jobType == "求职状态"
+          this.jobType == "工作类型" || this.jobType == "不限"
             ? ""
             : this.jobType, //工作类型
         cityName: this.cityName == "全国" ? "" : this.cityName, //城市名称
@@ -124,12 +123,14 @@ export default {
         upOrDown: this.flag, //up"为向左 "down"为向右
         row: this.activeIndex,
         searchType: this.searchType, //(1简历搜索，2人才搜索)
-        jobStatus: this.statusStr || "", //求职状态(只有简历管理才需要传递)
+        jobStatus: this.jobStatus == "求职状态" ? "" : this.jobStatus, //求职状态(只有简历管理才需要传递)
         resumeId: this.flag ? "" : this.resumeId, //简历ID(只有简历管理才需要传递)
       };
       ResumeUpOrDownDetails(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.detailsDataObj = res.data;
+          this.show = true;
+          document.documentElement.style.overflow = "hidden"; //禁止背面滚动
         } else {
           this.$message({
             message: res.message,

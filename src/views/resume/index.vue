@@ -147,7 +147,7 @@
           <!--工作经验-->
           <el-dropdown @command="handleCommand3">
             <span class="el-dropdown-link">
-              {{ jobType }}
+              {{ jobStatus }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
@@ -157,14 +157,14 @@
           <!--求职状态-->
           <el-dropdown @command="handleCommand4">
             <span class="el-dropdown-link">
-              {{ jobStatus }}
+              {{ jobType }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item v-for="item in fixWorkType" :command="item">{{ item }}</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
-          <!--工作状态-->
+          <!--工作类型-->
 
           <span class="reset" @click="handleReset">重置</span>
         </div>
@@ -348,8 +348,8 @@ export default {
       postType: '应聘岗位',   //应聘岗位
       educationalBackground: '学历',    //学历
       workYears: '工作经验',
-      jobType: '求职状态',
-      jobStatus: '工作类型',
+      jobType: '工作类型',
+      jobStatus: '求职状态',
 
       type: 1,//1：表示简历管理的面试邀请 2：表示海量搜索简历的面试邀请
 
@@ -377,7 +377,11 @@ export default {
 
   methods: {
 
-
+    closedView() {
+      //详情关闭
+      this.show = false
+      this._GetResumemanagement()
+    },
 
     clearSearch() {   //清空搜索
       this._GetResumemanagement()
@@ -389,8 +393,11 @@ export default {
       this.postType = '应聘岗位';   //应聘岗位
       this.educationalBackground = '学历';    //学历
       this.workYears = '工作经验';
-      this.jobType = '求职状态';
-      this.jobStatus = '工作类型';
+      this.jobType = '工作类型';
+      this.jobStatus = '求职状态';
+      this.pageIndex = 1;
+      this.resumeType = 3
+      this.key = '';
       this._GetResumemanagement()
     },
     handlePage(e) {
@@ -410,11 +417,13 @@ export default {
       this._GetResumemanagement();
     },
     handleCommand3(e) {//求职状态
-      this.jobType = e;
+
+      debugger
+      this.jobStatus = e;
       this._GetResumemanagement();
     },
-    handleCommand4(e) {//工作状态
-      this.jobStatus = e;
+    handleCommand4(e) {//工作类型
+      this.jobType = e;
       this._GetResumemanagement();
     },
     checkStatu({ inx, id }) {   //切换TAB
@@ -426,6 +435,7 @@ export default {
 
 
     _GetResumemanagement() {      //列表数据
+
       let data = {
         resumeType: this.resumeType,
         pageIndex: this.pageIndex,
@@ -433,8 +443,8 @@ export default {
         postType: this.postType == '应聘岗位' ? '' : this.postType,    //应聘岗位
         educationalBackground: (this.educationalBackground == '学历' || this.educationalBackground == '不限') ? '' : this.educationalBackground,
         workYears: (this.workYears == '工作经验' || this.workYears == '不限') ? '' : this.workYears,
-        jobType: (this.jobType == '求职状态' || this.jobType == '不限') ? '' : this.jobType,
-        jobStatus: (this.jobStatus == '工作类型' || this.jobStatus == '不限') ? '' : this.jobStatus,
+        jobType: (this.jobType == '工作类型' || this.jobType == '不限') ? '' : this.jobType,
+        jobStatus: (this.jobStatus == '求职状态' || this.jobStatus == '不限') ? '' : this.jobStatus,
       }
       GetResumemanagement(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {

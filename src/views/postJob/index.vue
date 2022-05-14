@@ -218,8 +218,8 @@
         <el-button type="primary" class="companyBg mar120" @click="handleCreate">发布职位</el-button>
       </div>
     </div>
-    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay">
-      <pay-buy :paydata="paydata" :type="1" @closedShow="closedShow" :otherPosition="otherPosition"></pay-buy>
+    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" destroy-on-close>
+      <pay-buy :paydata="paydata" :type="1" @closedShow="closedShow" :otherPosition="otherPosition"   :fucktype="1"></pay-buy>
     </el-dialog>
   </div>
 </template>
@@ -411,7 +411,7 @@ export default {
         return
       }
       SaveJobOffers(data).then(res => {
-        debugger
+        
         if (res.status === Code.SUCCESS_CODE) {
           this.positionId = res.data.positionId
           this.$message({
@@ -421,7 +421,7 @@ export default {
           this.$router.back()
         } else if (res.status === 1007) {     //职位已经用完了
           console.log(res)
-          debugger
+          
 
           this.positionId = res.data.positionId
           this.$confirm('您的服务余量已经用完，请续费或支付成功后使用此服务哦', '提示', {

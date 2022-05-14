@@ -189,7 +189,7 @@ export default {
       searchType: 2,   //(1简历搜索，2人才搜索)
       type: 2,//1：表示简历管理的面试邀请 2：表示海量搜索简历的面试邀请
 
-
+      orderby: "ModiDateTime",  //排序规则
 
       pageNo: 1,
       cityName: "全国",
@@ -226,6 +226,11 @@ export default {
   },
   methods: {
 
+    closedView() {
+      //详情关闭
+      this.show = false
+      this._ResumeSearch()
+    },
 
     checkCity() {    //选择城市
       this.$router.push({ name: "CheckCity" })
@@ -279,8 +284,10 @@ export default {
     handleFilter(e) {     //默认和时间筛选
       if (e.target.innerText == '时间') {
         this.active = '2'
+        this.orderby = 'CreateDateTime'
       } else {
         this.active = '1'
+        this.orderby = 'ModiDateTime'
       }
       this._ResumeSearch()
     },
@@ -294,7 +301,7 @@ export default {
         orderby: this.orderby,
         postType: this.postType,
         pageNo: reset ? this.pageNo : 1,
-        cityName: this.cityName == '全国' ? '' : this.cityName
+        cityName: this.cityName == '全国' ? '' : this.cityName,
       }
       ResumeSearch(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {

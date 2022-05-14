@@ -5,7 +5,7 @@
         <!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
         <template slot="dateCell" slot-scope="{date, data}">
           <p>{{ data.day.split('-').slice(1).join('-') }}</p>
-          <div v-for="item in dateArr" :key="item">
+          <div v-for="(item, index) in dateArr" :key="index">
             <div v-if="item.indexOf(data.day) != -1">
               <p class="is-selected">今日有面试 ✔️</p>
               <el-button size="mini" round @click="hanldeInviewMore(3)">查看详情</el-button>
@@ -118,8 +118,8 @@
             <el-timeline-item
               :timestamp="item.interviewTime"
               placement="top"
-              v-for="item in todayInterview.datas"
-              :key="item.interviewTime"
+              v-for="(item,index) in todayInterview.datas"
+              :key="index"
             >
               <el-card>
                 <p class="interviewName">面试人:{{ item.realName }}</p>

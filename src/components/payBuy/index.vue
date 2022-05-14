@@ -82,11 +82,11 @@
         </p>
         <p v-else-if="type == 2">
           还需支付：
-          <span>{{ realityRmb }}元/{{ realityRmb * 10 }}金币</span>
+          <span>{{ realityRmb }}元/{{ realityRmb * 100 }}金币</span>
         </p>
         <p v-else-if="type == 4">
           还需支付：
-          <span>{{ (paydata.oneGoldPrice * num).toFixed(1) }}元</span>
+          <span>{{ (paydata.oneGoldPrice * num).toFixed(2) }}元</span>
         </p>
       </div>
       <div class="QRbox" v-show="zfActive != 'gold'">
@@ -162,6 +162,10 @@ export default {
           postStatus: ""
         }
       }
+    },
+    fucktype: {
+      type: Number,
+      default: -1
     }
   },
   computed: {
@@ -174,11 +178,11 @@ export default {
     realityRmb() {   //使用优惠券之后的实际价格
       if (this.cardActive != 100 && this.cardData[this.cardActive].ticketType == '1') {//满减券
 
-        return Math.floor((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) - Number(this.cardData[this.cardActive].reduceRMB))
+        return ((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) - Number(this.cardData[this.cardActive].reduceRMB)).toFixed(2)
       } else if (this.cardActive != 100 && this.cardData[this.cardActive].ticketType == '2') {//折扣券
-        return Math.floor((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) * (0.1 * Number(this.cardData[this.cardActive].discount)))
+        return ((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)) * (0.1 * Number(this.cardData[this.cardActive].discount))).toFixed(2)
       } else {
-        return Math.floor((Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)))
+        return (Number(this.paydata.ServiceData.serviceRMB) * Number(this.num)).toFixed(2)
       }
     }
   },
@@ -245,6 +249,9 @@ export default {
         positionId: this.otherPosition.positionId || 0,
         serviceCode: this.otherPosition.serviceCode || '',
         postStatus: this.otherPosition.postStatus || 1,
+
+        //转精品和上线精品需要做类型判断
+        type: this.fucktype  //1职位上线；2转精品；-1其他
       }
 
       ServiceOrGoldPayment(data).then(res => {
@@ -255,7 +262,7 @@ export default {
               message: '支付成功',
               type: 'success'
             });
-            clearInterval(this.timer)     //清除定时器
+            this.clearTimer()    //清除定时器
             this.$emit('closedShow')
           } else {
             this.codeUrl = res.data.code_url
@@ -283,7 +290,7 @@ export default {
               message: '支付成功',
               type: 'success'
             });
-            clearInterval(this.timer)     //清除定时器
+            this.clearTimer()     //清除定时器
             this.$emit('closedShow')
           } else {
             this.codeUrl = res.data.code_url
@@ -324,7 +331,7 @@ export default {
             message: '支付成功',
             type: 'success'
           });
-          clearInterval(this.timer)     //清除定时器
+          this.clearTimer()    //清除定时器
           this.$emit('closedShow')
         }
       })
@@ -352,6 +359,9 @@ export default {
     timerFun() {      //查询支付定时器
       this.timer = setInterval(this._PayStatus, 3000)
     },
+    clearTimer() {    //清除定时器
+      clearInterval(this.timer)
+    },
     refreshCode() {    //刷新付款码
       if (this.type === 3) {   //兼职
         this._PartTimePayment()  //兼职二维码
@@ -365,18 +375,16 @@ export default {
   },
   mounted() {
     this.refreshCode()  //获取付款码
-    if (this.type === 3) {   //兼职
+    if (this.type === 3 || this.type === 1) {   //兼职  职位
 
-    } else if (this.type === 2 || this.type === 4) {   //套餐
+    } else if (this.type === 2 || this.type === 4) {   //套餐  金币
       this._GetCardTicketList();    //显示优惠券
-    } else if (this.type === 1) {   //职位
-
     }
 
   },
   destroyed() {
 
-    clearInterval(this.timer)
+    this.clearTimer()
   }
 }
 </script>

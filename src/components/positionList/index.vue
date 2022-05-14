@@ -126,13 +126,15 @@
         </template>
       </div>
     </div>
-    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay">
+    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" @close="closedShow">
       <pay-buy
         :paydata="paydata"
         :type="flag ? 1 : 3"
         :groupId="groupId"
         @closedShow="closedShow"
         :otherPosition="otherPosition"
+        :fucktype="fucktype"
+        ref="pay"
       ></pay-buy>
     </el-dialog>
   </div>
@@ -170,6 +172,7 @@ export default {
       positionId: 0,  //职位ID
       curPositionStatus: "",  //招聘职位状态码，注意改状态为当前状态，不是修改后的状态(1:开启招聘，2：关闭招聘)
       serviceCode: "",
+      fucktype: -1  //1职位上线；2转精品；-1其他
     }
   },
   props: {
@@ -275,6 +278,7 @@ export default {
     },
     /*--------------------------------------炒更团方法--------------------------------------*/
     _ServicePayInit() {     //炒更，职位初始化数据
+
       let data = {
         businesstype: this.flag ? 'Service' : 'WithGroup',
         serviceCode: this.flag ? this.serviceCode : '',    //服务码(1001普通职位；1002精品职位)
@@ -282,7 +286,6 @@ export default {
       }
       ServicePayInit(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
-
           if (this.flag) {   //职位
             this.paydata = res.data[0]
           } else {    //炒更
@@ -290,6 +293,11 @@ export default {
           }
           this.dialogVisible = false;
           this.dialogTableVisiblePay = true
+
+          if (this.$refs.pay) {      //当组件还没有渲染的时候，pay会undefiend,组件渲染时，会自动执行_ServiceOrGoldPayment() 所以不用调用
+            this.$refs.pay._ServiceOrGoldPayment()      //弹窗只是显示隐藏，导致不会触发组件mounted的钩子函数，所以显示时，调用子组件获取二维码方法
+          }
+
         } else {
           this.$message({
             message: res.message,
@@ -300,12 +308,12 @@ export default {
     },
     closedShow() {      //关闭支付弹窗
       this.dialogTableVisiblePay = false;
+      this.$refs.pay.clearTimer()   //清除子组件的定时器
       this.$emit('refresh')
     },
     /*--------------------------------------职位炒更共用方法--------------------------------------*/
 
     handleUnknow(e) {     //职位未阅读 
-      
       this.$router.push({
         name: "Resume", query: {
           status: e
@@ -325,12 +333,17 @@ export default {
               message: '刷新成功！',
               type: 'success'
             });
+            this.$emit('refresh')
           }
         })
       } else if (command instanceof Object && command.flag == 'return') {    //转精品
+
+        this.positionId = command.id
+        this.fucktype = 2   //转精品
         GetPostNum({}).then(res => {
           if (res.status === Code.SUCCESS_CODE) {
-            this.serviceCode = '1002'
+            this.serviceCode = '1002';
+
             this.serviceSurplus1001 = res.data.serviceSurplus1001;
             this.serviceSurplus1002 = res.data.serviceSurplus1002;
             if (res.data.serviceSurplus1002 == 0) {     //代表没有转精品的资格
@@ -352,6 +365,7 @@ export default {
       let data = {
         jobId: this.command.id
       }
+
       CommonConvertBoutiqueJob(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
           this.$message({
@@ -374,7 +388,7 @@ export default {
       this.$router.push({ name: "PostJob", query: { id: e } })
     },
 
-    handleDownUp(e, s, t) {//下线职位   //上线也可以
+    handleDownUp(e, s, t) {//下线职位  
       this.positionId = e;
       this.curPositionStatus = t;
       this.serviceCode = s;
@@ -383,6 +397,7 @@ export default {
 
     },
     _UpdateJobStatus(e) {   //e如果有值，代表是开启的普通职位或者精品
+
       if (e == 'pt') {
         this.serviceCode = '1001'
       } else if (e == 'jp') {
@@ -394,20 +409,26 @@ export default {
         serviceCode: this.serviceCode
       }
       UpdateJobStatus(data).then(res => {
+
         if (res.status === Code.SUCCESS_CODE) {
+
           this.$message({
             message: '操作成功！',
             type: 'success'
           });
           this.$emit('refresh')
         } else {    //操作失败则支付
+
+
           this._ServicePayInit()
         }
+        this.dialogVisible = false;
       })
     },
 
     handleUp(e, s, t) {   //上线职位
 
+      this.fucktype = 1   //职位上线
       this.positionId = e;
       this.curPositionStatus = t;
       this.serviceCode = s;
