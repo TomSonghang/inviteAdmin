@@ -172,7 +172,7 @@ input::-webkit-inner-spin-button {
 }
 
 //修改滚动条
-#app ::-webkit-scrollbar {
+body ::-webkit-scrollbar {
 
   width: 7px;
   /*滚动条宽度*/
@@ -181,7 +181,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-#app ::-webkit-scrollbar-thumb {
+body ::-webkit-scrollbar-thumb {
 
   border-radius: 3px;
   /*滚动条圆角*/
@@ -194,7 +194,7 @@ input::-webkit-inner-spin-button {
 
 }
 
-#app ::-webkit-scrollbar-track {
+body ::-webkit-scrollbar-track {
 
   background-color: transparent;
   /*滚动条的背景颜色*/
@@ -202,9 +202,9 @@ input::-webkit-inner-spin-button {
 }
 
 .fyDiv {
-  text-align: center;
+  text-align    : center;
   padding-bottom: 20px;
-  margin-top: 20px;
+  margin-top    : 20px;
 }
 
 .companyBg {
@@ -215,4 +215,15 @@ input::-webkit-inner-spin-button {
   &:hover {
     background-color: #1cc9c6;
   }
+}
+
+.el-cascader-panel {
+  //多级联动option过多，导致高度太高
+  max-height: 300px;
+}
+
+.el-dropdown-menu {
+  //高度太高
+  max-height    : 400px;
+  overflow-y: auto;
 }

@@ -309,6 +309,7 @@ export default {
     closedShow() {      //关闭支付弹窗
       this.dialogTableVisiblePay = false;
       this.$refs.pay.clearTimer()   //清除子组件的定时器
+      
       this.$emit('refresh')
     },
     /*--------------------------------------职位炒更共用方法--------------------------------------*/

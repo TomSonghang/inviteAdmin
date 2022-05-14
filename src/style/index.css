@@ -341,12 +341,12 @@ input::-webkit-inner-spin-button {
   justify-content: space-between;
   align-items: center;
 }
-#app ::-webkit-scrollbar {
+body ::-webkit-scrollbar {
   width: 7px;
   /*滚动条宽度*/
   height: 7px;
 }
-#app ::-webkit-scrollbar-thumb {
+body ::-webkit-scrollbar-thumb {
   border-radius: 3px;
   /*滚动条圆角*/
   -webkit-border-radius: 3px;
@@ -354,7 +354,7 @@ input::-webkit-inner-spin-button {
   background-color: #c3c3c3;
   /*滚动条颜色*/
 }
-#app ::-webkit-scrollbar-track {
+body ::-webkit-scrollbar-track {
   background-color: transparent;
   /*滚动条的背景颜色*/
 }
@@ -369,4 +369,11 @@ input::-webkit-inner-spin-button {
 }
 .companyBg:hover {
   background-color: #1cc9c6;
+}
+.el-cascader-panel {
+  max-height: 300px;
+}
+.el-dropdown-menu {
+  max-height: 400px;
+  overflow-y: auto;
 }

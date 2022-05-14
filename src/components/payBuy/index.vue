@@ -264,6 +264,7 @@ export default {
             });
             this.clearTimer()    //清除定时器
             this.$emit('closedShow')
+            
           } else {
             this.codeUrl = res.data.code_url
             this.codeNum = res.data.out_trade_no

@@ -76,6 +76,7 @@ export default {
       this._PositionManagementList()
     },
     refresh() {    //刷新职位
+      
       this._PositionManagementList()
     },
     handlePost() {      //发布职位

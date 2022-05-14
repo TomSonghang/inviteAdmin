@@ -112,13 +112,14 @@
     <div class="main">
       <div class="filter">
         <div class="left">
-          <el-dropdown @command="handleCommand">
+          <el-dropdown @command="handleCommand" trigger="click">
             <span class="el-dropdown-link">
               {{ postType }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
+                
                 :command="item.postName"
                 v-for="item in postTypeArray"
               >{{ item.postName }}</el-dropdown-item>
@@ -169,6 +170,12 @@
           <span class="reset" @click="handleReset">重置</span>
         </div>
         <div class="right">
+          <el-date-picker
+            v-model="interViewTime"
+            type="date"
+            placeholder="选择面试日期"
+            style="margin-right: 10px;width: 300px;"
+          ></el-date-picker>
           <el-input
             placeholder="请输入内容"
             v-model="key"
@@ -350,6 +357,7 @@ export default {
       workYears: '工作经验',
       jobType: '工作类型',
       jobStatus: '求职状态',
+      interViewTime: "", //面试时间
 
       type: 1,//1：表示简历管理的面试邀请 2：表示海量搜索简历的面试邀请
 
@@ -363,7 +371,11 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      //debugger
+
+      if (to.query.date) {
+        vm.interViewTime = to.query.date
+
+      }
       vm.activeItem = Number(to.query.status) || 0
       vm.resumeType = vm.liItem[vm.activeItem].id
     })
@@ -445,6 +457,7 @@ export default {
         workYears: (this.workYears == '工作经验' || this.workYears == '不限') ? '' : this.workYears,
         jobType: (this.jobType == '工作类型' || this.jobType == '不限') ? '' : this.jobType,
         jobStatus: (this.jobStatus == '求职状态' || this.jobStatus == '不限') ? '' : this.jobStatus,
+        interViewTime: this.interViewTime
       }
       GetResumemanagement(data).then(res => {
         if (res.status === Code.SUCCESS_CODE) {
@@ -477,7 +490,9 @@ export default {
   justify-content: space-between;
   align-items: center;
   .right {
-    flex-basis: 250px;
+    flex-basis: 350px;
+    display: flex;
+    align-items: center;
   }
 }
 .table {

@@ -8,7 +8,7 @@
           <div v-for="(item, index) in dateArr" :key="index">
             <div v-if="item.indexOf(data.day) != -1">
               <p class="is-selected">今日有面试 ✔️</p>
-              <el-button size="mini" round @click="hanldeInviewMore(3)">查看详情</el-button>
+              <el-button size="mini" round @click="hanldeInviewMore(3, item)">查看详情</el-button>
             </div>
           </div>
         </template>
@@ -118,7 +118,7 @@
             <el-timeline-item
               :timestamp="item.interviewTime"
               placement="top"
-              v-for="(item,index) in todayInterview.datas"
+              v-for="(item, index) in todayInterview.datas"
               :key="index"
             >
               <el-card>
@@ -163,11 +163,12 @@ export default {
     }
   },
   methods: {
-    hanldeInviewMore() {
+    hanldeInviewMore(status, date) {
       this.dialogTableVisible = false
       this.$router.push({
         name: "Resume", query: {
-          status: 3
+          status,
+          date
         }
       })
     },

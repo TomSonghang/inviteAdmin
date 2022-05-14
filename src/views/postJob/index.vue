@@ -165,7 +165,7 @@
           <div>
             <el-cascader
               v-model="postCitys"
-              popper-class="casClass"
+            
               class="inputWidth"
               placeholder="省市区，可搜索"
               :options="cityData"
@@ -550,10 +550,7 @@ export default {
 .partTwo {
   margin-top: 50px;
 }
-.casClass {
-  height: 300px;
-  overflow-y: auto;
-}
+
 .mar120 {
   margin-left: 120px;
 }

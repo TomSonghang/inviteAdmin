@@ -297,6 +297,7 @@ export default {
             message: '评价成功',
             type: 'success'
           });
+          this._GetWithGroupDetails()  //刷新一下详情数据
         } else {
           this.$message({
             message: res.message,

@@ -38,14 +38,14 @@
     <div class="filter">
       <div class="selectBox">
         <div class="checkItem">
-          <span>工作经验</span>
+          <span class="labelTitle">工作经验</span>
           <el-select v-model="workYears" placeholder="不限" class="input" @change="handleChange1">
             <el-option v-for="item in fixExperienceYea" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </div>
 
         <div class="checkItem">
-          <span>学历要求</span>
+          <span class="labelTitle">学历要求</span>
           <el-select
             v-model="educationalBackground"
             placeholder="不限"
@@ -62,14 +62,14 @@
         </div>
 
         <div class="checkItem">
-          <span>工作类型</span>
+          <span class="labelTitle">工作类型</span>
           <el-select v-model="jobType" placeholder="不限" class="input" @change="handleChange3">
             <el-option v-for="item in fixWorkType" :key="item" :label="item" :value="item"></el-option>
           </el-select>
         </div>
 
         <div class="checkItem">
-          <span>性别</span>
+          <span class="labelTitle">性别</span>
           <el-select v-model="gender" placeholder="不限" class="input" @change="handleChange4">
             <el-option v-for="item in genders" :key="item" :label="item" :value="item"></el-option>
           </el-select>
@@ -380,10 +380,10 @@ export default {
   }
   .checkItem {
     margin-right: 20px;
-    span {
+    .labelTitle {
+      margin-right: 12px;
       color: #333;
       font-size: 14px;
-      margin-right: 12px;
     }
   }
 
