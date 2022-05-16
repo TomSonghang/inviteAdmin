@@ -80,8 +80,25 @@ export default {
       console.log(data);
       this.flag = data;
       if (data == "up") {
+        if (this.activeIndex === 1) {
+          //第一个了
+          this.$message({
+            message: "该简历已经是第一位了，不能再往上了",
+            type: "warning",
+          });
+          return;
+        }
         this.activeIndex = this.activeIndex - 1;
       } else {
+        if (this.activeIndex === this.total) {
+          //第一个了
+          this.$message({
+            message: "该简历已经是最后一位了，不能再往下了",
+            type: "warning",
+          });
+          return;
+        }
+
         this.activeIndex = this.activeIndex + 1;
       }
       this._ResumeUpOrDownDetails();

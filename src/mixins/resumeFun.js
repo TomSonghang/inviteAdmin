@@ -376,6 +376,7 @@ export default {
       });
     },
     _CollectResume() {
+ 
       //收藏
       let data = {
         userId: this.userId,
@@ -387,8 +388,9 @@ export default {
             type: "success",
           });
           this.handleRefresh();
-
-          this.detailsData.isCollection = 1; //修改详情数据
+          this.detailsData
+            ? (this.detailsData.isCollection = 1)
+            : (this.detailsDataObj.isCollection = 1); //修改详情数据
         } else {
           this.$message({
             message: res.message,
@@ -409,8 +411,9 @@ export default {
             type: "success",
           });
           this.handleRefresh();
-
-          this.detailsData.isCollection = 0; //修改详情数据
+          this.detailsData
+            ? (this.detailsData.isCollection = 0)
+            : (this.detailsDataObj.isCollection = 0); //修改详情数据
         } else {
           this.$message({
             message: res.message,

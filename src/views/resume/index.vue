@@ -119,7 +119,6 @@
             </span>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item
-                
                 :command="item.postName"
                 v-for="item in postTypeArray"
               >{{ item.postName }}</el-dropdown-item>
@@ -246,11 +245,14 @@
                     @click="handleInterview(scope.row.userId)"
                   >面试</span>
                 </el-tooltip>
-
                 <span
                   v-show="scope.row.status == 5 || scope.row.status == 6"
                   @click="handleReport(scope.row.userId)"
                 >举报</span>
+                <!-- <span
+                  v-show="activeItem == 6 && scope.row.status == 2"
+                  @click="handleReport(scope.row.userId)"
+                >取消收藏</span> -->
                 <el-tooltip class="item" effect="dark" content="简历状态改为待处理" placement="top-start">
                   <span
                     @click="handleReturn({ id: scope.row.resumeId, statu: '', positionId: scope.row.positionId })"
@@ -340,6 +342,9 @@ export default {
       {
         id: 6,
         name: "不合适",
+      }, {
+        id: 7,
+        name: "收藏",
       }],
       activeItem: 0,      //顶部切换
 

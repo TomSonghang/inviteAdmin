@@ -101,7 +101,7 @@
             <el-button round plain size="small" @click="handleDoit(item.id)">去处理</el-button>
           </div>
         </div>
-        <div class="user_list">
+        <div class="user_list" v-else>
           <span>今天没有新投递简历可处理哦</span>
         </div>
       </div>
@@ -163,6 +163,15 @@ export default {
     }
   },
   methods: {
+    handleDoit() {
+      //点击了新投递简历去处理按钮
+      this.$router.push({
+        name: "Resume",
+        query: {
+          status: 1
+        }
+      })
+    },
     hanldeInviewMore(status, date) {
       this.dialogTableVisible = false
       this.$router.push({
