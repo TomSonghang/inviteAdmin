@@ -20,6 +20,7 @@
           <div class="title">公司基本信息</div>
           <p class="descript">丰富的公司介绍，能获得更多求职者的青睐，为你的职位带来更多查看</p>
         </div>
+
         <div class="itemBox">
           <div class="itemTitle">企业头像</div>
           <div>
@@ -39,11 +40,10 @@
             </el-upload>
           </div>
         </div>
-
         <div class="itemBox">
           <div class="itemTitle">企业名称</div>
           <div>
-            <el-input v-model="companyName" readonly placeholder="请输入内容" class="inputWidth"></el-input>
+            <el-input v-model="companyName" readonly placeholder="请输入内容" class="inputWidth2"></el-input>
           </div>
         </div>
 
@@ -98,7 +98,6 @@
           <div>
             <el-cascader
               v-model="postCitys"
-           
               class="inputWidth"
               placeholder="省市区，可搜索"
               :options="cityData"
@@ -247,14 +246,30 @@
       <div class="part4" v-show="active === 3">
         <div class="titleBox">
           <div class="title">公司资质</div>
-          <p class="descript">营业执照、税务登记、组织机构代码，三证合一;这里仅展示营业执照审核状态;</p>
+          <p class="descript">三证合一只需上传营业执照；如未登记和审核失败会显示上传按钮，审核中和审核成功仅展示审核状态;</p>
         </div>
+
         <div class="itemBox">
-          <div class="itemTitle">
-            <span>营业执照：</span>
+          <div class="itemTitle">营业执照</div>
+          <div v-if="businessLicenseStatus === '0' || businessLicenseStatus === '3'">
+            <el-upload
+              class="avatar-uploader"
+              :action="uploadBusinessUrl"
+              accept="image/jpeg, image/gif, image/png"
+              :headers="{
+                Authorization: token
+              }"
+              style=" border: 1px dashed #d9d9d9;border-radius: 6px;"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccessBusiness"
+              :on-error="handleErrorBusiness"
+              :data="{ fileFlag: 2 }"
+            >
+              <img v-if="pathBusiness" :src="pathBusiness" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </div>
-          <div class="textStyle">
-            <!-- <img v-if="path" :src="path" class="avatar" /> -->
+          <div class="textStyle" v-else>
             <span>{{ businessLicenseStatus | statu }}</span>
           </div>
         </div>
@@ -311,7 +326,9 @@ export default {
   data() {
     return {
       uploadActionUrl: `${process.env.VUE_APP_BASE_API}/api/Enterprise/UpdateHeadPortrait`,   //上传头像地址
-      path: "",
+      uploadBusinessUrl: `${process.env.VUE_APP_BASE_API}/api/Enterprise/UpLoadBusinessLicense`,   //上传资质图片
+      path: "", //头像
+      pathBusiness: "",      //资质
       companyName: "",
       companyType: "",
       companySize: "",
@@ -602,6 +619,26 @@ export default {
         store.dispatch('user/set_headpath', res.data.args.HeadPortraitPath)
       }
     },
+    handleAvatarSuccessBusiness(res) {
+      if (res.status === Code.SUCCESS_CODE) {
+        this.$message({
+          message: '上传成功，等待工作人员审核',
+          type: 'success'
+        });
+        this.businessLicenseStatus = '1'
+      } else {
+        this.$message({
+          message: res.message,
+          type: 'warning'
+        });
+      }
+    },
+    handleErrorBusiness(res) {
+      this.$message({
+        message: res.message,
+        type: 'warning'
+      });
+    },
     handleDes() {   //保存基本信息
       this._UpdateCompanyInformation();
     },
@@ -705,7 +742,7 @@ export default {
       })
     },
     handleItem(e) {     //左侧tab
-      debugger
+
       this.active = Number(e.target.attributes['datatab']?.value)
     },
     handleAvatarSuccess(res, file) {
@@ -790,6 +827,7 @@ export default {
   margin-right: 20px;
   display: flex;
   justify-content: flex-end;
+  color: #666;
 }
 .itemMain {
   flex: 1;
@@ -803,6 +841,7 @@ export default {
 .inputWidth2 {
   width: 500px;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;

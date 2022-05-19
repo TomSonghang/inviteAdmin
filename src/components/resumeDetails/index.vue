@@ -1,10 +1,10 @@
 <template>
   <div id="app">
-    <el-dialog :title="interviewTag ? '修改面试时间' : '邀请面试'" :visible.sync="outerVisible">
+    <el-dialog width="40%" :title="interviewTag ? '修改面试时间' : '邀请面试'" :visible.sync="outerVisible">
       <el-form :model="formInfo" class="demo-form-inline">
         <el-form-item label="面试职位">
           <template v-if="!interviewTag">
-            <el-select v-model="formInfo.post" placeholder="选择面试职位">
+            <el-select v-model="formInfo.post" placeholder="选择面试职位" class="inpWidth">
               <el-option :label="item.postName" :value="item.id" v-for="item in postTypeArray"></el-option>
             </el-select>
           </template>
@@ -14,12 +14,14 @@
         </el-form-item>
         <el-form-item label="面试时间">
           <el-date-picker
+            class="inpWidth"
             value-format="yyyy-MM-dd HH:mm:ss"
             v-model="formInfo.time"
             type="datetime"
             placeholder="选择日期时间"
           ></el-date-picker>
         </el-form-item>
+        <div class="line"></div>
         <div class="mianshi">
           <span>面试信息</span>
           <p @click="handleInterviewInfo" v-show="!interviewTag">新增面试信息</p>
@@ -46,10 +48,10 @@
         <el-button
           v-if="interviewTag"
           type="primary"
-          class="companyBg mar120"
+          class="companyBg"
           @click="handleChangeTime"
         >确定修改</el-button>
-        <el-button v-else type="primary" class="companyBg mar120" @click="handleInvited">确定邀请</el-button>
+        <el-button v-else type="primary" class="companyBg" @click="handleInvited">确定邀请</el-button>
       </el-form>
 
       <el-dialog width="30%" title="新增面试信息" :visible.sync="innerVisible" append-to-body>
@@ -68,7 +70,7 @@
           <el-form-item label="联系地址" prop="interViewAddress">
             <el-input v-model="formInfoInner.interViewAddress" placeholder="请输入地址"></el-input>
           </el-form-item>
-          <el-button type="primary" class="companyBg mar120" @click="handleTrue">确定</el-button>
+          <el-button type="primary" class="companyBg" @click="handleTrue">确定</el-button>
         </el-form>
       </el-dialog>
     </el-dialog>
@@ -90,7 +92,7 @@
           <el-input v-model="reportInfo.value" placeholder="请输入内容"></el-input>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="companyBg mar120" @click="handleReportTure">确定</el-button>
+      <el-button type="primary" class="companyBg" @click="handleReportTure">确定</el-button>
     </el-dialog>
     <!--举报-->
     <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
@@ -278,8 +280,8 @@ export default {
   name: "ResumeDetail",
   data() {
     return {
-     
-    
+
+
       height: null,
       screenHeight: null,
     }
@@ -328,7 +330,9 @@ export default {
 #app {
   position: relative;
 }
-
+.inpWidth {
+  width: 250px;
+}
 .mask_sh {
   width: 100%;
   height: 100vh;
@@ -681,5 +685,10 @@ export default {
 }
 .pointer {
   cursor: pointer;
+}
+.line{
+  height: 6px;
+  background: #f5f5f5;
+  margin-bottom: 16px;
 }
 </style>

@@ -410,6 +410,7 @@ export default {
   margin-right: 20px;
   display: flex;
   justify-content: flex-end;
+  color: #666;
 }
 .priceBox {
   display: flex;

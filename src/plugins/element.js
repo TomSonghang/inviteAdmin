@@ -52,6 +52,8 @@ import {
   Radio,
   Switch,
   Rate,
+  Checkbox,
+  checkboxGroup,
 } from "element-ui";
 
 Message.install = () => {
@@ -116,3 +118,5 @@ Vue.use(InputNumber);
 Vue.use(Radio);
 Vue.use(Switch);
 Vue.use(Rate);
+Vue.use(Checkbox);
+Vue.use(checkboxGroup);

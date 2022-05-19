@@ -14,11 +14,13 @@
               placeholder="请选择"
               class="inputWidth"
               :disabled="action == 'edit' && serviceCode == '精品职位'"
+              @visible-change="handleShoweAction"
+              @change="handleChangeAction"
             >
               <el-option v-for="item in postTypeOption" :key="item" :label="item" :value="item"></el-option>
             </el-select>
           </div>
-          <p v-show="action == 'edit' && serviceCode == '精品职位'">编辑时，精品职位不能转普通职位哦</p>
+          <p v-show="action == 'edit' && serviceCode == '精品职位'">精品职位不能转普通职位哦</p>
         </div>
 
         <div class="itemBox">
@@ -101,7 +103,7 @@
         </div>
 
         <div class="itemBox">
-          <div class="itemTitle">最高学历</div>
+          <div class="itemTitle">最低学历</div>
           <div>
             <el-select v-model="academicRequirements" placeholder="请选择" class="inputWidth">
               <el-option
@@ -141,7 +143,13 @@
         <div class="itemBox">
           <div class="itemTitle">福利待遇</div>
           <div>
-            <el-select multiple v-model="welfare" placeholder="请选择" class="inputWidth">
+            <!-- <mul-select :mulData="fixWelfareOption" @changeMul="changeMul" :checkboxGroup="welfare"></mul-select> -->
+
+            <!-- <mul-select :mulData="fixWelfareOption" v-model="welfare"></mul-select> -->
+            <mul-select :mulData="fixWelfareOption" :welfare.sync="welfare"></mul-select>
+          </div>
+          <!-- <div>
+            <el-select multiple v-model="welfare" placeholder="请选择（可多选）" class="inputWidth">
               <el-option
                 v-for="item in fixWelfareOption"
                 :key="item.id"
@@ -149,7 +157,7 @@
                 :value="item.name"
               ></el-option>
             </el-select>
-          </div>
+          </div>-->
         </div>
 
         <div class="itemBox">
@@ -165,7 +173,6 @@
           <div>
             <el-cascader
               v-model="postCitys"
-            
               class="inputWidth"
               placeholder="省市区，可搜索"
               :options="cityData"
@@ -178,7 +185,7 @@
         <div class="itemBox">
           <div class="itemTitle">详细地点</div>
           <div class="inputWidth">
-            <el-input v-model="postCity" placeholder="详细地点" @blur="changeAddress"></el-input>
+            <el-input v-model="postCity" placeholder="详细地点" @change="changeAddress"></el-input>
           </div>
         </div>
         <div class="itemBox">
@@ -219,18 +226,26 @@
       </div>
     </div>
     <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" destroy-on-close>
-      <pay-buy :paydata="paydata" :type="1" @closedShow="closedShow" :otherPosition="otherPosition"   :fucktype="1"></pay-buy>
+      <pay-buy
+        :paydata="paydata"
+        :type="1"
+        @closedShow="closedShow"
+        :otherPosition="otherPosition"
+        :fucktype="1"
+      ></pay-buy>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import payBuy from '@/components/payBuy/index'
+import mulSelect from '@/components/mulSelect/index'
 import cityData from '@/utils/city'
 import fixData from '@/mixins/getfixData'
 import Code from "@/api/statusCode";
 import { SaveJobOffers, JobAddOrEditInit } from '@/api/postJob'
 import { ServicePayInit } from '@/api/timeJob'
+import { GetPostNum, CommonConvertBoutiqueJob } from '@/api/positionManagement'
 export default {
   name: "PostJob",
   data() {
@@ -242,7 +257,7 @@ export default {
       postName: "",//岗位名称
       hiring: "",//招聘人数
       payroll: "",//薪资(如："8-10K")
-      welfare: "",//福利待遇
+      welfare: [],//福利待遇
       experienceYear: "",//工作经验（如："1-3年经验"
       postEmail: "",//公司招聘邮箱
       postPhone: "",//公司招聘电话
@@ -253,6 +268,7 @@ export default {
       postCitys: [],//省市区
 
       serviceCode: '普通职位',//服务编号:1001=普通职位,1002=精品职位
+
 
       minPrice: "",
       maxPrice: "",
@@ -273,6 +289,7 @@ export default {
       dialogTableVisiblePay: false,
       paydata: {},
       BMap: null,
+      jpNum: 0   //精品剩余个数
 
     }
   },
@@ -307,8 +324,52 @@ export default {
       return `${postCitys} ${this.postCity}`  //'深圳市罗湖区水贝金座大厦'
     }
   },
-  components: { payBuy },
+  components: { payBuy, mulSelect },
   methods: {
+    changeMul(e) {      //获取了福利待遇
+      this.welfare = e
+    },
+    handleShoweAction(e) {
+      if (!e) {
+        return
+      }
+      GetPostNum({}).then(res => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.jpNum = res.data.serviceSurplus1002
+        }
+      })
+    },
+    handleChangeAction() {//切换发布类型
+
+      if (this.action == 'edit') {
+        this.$confirm(`您的精品职位还剩${this.jpNum}次, 此操作会扣减1次额度,是否继续?`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          CommonConvertBoutiqueJob({ jobId: this.positionId }).then(res => {
+            if (res.status === Code.SUCCESS_CODE) {
+              this.$message({
+                type: 'success',
+                message: '该职位已经成功更新为精品职位'
+              });
+            } else {
+              this.$message({
+                type: 'warning',
+                message: res.message
+              });
+              this.serviceCode = '普通职位'  //改回来
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消更改'
+          });
+          this.serviceCode = '普通职位'  //改回来
+        });
+      }
+    },
     _ServicePayInit() {     //职位初始化数据
 
       let data = {
@@ -352,24 +413,31 @@ export default {
       })
     },
     handleCreate() {     //发布职位
-      this.$confirm('职位发布后，职位名称和职位类型将不能修改，并扣减一次发布额度，请确认后发布?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this._SaveJobOffers()
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消发布'
+
+      if (this.action === 'add') {    //如果是新增，则提示
+        this.$confirm('职位发布后，职位名称和职位类型将不能修改，并扣减一次发布额度，请确认后发布?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this._SaveJobOffers()
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消发布'
+          });
         });
-      });
+      } else {
+        this._SaveJobOffers()
+      }
+
     },
     _SaveJobOffers() {      //保存职位
       let welfare = '';
       if (this.welfare.length > 0) {  //福利待遇
         welfare = this.welfare.join(',')
       }
+      debugger
       let postCitys = '';
       if (this.postCitys.length > 0) {  //地址
         postCitys = this.postCitys.join('-')
@@ -385,6 +453,7 @@ export default {
       let data = {
         positionId: this.positionId,
         action: this.action,//edit=编辑；add=新增
+
         postType: postType,//岗位类型
         jobType: this.jobType,//职位类型（全职，兼职，实习
         postName: this.postName,//岗位名称
@@ -403,7 +472,7 @@ export default {
         latitude: this.center.lat,//纬度
         serviceCode: this.serviceCode == '普通职位' ? 1001 : 1002,//服务编号:1001=普通职位,1002=精品职位
       }
-      if (!this.action || !postType || !this.postName || !this.jobType || !this.hiring || !welfare || !this.payroll || !this.experienceYear || !this.requirements || !this.postPhone || !postCitys || !this.postCity || !this.jobDescription || !this.academicRequirements) {
+      if (!this.action || !postType || !this.postName || !this.jobType || !this.hiring || !welfare || !this.payroll || !this.minPrice || !this.maxPrice || !this.checkPrice || !this.experienceYear || !this.requirements || !this.postPhone || !postCitys || !this.postCity || !this.jobDescription || !this.academicRequirements) {
         this.$message({
           message: '请检查输入信息是否完整~',
           type: 'warning'
@@ -411,9 +480,7 @@ export default {
         return
       }
       SaveJobOffers(data).then(res => {
-        
         if (res.status === Code.SUCCESS_CODE) {
-          this.positionId = res.data.positionId
           this.$message({
             message: '发布成功',
             type: 'success'
@@ -421,9 +488,7 @@ export default {
           this.$router.back()
         } else if (res.status === 1007) {     //职位已经用完了
           console.log(res)
-          
-
-          this.positionId = res.data.positionId
+          this.positionId = res.data?.positionId
           this.$confirm('您的服务余量已经用完，请续费或支付成功后使用此服务哦', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
@@ -456,11 +521,13 @@ export default {
           let { serviceCode, welfare, postType, postName, hiring, experienceYear, jobType,
             postEmail, postPhone, jobDescription, requirements, academicRequirements,
             minPayroll, maxPayroll, payrollUnit, provinceName, cityName, areaName, detailAddress, latitude, longitude } = res.data
+
           if (welfare) {
             this.welfare = welfare.split(',')
           }
           this.serviceCode = serviceCode == '1001' ? '普通职位' : '精品职位'
           this.action = 'edit';
+
           this.postType = postType;
           this.jobType = jobType;
           this.postName = postName;
@@ -528,6 +595,7 @@ export default {
   margin-right: 20px;
   display: flex;
   justify-content: flex-end;
+  color: #666;
 }
 .priceBox {
   display: flex;

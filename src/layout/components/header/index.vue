@@ -3,7 +3,8 @@
     <div class="header_l">
       <a href="javascript:;" class="logoLink">
         <img src="./logo.png" alt="logo" />
-        点金台招聘后台
+        <!-- 点金台招聘后台 -->
+        <img src="./logo-text.png" alt="logo" />
       </a>
     </div>
     <div class="header_r">

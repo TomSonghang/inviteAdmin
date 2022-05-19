@@ -88,10 +88,10 @@
       <div class="resume">
         <div class="resumeTitle">新投递简历({{ newResume.count }})</div>
         <div class="user_list" v-if="newResume.count != 0">
-          <div v-for="(item, index) in newResume.datas" class="userBox">
+          <div v-for="(item, index) in newResume.datas" class="userBox" :key="item.id">
             <div class="u_left">
               <div class="userImg">
-                <!-- <el-image :src="item.headPath" width="42px" height="42px"></el-image> -->
+                <el-image :src="item.headPath" width="42px" height="42px"></el-image>
               </div>
               <div>
                 <p class="userName">{{ item.realName }}</p>
@@ -267,7 +267,7 @@ export default {
     width: 290px;
     .resume {
       box-sizing: border-box;
-      padding: 20px;
+      padding: 20px 20px 20px 20px;
       font-size: 16px;
       background-color: #fff;
       .resumeTitle {
@@ -295,6 +295,10 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 20px;
+    :nth-last-child(1) {
+      margin-bottom: 0px;
+    }
   }
   .u_left {
     display: flex;

@@ -19,219 +19,223 @@ import { Message } from "element-ui";
  */
 
 export const currencyRoutes = [
-  {
-    path: "/login",
-    name: "Login",
-    component: () => import("@/views/login"),
-    meta: { title: "登录页" },
-    hidden: true,
-  },
-  {
-    path: "/404",
-    name: "404",
-    component: () => import("@/views/error-page/404.vue"),
-    hidden: true,
-  },
-  {
-    path: "/",
-    name: "Home",
-    component: Layout,
-    redirect: "/dashbord",
-    children: [
-      {
-        path: "dashbord",
-        name: "Dashbord",
-        component: () => import("@/views/dashboard"),
-        meta: { title: "工作台", icon: "el-icon-s-platform" },
-      },
-    ],
-  },
+         {
+           path: "/login",
+           name: "Login",
+           component: () => import("@/views/login"),
+           meta: { title: "登录页" },
+           hidden: true,
+         },
+         {
+           path: "/404",
+           name: "404",
+           component: () => import("@/views/error-page/404.vue"),
+           hidden: true,
+         },
+         {
+           path: "/",
+           name: "Home",
+           component: Layout,
+           redirect: "/dashbord",
+           children: [
+             {
+               path: "dashbord",
+               name: "Dashbord",
+               component: () => import("@/views/dashboard"),
+               meta: {
+                 title: "工作台",
+                 icon: "el-icon-s-platform",
+                 noCache: true,
+               },
+             },
+           ],
+         },
 
-  {
-    path: "/personal",
-    name: "Personal",
-    component: Layout,
-    redirect: "/personal/index",
-    hidden: true,
-    children: [
-      {
-        path: "index",
-        name: "Personal-index",
-        component: () => import("@/views/personal"),
-        meta: { title: "个人中心" },
-      },
-    ],
-  },
-  {
-    path: "/driver",
-    name: "Driver",
-    component: Layout,
-    redirect: "/driver/index",
-    hidden: true,
-    children: [
-      {
-        path: "index",
-        name: "Driver-index",
-        component: () => import("@/views/driver-page"),
-        meta: { title: "引导指南", icon: "el-icon-s-flag" },
-      },
-    ],
-  },
-  {
-    path: "/position",
-    name: "Position",
-    component: Layout,
-    redirect: "/position/index",
-    children: [
-      {
-        path: "index",
-        name: "Position-index",
-        component: () => import("@/views/positionManagement"),
-        meta: {
-          title: "职位管理",
-          icon: "el-icon-s-cooperation",
-          noCache: true,
-        },
-      },
-    ],
-  },
-  {
-    path: "/resume",
-    name: "Resume",
-    component: Layout,
-    redirect: "/resume/index",
-    children: [
-      {
-        path: "index",
-        name: "Resume-index",
-        component: () => import("@/views/resume"),
-        meta: {
-          title: "简历管理",
-          icon: "el-icon-s-management",
-          noCache: true,
-        },
-      },
-    ],
-  },
-  {
-    path: "/search",
-    name: "Search",
-    component: Layout,
-    redirect: "/search/index",
-    children: [
-      {
-        path: "index",
-        name: "Search-index",
-        component: () => import("@/views/search"),
-        meta: {
-          title: "搜索人才",
-          icon: "el-icon-s-custom",
-          noCache: true,
-        },
-      },
-    ],
-  },
-  {
-    path: "/timeJob",
-    name: "TimeJob",
-    component: Layout,
-    redirect: "/timeJob/index",
-    children: [
-      {
-        path: "index",
-        name: "TimeJob-index",
-        component: () => import("@/views/timeJob"),
-        meta: {
-          title: "兼职炒更",
-          icon: "el-icon-s-marketing",
-          noCache: true,
-        },
-      },
-    ],
-  },
-  {
-    path: "/serve",
-    name: "Serve",
-    component: Layout,
-    redirect: "/serve/index",
-    children: [
-      {
-        path: "index",
-        name: "Serve-index",
-        component: () => import("@/views/serve"),
-        meta: {
-          title: "增值服务",
-          icon: "el-icon-s-goods",
-          noCache: true,
-        },
-      },
-    ],
-  },
+         {
+           path: "/personal",
+           name: "Personal",
+           component: Layout,
+           redirect: "/personal/index",
+           hidden: true,
+           children: [
+             {
+               path: "index",
+               name: "Personal-index",
+               component: () => import("@/views/personal"),
+               meta: { title: "个人中心" },
+             },
+           ],
+         },
+         {
+           path: "/driver",
+           name: "Driver",
+           component: Layout,
+           redirect: "/driver/index",
+           hidden: true,
+           children: [
+             {
+               path: "index",
+               name: "Driver-index",
+               component: () => import("@/views/driver-page"),
+               meta: { title: "引导指南", icon: "el-icon-s-flag" },
+             },
+           ],
+         },
+         {
+           path: "/position",
+           name: "Position",
+           component: Layout,
+           redirect: "/position/index",
+           children: [
+             {
+               path: "index",
+               name: "Position-index",
+               component: () => import("@/views/positionManagement"),
+               meta: {
+                 title: "职位管理",
+                 icon: "el-icon-s-cooperation",
+                 noCache: true,
+               },
+             },
+           ],
+         },
+         {
+           path: "/resume",
+           name: "Resume",
+           component: Layout,
+           redirect: "/resume/index",
+           children: [
+             {
+               path: "index",
+               name: "Resume-index",
+               component: () => import("@/views/resume"),
+               meta: {
+                 title: "简历管理",
+                 icon: "el-icon-s-management",
+                 noCache: true,
+               },
+             },
+           ],
+         },
+         {
+           path: "/search",
+           name: "Search",
+           component: Layout,
+           redirect: "/search/index",
+           children: [
+             {
+               path: "index",
+               name: "Search-index",
+               component: () => import("@/views/search"),
+               meta: {
+                 title: "搜索人才",
+                 icon: "el-icon-s-custom",
+                 noCache: true,
+               },
+             },
+           ],
+         },
+         {
+           path: "/timeJob",
+           name: "TimeJob",
+           component: Layout,
+           redirect: "/timeJob/index",
+           children: [
+             {
+               path: "index",
+               name: "TimeJob-index",
+               component: () => import("@/views/timeJob"),
+               meta: {
+                 title: "兼职炒更",
+                 icon: "el-icon-s-marketing",
+                 noCache: true,
+               },
+             },
+           ],
+         },
+         {
+           path: "/serve",
+           name: "Serve",
+           component: Layout,
+           redirect: "/serve/index",
+           children: [
+             {
+               path: "index",
+               name: "Serve-index",
+               component: () => import("@/views/serve"),
+               meta: {
+                 title: "增值服务",
+                 icon: "el-icon-s-goods",
+                 noCache: true,
+               },
+             },
+           ],
+         },
 
-  {
-    path: "/company",
-    name: "Company",
-    component: Layout,
-    redirect: "/company/index",
-    children: [
-      {
-        path: "index",
-        name: "Company-index",
-        component: () => import("@/views/company"),
-        meta: {
-          title: "公司主页",
-          icon: "el-icon-s-home",
-          noCache: true,
-        },
-      },
-    ],
-  },
-  {
-    path: "/postJob",
-    name: "PostJob",
-    component: Layout,
-    redirect: "/postJob/index",
-    hidden: true,
-    children: [
-      {
-        path: "index",
-        name: "PostJob-index",
-        component: () => import("@/views/postJob"),
-        meta: { title: "发布职位", noCache: true },
-      },
-    ],
-  },
-  {
-    path: "/postTime",
-    name: "PostTime",
-    component: Layout,
-    redirect: "/postTime/index",
-    hidden: true,
-    children: [
-      {
-        path: "index",
-        name: "PostTime-index",
-        component: () => import("@/views/postTime"),
-        meta: { title: "发布兼职" },
-      },
-    ],
-  },
-  {
-    path: "/checkCity",
-    name: "CheckCity",
-    component: Layout,
-    hidden: true,
-    redirect: "/checkCity/index",
-    children: [
-      {
-        path: "index",
-        name: "CheckCity-index",
-        component: () => import("@/views/checkCity"),
-        meta: { title: "选择城市" },
-      },
-    ],
-  },
-];
+         {
+           path: "/company",
+           name: "Company",
+           component: Layout,
+           redirect: "/company/index",
+           children: [
+             {
+               path: "index",
+               name: "Company-index",
+               component: () => import("@/views/company"),
+               meta: {
+                 title: "公司主页",
+                 icon: "el-icon-s-home",
+                 noCache: true,
+               },
+             },
+           ],
+         },
+         {
+           path: "/postJob",
+           name: "PostJob",
+           component: Layout,
+           redirect: "/postJob/index",
+           hidden: true,
+           children: [
+             {
+               path: "index",
+               name: "PostJob-index",
+               component: () => import("@/views/postJob"),
+               meta: { title: "发布职位", noCache: true },
+             },
+           ],
+         },
+         {
+           path: "/postTime",
+           name: "PostTime",
+           component: Layout,
+           redirect: "/postTime/index",
+           hidden: true,
+           children: [
+             {
+               path: "index",
+               name: "PostTime-index",
+               component: () => import("@/views/postTime"),
+               meta: { title: "发布兼职" },
+             },
+           ],
+         },
+         {
+           path: "/checkCity",
+           name: "CheckCity",
+           component: Layout,
+           hidden: true,
+           redirect: "/checkCity/index",
+           children: [
+             {
+               path: "index",
+               name: "CheckCity-index",
+               component: () => import("@/views/checkCity"),
+               meta: { title: "选择城市" },
+             },
+           ],
+         },
+       ];
 
 export const asyncRoutes = [
   {
