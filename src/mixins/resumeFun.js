@@ -230,6 +230,18 @@ export default {
           };
           this.radio = "";
           this.outerVisible = false;
+        } else if (res.status === 1007) {
+          this.$confirm(`您的主动邀请服务余量不足，${res.message}`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(() => {
+              this.$router.push({
+                name: "Serve",
+              });
+            })
+            .catch(() => {});
         } else {
           this.$message({
             message: res.message,
@@ -376,7 +388,6 @@ export default {
       });
     },
     _CollectResume() {
- 
       //收藏
       let data = {
         userId: this.userId,

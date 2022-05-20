@@ -147,9 +147,10 @@
           <div class="d_top_two_sh">
             <div>居住地:{{ detailsData.living }}</div>
             <div class="checkPhone_sh">
+              <!-- -->
               <span
-                v-if="detailsData.mobile == 'none'"
                 @click="checkPhone(detailsData.userId)"
+                v-if="detailsData.mobile == 'none'"
               >点击查看手机号</span>
               <span v-else>{{ detailsData.mobile }}</span>
             </div>
@@ -686,7 +687,7 @@ export default {
 .pointer {
   cursor: pointer;
 }
-.line{
+.line {
   height: 6px;
   background: #f5f5f5;
   margin-bottom: 16px;

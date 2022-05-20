@@ -11,3 +11,9 @@ export function CompanySeeContactWay(data) {
   const url = "/api/Enterprise/CompanySeeContactWay";
   return $axios.get(url, data);
 }
+
+export function GetServiceLevel(data) {
+  //获取服务等级并提示
+  const url = "/api/Enterprise/GetServiceLevel";
+  return $axios.get(url, data);
+}

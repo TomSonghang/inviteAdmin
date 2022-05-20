@@ -1,6 +1,7 @@
 import {
   ResumeUpOrDownDetails,
   CompanySeeContactWay,
+  GetServiceLevel,
 } from "@/api/resumeDetails";
 import { GetPositionDropDownList } from "@/api/resume";
 import Code from "@/api/statusCode";
@@ -58,7 +59,25 @@ export default {
     checkPhone(id) {
       //查看手机号
       this.userId = id;
-      this._CompanySeeContactWay();
+      this._GetServiceLevel();
+    },
+    _GetServiceLevel() {
+      let data = {
+        userId: this.userId,
+      };
+      GetServiceLevel(data).then((res) => {
+        if (res.status === Code.SUCCESS_CODE) {
+          this.$confirm(`${res.data[0].tipText}`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(() => {
+              this._CompanySeeContactWay();
+            })
+            .catch(() => {});
+        }
+      });
     },
     _CompanySeeContactWay() {
       let data = {
@@ -66,8 +85,29 @@ export default {
       };
       CompanySeeContactWay(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
+          this.$message({
+            type: "success",
+            message: "购买成功",
+          });
           this.detailsData.mobile = res.data.phone;
           this.detailsData.realName = res.data.realName;
+        } else if (res.status === 1007) {
+          this.$confirm(`${res.message}`, "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning",
+          })
+            .then(() => {
+              this.$router.push({
+                name: "Serve",
+              });
+            })
+            .catch(() => {});
+        } else {
+          this.$message({
+            type: "warning",
+            message: res.message,
+          });
         }
       });
     },

@@ -141,6 +141,7 @@ export default {
 }
 .todo {
   margin-bottom: 5px;
+  width: 100px;
 }
 .is-bordered {
   margin-left: 0 !important;

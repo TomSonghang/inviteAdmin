@@ -451,7 +451,7 @@ export default {
       }
       this.payroll = `${this.minPrice}-${this.maxPrice}${this.checkPrice}`
       let data = {
-        positionId: this.positionId,
+        positionId: this.action == 'add' ? 0 : this.positionId,
         action: this.action,//edit=编辑；add=新增
 
         postType: postType,//岗位类型

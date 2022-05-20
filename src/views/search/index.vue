@@ -144,10 +144,9 @@
           <!-- <el-button type="primary" v-if="item.isSecrecy" class="companyBg">拨打电话</el-button> -->
           <el-button
             type="primary"
-            :disabled="item.isSecrecy"
             class="companyBg"
             @click="handleView({ id: item.fromUserId, row: item.row })"
-          >{{ item.isSecrecy ? '简历保密' : '查看简历' }}</el-button>
+          >查看简历</el-button>
         </div>
       </div>
 
