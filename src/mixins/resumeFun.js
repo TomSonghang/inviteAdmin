@@ -96,8 +96,14 @@ export default {
       this.innerVisible = true;
     },
 
-    handleInterview(id) {
+    handleInterview(id, postName) {
       //面试
+
+      let post = ""; //因为邀请面试的职位可能已经下线了，不能匹配到select下拉框，所以验证一下，没有就为空
+      this.postTypeArray.forEach((item) => {
+        item.id === postName ? (post = Number(postName)) : "";
+      });
+      this.formInfo.post = post;
       this.userId = id;
       this.outerVisible = true;
       this.interviewTag = 0;
@@ -208,6 +214,7 @@ export default {
           interViewContactPhone = item.interViewContactPhone;
         }
       });
+
       let data = {
         userId: this.userId,
         positionId: this.formInfo.post,
@@ -383,6 +390,7 @@ export default {
             message: "删除成功",
             type: "success",
           });
+          this.radio = "";
           this._GetInterviewerInfo(); //获取面试信息
         }
       });
@@ -435,7 +443,7 @@ export default {
     },
     handleHire(data) {
       //录取
-      debugger;
+
       let { id, statu, positionId } = data;
       this.resumeId = id;
       this.statusStr = statu;
@@ -448,7 +456,7 @@ export default {
         statusStr: this.statusStr,
         positionId: this.positionId,
       };
-      debugger;
+
       HireResume(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.$message({
@@ -465,7 +473,6 @@ export default {
       });
     },
     handleReturn(data) {
-      debugger;
       let { id, statu, positionId } = data;
       this.resumeId = id;
       this.statusStr = statu;

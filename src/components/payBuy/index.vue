@@ -46,6 +46,12 @@
     <!--左侧-->
     <div class="buyR">
       <div class="payWay">
+        <div class="zfbPay wx" :class="zfActive == 'wx' ? 'wxActive' : ''" @click="handleWay('wx')">
+          <div class="zfbImg">
+            <img src="@/assets/images/wxpay.png" />
+          </div>
+          <span>微信支付</span>
+        </div>
         <div
           class="zfbPay zfb"
           :class="zfActive == 'zfb' ? 'zfbActive' : ''"
@@ -55,12 +61,6 @@
             <img src="@/assets/images/zfbpay.png" />
           </div>
           <span>支付宝支付</span>
-        </div>
-        <div class="zfbPay wx" :class="zfActive == 'wx' ? 'wxActive' : ''" @click="handleWay('wx')">
-          <div class="zfbImg">
-            <img src="@/assets/images/wxpay.png" />
-          </div>
-          <span>微信支付</span>
         </div>
         <div
           v-if="type != 4"
@@ -94,10 +94,10 @@
           <div id="qrcode" ref="qrCodeUrl"></div>
         </div>
         <div class="wayDes">
-          <div class="payWabImg">
+          <div class="payWabImg" v-show="zfActive == 'zfb'">
             <img src="@/assets/images/zfbIcon.png" />
           </div>
-          <div class="payWabImg">
+          <div class="payWabImg" v-show="zfActive == 'wx'">
             <img src="@/assets/images/wxIcon.png" />
           </div>
           <span>扫码付款</span>
@@ -130,7 +130,7 @@ export default {
       num: 1,
       moneyOff: 2980,  //实付价格\
       cardData: [], //可用优惠券数据
-      zfActive: 'zfb',
+      zfActive: 'wx',
       codeUrl: "",      //付款码链接
       codeNum: "",   //付款码订单号
       timer: null,       //轮询支付订单
@@ -264,7 +264,7 @@ export default {
             });
             this.clearTimer()    //清除定时器
             this.$emit('closedShow')
-            
+
           } else {
             this.codeUrl = res.data.code_url
             this.codeNum = res.data.out_trade_no

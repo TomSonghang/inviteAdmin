@@ -13,14 +13,14 @@
               v-model="serviceCode"
               placeholder="请选择"
               class="inputWidth"
-              :disabled="action == 'edit' && serviceCode == '精品职位'"
+              :disabled="action == 'edit'"
               @visible-change="handleShoweAction"
               @change="handleChangeAction"
             >
               <el-option v-for="item in postTypeOption" :key="item" :label="item" :value="item"></el-option>
             </el-select>
           </div>
-          <p v-show="action == 'edit' && serviceCode == '精品职位'">精品职位不能转普通职位哦</p>
+         <p v-show="action == 'edit' && serviceCode == '普通职位'">如需转精品可在职位管理列表里操作哦~</p>
         </div>
 
         <div class="itemBox">
@@ -89,7 +89,7 @@
     <!--第二部分-->
     <div class="partTwo">
       <div class="titleBox">
-        <div class="title">其他信息</div>
+        <div class="title">详细信息</div>
         <p class="descript">详细的职位介绍信息能帮助你更快找到合适的候选人</p>
       </div>
       <div class="inputBox">

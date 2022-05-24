@@ -43,14 +43,15 @@
         <div class="itemBox">
           <div class="itemTitle">企业名称</div>
           <div>
-            <el-input v-model="companyName" readonly placeholder="请输入内容" class="inputWidth2"></el-input>
+            <el-input v-model="companyName" :disabled="businessLicenseStatus=='2' || businessLicenseStatus=='1' " placeholder="请输入内容" class="inputWidth3"></el-input>
+            <span class="textTitle">认证通过后企业名称不支持自行更改，如需调整请联系点金台客服</span>
           </div>
         </div>
 
         <div class="itemBox">
           <div class="itemTitle">企业性质</div>
           <div>
-            <el-select v-model="companyType" placeholder="请选择" class="inputWidth">
+            <el-select v-model="companyType" placeholder="请选择" class="inputWidth3">
               <el-option v-for="item in companyTypeOptions" :key="item" :label="item" :value="item"></el-option>
             </el-select>
           </div>
@@ -59,7 +60,7 @@
         <div class="itemBox">
           <div class="itemTitle">企业规模</div>
           <div>
-            <el-select v-model="companySize" placeholder="请选择" class="inputWidth">
+            <el-select v-model="companySize" placeholder="请选择" class="inputWidth3">
               <el-option v-for="item in companySizeOption" :key="item" :label="item" :value="item"></el-option>
             </el-select>
           </div>
@@ -68,28 +69,28 @@
         <div class="itemBox">
           <div class="itemTitle">联系电话</div>
           <div>
-            <el-input v-model="tel" placeholder="请输入内容" class="inputWidth"></el-input>
+            <el-input v-model="tel" placeholder="请输入内容" class="inputWidth3"></el-input>
           </div>
         </div>
 
         <div class="itemBox">
           <div class="itemTitle">企业传真</div>
           <div>
-            <el-input v-model="fax" placeholder="请输入内容" class="inputWidth"></el-input>
+            <el-input v-model="fax" placeholder="请输入内容" class="inputWidth3"></el-input>
           </div>
         </div>
 
         <div class="itemBox">
           <div class="itemTitle">企业网站</div>
           <div>
-            <el-input v-model="website" placeholder="请输入内容" class="inputWidth"></el-input>
+            <el-input v-model="website" placeholder="请输入内容" class="inputWidth3"></el-input>
           </div>
         </div>
 
         <div class="itemBox">
           <div class="itemTitle">企业邮箱</div>
           <div>
-            <el-input v-model="email" placeholder="请输入内容" class="inputWidth"></el-input>
+            <el-input v-model="email" placeholder="请输入内容" class="inputWidth3"></el-input>
           </div>
         </div>
 
@@ -98,7 +99,7 @@
           <div>
             <el-cascader
               v-model="postCitys"
-              class="inputWidth"
+              class="inputWidth3"
               placeholder="省市区，可搜索"
               :options="cityData"
               filterable
@@ -109,7 +110,7 @@
 
         <div class="itemBox">
           <div class="itemTitle">详细地点</div>
-          <div class="inputWidth">
+          <div class="inputWidth3">
             <el-input v-model="postCity" placeholder="详细地点"></el-input>
           </div>
         </div>
@@ -841,7 +842,9 @@ export default {
 .inputWidth2 {
   width: 500px;
 }
-
+.inputWidth3 {
+  width: 320px;
+}
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -875,5 +878,10 @@ export default {
 }
 .mar120 {
   margin-left: 120px;
+}
+.textTitle{
+    margin-left: 10px;
+    color: #999;
+    font-size: 12px;
 }
 </style>

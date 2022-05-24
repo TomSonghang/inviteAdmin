@@ -326,7 +326,7 @@ export default {
   overflow: hidden;
   width: 1200px;
   margin: 0 auto;
-  .el-select .el-input {
+  .input {
     width: 130px;
   }
   .search {

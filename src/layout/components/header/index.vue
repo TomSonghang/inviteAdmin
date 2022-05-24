@@ -4,7 +4,7 @@
       <a href="javascript:;" class="logoLink">
         <img src="./logo.png" alt="logo" />
         <!-- 点金台招聘后台 -->
-        <img src="./logo-text.png" alt="logo" />
+        <img src="./logo-text.png" alt="logo" style="height:22px" />
       </a>
     </div>
     <div class="header_r">

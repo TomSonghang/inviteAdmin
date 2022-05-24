@@ -493,7 +493,7 @@ export default {
         case 1:
           return "提交待审核";
         case 2:
-          return "审合通过";
+          return "审核通过";
         case 3:
           return "招募中";
         case 4:

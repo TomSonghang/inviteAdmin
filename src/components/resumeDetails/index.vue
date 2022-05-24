@@ -1,11 +1,23 @@
 <template>
   <div id="app">
-    <el-dialog width="40%" :title="interviewTag ? '修改面试时间' : '邀请面试'" :visible.sync="outerVisible">
+    <el-dialog
+      width="30%"
+      :title="interviewTag ? '修改面试时间' : '邀请面试'"
+      :visible.sync="outerVisible"
+    >
       <el-form :model="formInfo" class="demo-form-inline">
         <el-form-item label="面试职位">
           <template v-if="!interviewTag">
-            <el-select v-model="formInfo.post" placeholder="选择面试职位" class="inpWidth">
-              <el-option :label="item.postName" :value="item.id" v-for="item in postTypeArray"></el-option>
+            <el-select
+              v-model="formInfo.post"
+              placeholder="选择面试职位"
+              class="inpWidth"
+            >
+              <el-option
+                :label="item.postName"
+                :value="item.id"
+                v-for="item in postTypeArray"
+              ></el-option>
             </el-select>
           </template>
           <template v-else>
@@ -21,12 +33,8 @@
             placeholder="选择日期时间"
           ></el-date-picker>
         </el-form-item>
-        <div class="line"></div>
-        <div class="mianshi">
-          <span>面试信息</span>
-          <p @click="handleInterviewInfo" v-show="!interviewTag">新增面试信息</p>
-        </div>
-        <el-form-item>
+
+        <el-form-item label="面试信息">
           <template v-if="interviewTag">
             <div class="radioBox">
               <span>{{ fixIndoInner.interViewContact }}</span>
@@ -35,14 +43,39 @@
             </div>
           </template>
           <template v-else>
-            <div v-for="item in interviewData" :key="item.id" class="radioBox">
+            <div class="mianshiBox">
+              <el-select v-model="radio" placeholder="请选择" class="inpWidth">
+                <el-option
+                  v-for="item in interviewData"
+                  :label="
+                    item.interViewContact +
+                      ' ' +
+                      item.interViewContactPhone +
+                      ' ' +
+                      item.interViewAddress
+                  "
+                  :value="item.id"
+                >
+                  <span class="spanText">{{ item.interViewContact }}</span>
+                  <span class="spanText">{{ item.interViewContactPhone }}</span>
+                  <span class="spanText">{{ item.interViewAddress }}</span>
+                  <span @click.stop="delCard(item.id)" class="delCard"
+                    >删除</span
+                  >
+                </el-option>
+              </el-select>
+              <p @click="handleInterviewInfo" v-show="!interviewTag">
+                新增
+              </p>
+            </div>
+            <!-- <div v-for="item in interviewData" :key="item.id" class="radioBox">
               <el-radio @change="changeRadio" v-model="radio" :label="item.id" border>
                 <span>{{ item.interViewContact }}</span>
                 <span>{{ item.interViewContactPhone }}</span>
                 <span>{{ item.interViewAddress }}</span>
               </el-radio>
               <span @click="delCard(item.id)" class="delCard">删除</span>
-            </div>
+            </div> -->
           </template>
         </el-form-item>
         <el-button
@@ -50,11 +83,23 @@
           type="primary"
           class="companyBg"
           @click="handleChangeTime"
-        >确定修改</el-button>
-        <el-button v-else type="primary" class="companyBg" @click="handleInvited">确定邀请</el-button>
+          >确定修改</el-button
+        >
+        <el-button
+          v-else
+          type="primary"
+          class="companyBg mar70"
+          @click="handleInvited"
+          >确定邀请</el-button
+        >
       </el-form>
 
-      <el-dialog width="30%" title="新增面试信息" :visible.sync="innerVisible" append-to-body>
+      <el-dialog
+        width="30%"
+        title="新增面试信息"
+        :visible.sync="innerVisible"
+        append-to-body
+      >
         <el-form
           :model="formInfoInner"
           class="demo-form-inline"
@@ -62,22 +107,39 @@
           ref="formInfoInner"
         >
           <el-form-item label="联系人" prop="interViewContact">
-            <el-input v-model="formInfoInner.interViewContact" placeholder="请输入联系人"></el-input>
+            <el-input
+              v-model="formInfoInner.interViewContact"
+              placeholder="请输入联系人"
+            ></el-input>
           </el-form-item>
-          <el-form-item label="联系方式" prop="interViewContactPhone">
-            <el-input v-model="formInfoInner.interViewContactPhone" placeholder="请输入联系方式"></el-input>
+          <el-form-item label="联系手机" prop="interViewContactPhone">
+            <el-input
+              v-model="formInfoInner.interViewContactPhone"
+              type="number"
+              placeholder="请输入手机号"
+            ></el-input>
           </el-form-item>
           <el-form-item label="联系地址" prop="interViewAddress">
-            <el-input v-model="formInfoInner.interViewAddress" placeholder="请输入地址"></el-input>
+            <el-input
+              v-model="formInfoInner.interViewAddress"
+              placeholder="请输入联系地址"
+            ></el-input>
           </el-form-item>
-          <el-button type="primary" class="companyBg" @click="handleTrue">确定</el-button>
+          <el-button type="primary" class="companyBg" @click="handleTrue"
+            >确定</el-button
+          >
         </el-form>
       </el-dialog>
     </el-dialog>
 
     <!--邀请面试-->
     <el-dialog title="举报" :visible.sync="reportVisible">
-      <el-form :model="reportInfo" class="demo-form-inline" :rules="rulesReport" ref="reportInfo">
+      <el-form
+        :model="reportInfo"
+        class="demo-form-inline"
+        :rules="rulesReport"
+        ref="reportInfo"
+      >
         <el-form-item label="举报项目">
           <ul class="reportItem">
             <li
@@ -85,14 +147,21 @@
               v-for="(item, index) in feedBackData"
               :key="item.id"
               :class="active == index ? 'active' : ''"
-            >{{ item.content }}</li>
+            >
+              {{ item.content }}
+            </li>
           </ul>
         </el-form-item>
         <el-form-item label="举报内容" prop="value">
-          <el-input v-model="reportInfo.value" placeholder="请输入内容"></el-input>
+          <el-input
+            v-model="reportInfo.value"
+            placeholder="请输入内容"
+          ></el-input>
         </el-form-item>
       </el-form>
-      <el-button type="primary" class="companyBg" @click="handleReportTure">确定</el-button>
+      <el-button type="primary" class="companyBg" @click="handleReportTure"
+        >确定</el-button
+      >
     </el-dialog>
     <!--举报-->
     <el-dialog title="提示" :visible.sync="dialogVisible" width="30%">
@@ -123,186 +192,303 @@
       id="details_wrap"
       v-show="maskClose"
       :style="{
-        height: screenHeight + 'px'
+        height: screenHeight + 'px',
       }"
     >
-      <div class="d_top_wrap_sh">
-        <div class="d_img_box_sh">
-          <img :src="detailsData.headPath" alt="头像" class="img_box_sh" />
-          <img
-            src="@/assets/images/auth_icon.png"
-            class="auth_img_sh"
-            alt="认证"
-            v-show="detailsData.isAuthenticate"
-          />
-        </div>
-        <!--头部左-->
-        <div class="d_main_box_sh">
-          <div class="d_top_one_sh">
-            <div class="name_sex_age_sh">
-              <span class="name_sh">{{ detailsData.realName }}</span>
+      <div class="mainLeft">
+        <div class="d_top_wrap_sh">
+          <div class="d_img_box_sh">
+            <img :src="detailsData.headPath" alt="头像" class="img_box_sh" />
+            <img
+              src="@/assets/images/auth_icon.png"
+              class="auth_img_sh"
+              alt="认证"
+              v-show="detailsData.isAuthenticate"
+            />
+          </div>
+          <!--头部左-->
+          <div class="d_main_box_sh">
+            <div class="d_top_one_sh">
+              <div class="name_sex_age_sh">
+                <span class="name_sh">{{ detailsData.realName }}</span>
+              </div>
+              <div class="last_time_sh">
+                更新时间: {{ detailsData.modifyTime }}
+              </div>
             </div>
-            <div class="last_time_sh">更新时间: {{ detailsData.modifyTime }}</div>
+            <div class="d_top_two_sh">
+              <div>居住地:{{ detailsData.living }}</div>
+              <div class="checkPhone_sh">
+                <!-- -->
+                <span
+                  @click="checkPhone(detailsData.userId)"
+                  v-if="detailsData.mobile == 'none'"
+                  >点击查看手机号</span
+                >
+                <span v-else>{{ detailsData.mobile }}</span>
+              </div>
+            </div>
+            <div class="d_top_three_sh">
+              <div>
+                籍贯: {{ detailsData.nativeLand }} | {{ detailsData.age }} |
+                经验: {{ detailsData.workYears }} | 学历:
+                {{ detailsData.educationalBackground }} | 婚姻:
+                {{ detailsData.maritalStatus }}
+              </div>
+            </div>
+            <div class="d_top_four_sh">{{ detailsData.signature }}</div>
           </div>
-          <div class="d_top_two_sh">
-            <div>居住地:{{ detailsData.living }}</div>
-            <div class="checkPhone_sh">
-              <!-- -->
-              <span
-                @click="checkPhone(detailsData.userId)"
-                v-if="detailsData.mobile == 'none'"
-              >点击查看手机号</span>
-              <span v-else>{{ detailsData.mobile }}</span>
+          <!--头部右-->
+        </div>
+        <!--头部结束-->
+        <div class="second_wrap_sh">
+          <div class="d_qz_wrap_sh">
+            <div class="title_wrap_sh">
+              <div class="title_line_sh"></div>
+              <span>求职意向</span>
+            </div>
+            <div class="yx_item_sh">
+              <p>
+                意向职位:
+                <span>{{ detailsData.postName }}</span>
+              </p>
+              <p>
+                工作类型:
+                <span>{{ detailsData.jobType }}</span>
+              </p>
+              <p>
+                意向地区:
+                <span>{{ detailsData.area }}</span>
+              </p>
+              <p>
+                期望薪资:
+                <span>{{ detailsData.salary }}</span>
+              </p>
+              <p>
+                到岗时间:
+                <span>{{ detailsData.dutyTime }}</span>
+              </p>
             </div>
           </div>
-          <div class="d_top_three_sh">
-            <div>籍贯: {{ detailsData.nativeLand }} | {{ detailsData.age }} | 经验: {{ detailsData.workYears }} | 学历: {{ detailsData.educationalBackground }} | 婚姻: {{ detailsData.maritalStatus }}</div>
+          <!--求职结束-->
+          <div class="d_js_wrap_sh" v-if="detailsData.selfIntroduction">
+            <div class="title_wrap_sh">
+              <div class="title_line_sh"></div>
+              <span>自我介绍</span>
+            </div>
+            <div class="zw_description_sh">
+              {{ detailsData.selfIntroduction }}
+            </div>
           </div>
-          <div class="d_top_four_sh">{{ detailsData.signature }}</div>
+          <!--自我介绍结束-->
+          <div
+            class="d_jl_wrap_sh"
+            v-if="
+              detailsData.workExperiencelist &&
+                detailsData.workExperiencelist.length > 0
+            "
+          >
+            <div class="title_wrap_sh">
+              <div class="title_line_sh"></div>
+              <span>工作经历</span>
+            </div>
+            <div
+              class="jl_wrap_sh"
+              v-for="item in detailsData.workExperiencelist"
+            >
+              <div class="jl_top_sh">
+                <div class="gszw_sh">
+                  {{ item.experienceCompany }} - {{ item.position }}
+                </div>
+                <div class="gztime_sh">{{ item.time }}</div>
+              </div>
+              <div class="zwjs_sh">{{ item.position }}</div>
+            </div>
+          </div>
+          <!--工作经历结束-->
+          <div
+            class="d_jl_wrap_sh"
+            v-if="
+              detailsData.educationInfo && detailsData.educationInfo.length > 0
+            "
+          >
+            <div class="title_wrap_sh">
+              <div class="title_line_sh"></div>
+              <span>教育经历</span>
+            </div>
+            <div class="jl_wrap_sh" v-for="item in detailsData.educationInfo">
+              <div class="jl_top_sh">
+                <div class="gszw_sh">{{ item.educationalInstitutions }}</div>
+                <div class="gztime_sh">{{ item.time }}</div>
+              </div>
+              <div class="zwjs_sh">{{ item.specialty }}</div>
+            </div>
+          </div>
+          <!--教育经历结束-->
         </div>
-        <!--头部右-->
       </div>
-      <!--头部结束-->
-      <div class="second_wrap_sh">
-        <div class="d_qz_wrap_sh">
-          <div class="title_wrap_sh">
-            <div class="title_line_sh"></div>
-            <span>求职意向</span>
-          </div>
-          <div class="yx_item_sh">
-            <p>
-              意向职位:
-              <span>{{ detailsData.postName }}</span>
-            </p>
-            <p>
-              工作类型:
-              <span>{{ detailsData.jobType }}</span>
-            </p>
-            <p>
-              意向地区:
-              <span>{{ detailsData.area }}</span>
-            </p>
-            <p>
-              期望薪资:
-              <span>{{ detailsData.salary }}</span>
-            </p>
-            <p>
-              到岗时间:
-              <span>{{ detailsData.dutyTime }}</span>
-            </p>
-          </div>
-        </div>
-        <!--求职结束-->
-        <div class="d_js_wrap_sh" v-if="detailsData.selfIntroduction">
-          <div class="title_wrap_sh">
-            <div class="title_line_sh"></div>
-            <span>自我介绍</span>
-          </div>
-          <div class="zw_description_sh">{{ detailsData.selfIntroduction }}</div>
-        </div>
-        <!--自我介绍结束-->
-        <div
-          class="d_jl_wrap_sh"
-          v-if="detailsData.workExperiencelist && detailsData.workExperiencelist.length > 0"
-        >
-          <div class="title_wrap_sh">
-            <div class="title_line_sh"></div>
-            <span>工作经历</span>
-          </div>
-          <div class="jl_wrap_sh" v-for="item in detailsData.workExperiencelist">
-            <div class="jl_top_sh">
-              <div class="gszw_sh">{{ item.experienceCompany }} - {{ item.position }}</div>
-              <div class="gztime_sh">{{ item.time }}</div>
+      <div class="mainRight">
+        <div class="btnsWrap">
+          <div class="otherBtns">
+            <div
+              class="btnItem"
+              @click="handleMore({ title: '举报', id: detailsData.userId })"
+            >
+              <i class="el-icon-warning"></i>
+              <span>举报</span>
             </div>
-            <div class="zwjs_sh">{{ item.position }}</div>
-          </div>
-        </div>
-        <!--工作经历结束-->
-        <div
-          class="d_jl_wrap_sh"
-          v-if="detailsData.educationInfo && detailsData.educationInfo.length > 0"
-        >
-          <div class="title_wrap_sh">
-            <div class="title_line_sh"></div>
-            <span>教育经历</span>
-          </div>
-          <div class="jl_wrap_sh" v-for="item in detailsData.educationInfo">
-            <div class="jl_top_sh">
-              <div class="gszw_sh">{{ item.educationalInstitutions }}</div>
-              <div class="gztime_sh">{{ item.time }}</div>
+            <div
+              class="btnItem"
+              v-show="type == 1"
+              @click="
+                handleMore({
+                  title: '不合适',
+                  id: detailsData.resumeId,
+                  statu: '',
+                  positionId: detailsData.positionId,
+                })
+              "
+            >
+              <i class="el-icon-remove"></i>
+              <span>不合适</span>
             </div>
-            <div class="zwjs_sh">{{ item.specialty }}</div>
+            <div
+              class="btnItem"
+              v-if="detailsData.isCollection === 0"
+              @click="handleMore({ title: '收藏', id: detailsData.userId })"
+            >
+              <i class="el-icon-star-off" style='font-size:20px'></i>
+              <span>未收藏</span>
+            </div>
+            <div
+              class="btnItem"
+              v-else
+              @click="handleMore({ title: '取消收藏', id: detailsData.userId })"
+            >
+              <i class="el-icon-star-on" style='font-size:20px'></i>
+              <span>已收藏</span>
+            </div>
+          </div>
+          <div class="mainBtns">
+            <div class="longBtn" @click="handleInterview(detailsData.userId)">
+              <el-button type="primary" class="btnsStyle">邀请面试</el-button>
+            </div>
+            <div
+              class="longBtn"
+              v-show="detailsData.status == 4 && type == 1"
+              @click="
+                handleMore({ title: '修改面试时间', id: detailsData.resumeId })
+              "
+            >
+              <el-button plain class="btnsStyles">修改面试时间</el-button>
+            </div>
+            <div
+              class="longBtn"
+              @click="checkPhone(detailsData.userId)"
+              v-if="detailsData.mobile == 'none'"
+            >
+              <el-button plain class="btnsStyles">查看手机号</el-button>
+            </div>
           </div>
         </div>
-        <!--教育经历结束-->
       </div>
-      <div class="btns_bottom_sh">
+      <!-- 
+        v-if="detailsData.mobile == 'none'"
+        <div class="btns_bottom_sh">
         <div class="auto_btns_box">
           <ul class="btns_left_sh ul_sh">
-            <li class="btns_sh" @click="handleMore({ title: '举报', id: detailsData.userId })">举报</li>
+            <li
+              class="btns_sh"
+              @click="handleMore({ title: '举报', id: detailsData.userId })"
+            >
+              举报
+            </li>
             <li
               v-show="type == 1"
               class="btns_sh"
-              @click="handleMore({ title: '不合适', id: detailsData.resumeId, statu: '', positionId: detailsData.positionId })"
-            >不合适</li>
+              @click="
+                handleMore({
+                  title: '不合适',
+                  id: detailsData.resumeId,
+                  statu: '',
+                  positionId: detailsData.positionId,
+                })
+              "
+            >
+              不合适
+            </li>
             <li
               class="btns_sh"
               v-if="detailsData.isCollection === 0"
               @click="handleMore({ title: '收藏', id: detailsData.userId })"
-            >收藏</li>
+            >
+              收藏
+            </li>
             <li
               class="btns_sh"
               v-else
               @click="handleMore({ title: '取消收藏', id: detailsData.userId })"
-            >取消收藏</li>
+            >
+              取消收藏
+            </li>
             <li
               class="btns_sh"
               v-show="detailsData.status == 4 && type == 1"
-              @click="handleMore({ title: '修改面试时间', id: detailsData.resumeId })"
-            >修改面试时间</li>
+              @click="
+                handleMore({ title: '修改面试时间', id: detailsData.resumeId })
+              "
+            >
+              修改面试时间
+            </li>
           </ul>
           <ul class="btns_right_sh ul_sh">
             <li
               class="btns_sh"
               @click="checkPhone(detailsData.userId)"
               v-if="detailsData.mobile == 'none'"
-            >查看手机号</li>
-            <li class="btns_sh active_sh" @click="handleInterview(detailsData.userId)">邀请面试</li>
+            >
+              查看手机号
+            </li>
+            <li
+              class="btns_sh active_sh"
+              @click="handleInterview(detailsData.userId)"
+            >
+              邀请面试
+            </li>
           </ul>
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
 <script>
-import resumeDet from '@/mixins/resumeDetails'
-import resumeFun from '@/mixins/resumeFun'
+import resumeDet from "@/mixins/resumeDetails";
+import resumeFun from "@/mixins/resumeFun";
 export default {
   name: "ResumeDetail",
   data() {
     return {
-
-
       height: null,
       screenHeight: null,
-    }
+    };
   },
   mixins: [resumeDet, resumeFun],
   props: {
     maskClose: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    type: {    //1：简历管理 2：人才搜索
+    type: {
+      //1：简历管理 2：人才搜索
       type: Number,
-      default: 1
+      default: 1,
     },
     detailsData: {
       type: Object,
       default: () => {
-        return {}
-      }
-    }
+        return {};
+      },
+    },
   },
   mounted() {
     // 在调用显示层时加上这句js代码就可以了：
@@ -314,25 +500,23 @@ export default {
   },
 
   methods: {
-
     closeMask() {
       document.documentElement.style.overflow = "scroll";
-      this.$emit('closedView')
+      this.$emit("closedView");
     },
     handleNextPrv(flag) {
-      this.$emit('nextPrv', flag)
-
+      this.$emit("nextPrv", flag);
     },
-    he() { }
+    he() {},
   },
-}
+};
 </script>
 <style scoped lang="less">
 #app {
   position: relative;
 }
 .inpWidth {
-  width: 250px;
+  width: 420px;
 }
 .mask_sh {
   width: 100%;
@@ -348,7 +532,7 @@ export default {
   width: 44px;
   height: 44px;
   position: absolute;
-  right: 250px;
+  right: 150px;
   top: 100px;
   z-index: 1;
   cursor: pointer;
@@ -358,7 +542,7 @@ export default {
   width: 28px;
   height: 54px;
   position: absolute;
-  left: 250px;
+  left: 350px;
   top: 40%;
   z-index: 1;
   cursor: pointer;
@@ -368,7 +552,7 @@ export default {
   width: 28px;
   height: 54px;
   position: absolute;
-  right: 250px;
+  right: 150px;
   top: 40%;
   z-index: 1;
   cursor: pointer;
@@ -379,12 +563,14 @@ export default {
   background: #fff;
   box-shadow: 0 0 20px #333;
   border-radius: 10px;
-  width: 910px;
+  width: 1100px;
   z-index: 100;
   left: 50%;
   top: 100px;
   margin-left: -460px;
-  overflow-y: auto;
+  // overflow-y: auto;
+  display: flex;
+  justify-content: space-between;
 }
 
 .details_wrap::-webkit-scrollbar {
@@ -392,10 +578,9 @@ export default {
 }
 
 .d_top_wrap_sh {
-  padding: 37px 50px 30px;
+  padding: 30px;
   background-color: #f1f1f1;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+
   display: flex;
   align-items: center;
 }
@@ -496,7 +681,7 @@ export default {
 }
 
 .second_wrap_sh {
-  padding: 0 50px 100px;
+  padding: 0 30px 30px;
 }
 
 .d_qz_wrap_sh {
@@ -675,14 +860,18 @@ export default {
 .radioBox {
   margin-bottom: 10px;
   display: flex;
+    flex-wrap: wrap;
   align-items: center;
   span {
-    margin-right: 30px;
+    margin-right: 10px;
   }
 }
 .delCard {
+  font-size: 12px;
   color: #13b5b1;
   cursor: pointer;
+  float: right;
+  margin-left: 20px;
 }
 .pointer {
   cursor: pointer;
@@ -691,5 +880,70 @@ export default {
   height: 6px;
   background: #f5f5f5;
   margin-bottom: 16px;
+}
+.mianshiBox {
+  display: flex;
+  align-items: center;
+  p {
+    cursor: pointer;
+    margin-left: 10px;
+    color: #13b5b1;
+  }
+}
+.mar70 {
+  margin-left: 68px;
+}
+.mainLeft {
+  flex-basis: 700px;
+  overflow-y: auto;
+  border-top-left-radius: 10px;
+}
+.mainRight {
+  flex: 1;
+  background-color: #f6fafa;
+  border-top-right-radius: 10px;
+}
+.btnsWrap {
+  width: 90%;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: #fff;
+  box-sizing: border-box;
+}
+.otherBtns {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom:20px;
+}
+.btnItem {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+ color: #999;
+ cursor: pointer;
+  span {
+    font-size: 14px;
+    color: #666;
+    padding-top: 10px;
+    
+  }
+}
+.mainBtns {
+  margin-top: 20px;
+}
+.longBtn {
+  margin-bottom: 10px;
+}
+.btnsStyle {
+  background-color: #13b5b1;
+  width: 100%;
+  border: 1px solid #13b5b1;
+}
+.btnsStyles {
+  width: 100%;
+  border: 1px solid #13b5b1;
+  color: #13b5b1;
 }
 </style>
