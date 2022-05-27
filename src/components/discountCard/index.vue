@@ -3,32 +3,36 @@
     <div class="p_top">
       <div class="cardNum">
         <div class="priceMain">
-          <span
-            class="saleNum"
-          >{{ cardData.ticketType == '2' ? cardData.discount : cardData.reduceRMB }}</span>
-          <span class="saleUnit">{{ cardData.ticketType == '2' ? '折' : '元' }}</span>
+          <span class="saleNum">{{
+            cardData.ticketType == "2" ? cardData.discount : cardData.reduceRMB
+          }}</span>
+          <span class="saleUnit">{{
+            cardData.ticketType == "2" ? "折" : "元"
+          }}</span>
         </div>
-        <div
-          class="priceType"
-        >{{ cardData.ticketCodeName }}/{{ cardData.ticketType == '2' ? '折扣券' : '满减券' }}</div>
+        <div class="priceType">满{{ cardData.moneyOff }}元可用</div>
       </div>
-      <div class="condition">满{{ cardData.moneyOff }}元可用</div>
+      <div class="condition">
+        {{ cardData.ticketCodeName }}/{{
+          cardData.ticketType == "2" ? "折扣券" : "满减券"
+        }}
+      </div>
     </div>
     <div class="endTime">有效期至: {{ cardData.expiryDate }}</div>
   </div>
 </template>
 <script>
 export default {
-  name: 'Cardyh',
+  name: "Cardyh",
   props: {
     cardData: {
       type: Object,
-      default: function () {
-        return {}
-      }
-    }
-  }
-}
+      default: function() {
+        return {};
+      },
+    },
+  },
+};
 </script>
 <style scoped lang="less">
 .priceCard {
@@ -70,6 +74,12 @@ export default {
     .condition {
       font-size: 14px;
       padding-top: 12px;
+      width: 100%;
+      //注意点：一定要设置width
+     
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   .endTime {

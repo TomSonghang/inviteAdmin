@@ -32,7 +32,7 @@
             style="width: 100%"
             stripe
           >
-            <el-table-column align="center" prop="postName">
+            <el-table-column align="center" prop="postName" width="250px">
               <template slot="header">
                 <div @click="handleOpen(0)" class="cursor">
                   <p class="table-name">在招岗位</p>

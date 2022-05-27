@@ -54,6 +54,7 @@ import {
   Rate,
   Checkbox,
   checkboxGroup,
+  Loading,
 } from "element-ui";
 
 Message.install = () => {
@@ -120,3 +121,5 @@ Vue.use(Switch);
 Vue.use(Rate);
 Vue.use(Checkbox);
 Vue.use(checkboxGroup);
+
+Vue.use(Loading.directive);

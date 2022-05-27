@@ -45,10 +45,12 @@ export default {
     };
   },
   mounted() {
+
     this._GetPositionDropDownList(); //发布的职位列表
   },
   methods: {
     _GetPositionDropDownList() {
+      
       //筛选职位
       GetPositionDropDownList({}).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {

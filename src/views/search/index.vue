@@ -25,13 +25,20 @@
         >
           <!--prepend-->
         </el-input>
-        <el-button icon="el-icon-search" class="companyBg" type="primary" @click="confirmSearch"></el-button>
+        <el-button
+          icon="el-icon-search"
+          class="companyBg"
+          type="primary"
+          @click="confirmSearch"
+        ></el-button>
       </div>
     </div>
     <div class="recommend">
       <span>推荐</span>
       <ul class="hotPosition" @click="handleCheckItem">
-        <li v-for="item in popularPosition" :key="item.id">{{ item.postName }}</li>
+        <li v-for="item in popularPosition" :key="item.id">
+          {{ item.postName }}
+        </li>
       </ul>
     </div>
 
@@ -39,8 +46,18 @@
       <div class="selectBox">
         <div class="checkItem">
           <span class="labelTitle">工作经验</span>
-          <el-select v-model="workYears" placeholder="不限" class="input" @change="handleChange1">
-            <el-option v-for="item in fixExperienceYea" :key="item" :label="item" :value="item"></el-option>
+          <el-select
+            v-model="workYears"
+            placeholder="不限"
+            class="input"
+            @change="handleChange1"
+          >
+            <el-option
+              v-for="item in fixExperienceYea"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
           </el-select>
         </div>
 
@@ -63,15 +80,35 @@
 
         <div class="checkItem">
           <span class="labelTitle">工作类型</span>
-          <el-select v-model="jobType" placeholder="不限" class="input" @change="handleChange3">
-            <el-option v-for="item in fixWorkType" :key="item" :label="item" :value="item"></el-option>
+          <el-select
+            v-model="jobType"
+            placeholder="不限"
+            class="input"
+            @change="handleChange3"
+          >
+            <el-option
+              v-for="item in fixWorkType"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
           </el-select>
         </div>
 
         <div class="checkItem">
           <span class="labelTitle">性别</span>
-          <el-select v-model="gender" placeholder="不限" class="input" @change="handleChange4">
-            <el-option v-for="item in genders" :key="item" :label="item" :value="item"></el-option>
+          <el-select
+            v-model="gender"
+            placeholder="不限"
+            class="input"
+            @change="handleChange4"
+          >
+            <el-option
+              v-for="item in genders"
+              :key="item"
+              :label="item"
+              :value="item"
+            ></el-option>
           </el-select>
         </div>
       </div>
@@ -80,13 +117,22 @@
         <div class="btn" :class="active === '2' ? 'active' : ''">时间</div>
       </div>
     </div>
-    <div class="table">
+    <div class="table" v-loading="loading">
       <div class="listWrap" v-for="item in tableData" :key="item.fromUserId">
         <div class="imgBox">
           <div class="imgUrl">
-            <img src="@/assets/images/boy.png" class="gander" v-if="item.gender == '1'" />
+            <img
+              src="@/assets/images/boy.png"
+              class="gander"
+              v-if="item.gender == '1'"
+            />
             <img src="@/assets/images/girl.png" class="gander" v-else />
-            <el-image :src="item.headPortraitPath" height="46px" width="46px" class="imgPath"></el-image>
+            <el-image
+              :src="item.headPortraitPath"
+              height="46px"
+              width="46px"
+              class="imgPath"
+            ></el-image>
           </div>
           <div class="payment">{{ item.salary }}</div>
         </div>
@@ -100,7 +146,9 @@
           <div class="baseInfo">
             <span v-show="item.age">{{ item.age }}</span>
             <span v-show="item.workYears">{{ item.workYears }}</span>
-            <span v-show="item.educationalBackground">{{ item.educationalBackground }}</span>
+            <span v-show="item.educationalBackground">{{
+              item.educationalBackground
+            }}</span>
             <span v-show="item.maritalStatus">{{ item.maritalStatus }}</span>
             <span v-show="item.nativeLand">{{ item.nativeLand }}</span>
           </div>
@@ -146,7 +194,8 @@
             type="primary"
             class="companyBg"
             @click="handleView({ id: item.fromUserId, row: item.row })"
-          >查看简历</el-button>
+            >查看简历</el-button
+          >
         </div>
       </div>
 
@@ -169,158 +218,164 @@
   </div>
 </template>
 
-
 <script>
-
 import Code from "@/api/statusCode";
-import fixData from '@/mixins/getfixData'
-import details from '@/mixins/resumeDetails'
-import { ResumeSearch } from '@/api/search'
+import fixData from "@/mixins/getfixData";
+import details from "@/mixins/resumeDetails";
+import { ResumeSearch } from "@/api/search";
 
-import resumeDetails from '@/components/resumeDetails'
+import resumeDetails from "@/components/resumeDetails";
 export default {
   name: "Search",
   data() {
     return {
+      loading: true,
+      value: "",
 
-      value: '',
+      searchType: 2, //(1简历搜索，2人才搜索)
+      type: 2, //1：表示简历管理的面试邀请 2：表示海量搜索简历的面试邀请
 
-      searchType: 2,   //(1简历搜索，2人才搜索)
-      type: 2,//1：表示简历管理的面试邀请 2：表示海量搜索简历的面试邀请
-
-      orderby: "ModiDateTime",  //排序规则
+      orderby: "ModiDateTime", //排序规则
 
       pageNo: 1,
       cityName: "全国",
 
       tableData: [],
       total: 0,
-      popularPosition: [],  //推荐职位
-      genders: [
-        '不限', '男', '女'
-      ],
-      active: '1',
-
-    }
+      popularPosition: [], //推荐职位
+      genders: ["不限", "男", "女"],
+      active: "1",
+    };
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.cityName = to.query.name || '全国'
-      vm._ResumeSearch()
-    })
+    next((vm) => {
+      vm.cityName = to.query.name || "全国";
+      vm._ResumeSearch();
+    });
   },
   mounted() {
-    this._ResumeSearch();
+    // this._ResumeSearch();
   },
   computed: {
     postArray() {
-      let data = JSON.stringify(this.fixJobtypeList)
-      data = data.replace(/name/g, 'label').replace(/dataId/g, 'value').replace(/jobtype/g, 'children')
-      return JSON.parse(data)
-    }
+      let data = JSON.stringify(this.fixJobtypeList);
+      data = data
+        .replace(/name/g, "label")
+        .replace(/dataId/g, "value")
+        .replace(/jobtype/g, "children");
+      return JSON.parse(data);
+    },
   },
   mixins: [fixData, details],
   components: {
-    resumeDetails
+    resumeDetails,
   },
   methods: {
-
     closedView() {
       //详情关闭
-      this.show = false
-      this._ResumeSearch()
+      this.show = false;
+      //this._ResumeSearch()
     },
 
-    checkCity() {    //选择城市
-      this.$router.push({ name: "CheckCity" })
+    checkCity() {
+      //选择城市
+      this.$router.push({ name: "CheckCity" });
     },
-    handlePage(e) {   //分页
+    handlePage(e) {
+      //分页
       this.pageNo = e;
       this._ResumeSearch(true);
     },
-    clearSearch() {   //清空搜索
-      this._ResumeSearch()
+    clearSearch() {
+      //清空搜索
+      this._ResumeSearch();
     },
-    confirmSearch() {     //确认搜索
-      this._ResumeSearch()
+    confirmSearch() {
+      //确认搜索
+      this._ResumeSearch();
     },
-    handleCheckItem(e) {  //点击了推荐职位
+    handleCheckItem(e) {
+      //点击了推荐职位
       this.key = e.target.innerText;
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
 
-    handleChange(value) {     //职位分类
-      let val = ''
+    handleChange(value) {
+      //职位分类
+      let val = "";
       for (let i = 0; i < this.postArray.length; i++) {
         if (this.postArray[i].value == value[0]) {
           for (let j = 0; j < this.postArray[i].children.length; j++) {
             if (this.postArray[i].children[j].value === value[1]) {
-              val = this.postArray[i].children[j].label
+              val = this.postArray[i].children[j].label;
               break;
             }
           }
         }
       }
       this.postType = val;
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
-    handleChange1(value) {  //工作经验
+    handleChange1(value) {
+      //工作经验
       this.workYears = value;
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
-    handleChange2(value) {  //学历要求
+    handleChange2(value) {
+      //学历要求
       this.educationalBackground = value;
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
-    handleChange3(value) {  //工作类型
+    handleChange3(value) {
+      //工作类型
       this.jobType = value;
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
-    handleChange4(value) {  //性别
+    handleChange4(value) {
+      //性别
       this.gender = value;
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
-    handleFilter(e) {     //默认和时间筛选
-      if (e.target.innerText == '时间') {
-        this.active = '2'
-        this.orderby = 'CreateDateTime'
+    handleFilter(e) {
+      //默认和时间筛选
+      if (e.target.innerText == "时间") {
+        this.active = "2";
+        this.orderby = "CreateDateTime";
       } else {
-        this.active = '1'
-        this.orderby = 'ModiDateTime'
+        this.active = "1";
+        this.orderby = "ModiDateTime";
       }
-      this._ResumeSearch()
+      this._ResumeSearch();
     },
     _ResumeSearch(reset) {
       let data = {
         key: this.key,
         gender: this.gender,
-        educationalBackground: this.educationalBackground == '不限' ? "" : this.educationalBackground,
-        workYears: this.workYears == '不限' ? "" : this.workYears,
-        jobType: this.jobType == '不限' ? "" : this.jobType,
+        educationalBackground:
+          this.educationalBackground == "不限"
+            ? ""
+            : this.educationalBackground,
+        workYears: this.workYears == "不限" ? "" : this.workYears,
+        jobType: this.jobType == "不限" ? "" : this.jobType,
         orderby: this.orderby,
         postType: this.postType,
         pageNo: reset ? this.pageNo : 1,
-        cityName: this.cityName == '全国' ? '' : this.cityName,
-      }
-      ResumeSearch(data).then(res => {
+        cityName: this.cityName == "全国" ? "" : this.cityName,
+      };
+      ResumeSearch(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.tableData = res.data.datas;
           this.total = res.data.totalCount;
           this.popularPosition = res.data.popularPosition;
+          this.loading = false;
         }
-      })
+      });
     },
-
-
   },
-
-
-}
-
+};
 </script>
 
-
-<style lang="less" >
+<style lang="less">
 @padBot: 8px;
 .contextWrapCope {
   overflow: hidden;

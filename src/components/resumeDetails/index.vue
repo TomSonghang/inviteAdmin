@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-dialog
-      width="30%"
+      width="32%"
       :title="interviewTag ? '修改面试时间' : '邀请面试'"
       :visible.sync="outerVisible"
     >
@@ -205,6 +205,12 @@
               alt="认证"
               v-show="detailsData.isAuthenticate"
             />
+            <img
+              src="@/assets/images/boy.png"
+              class="gander_img_sh"
+              v-if="detailsData.sex == '男'"
+            />
+            <img src="@/assets/images/girl.png" class="gander_img_sh" v-else />
           </div>
           <!--头部左-->
           <div class="d_main_box_sh">
@@ -357,17 +363,27 @@
               v-if="detailsData.isCollection === 0"
               @click="handleMore({ title: '收藏', id: detailsData.userId })"
             >
-              <i class="el-icon-star-off" style='font-size:20px'></i>
-              <span>未收藏</span>
+              <i class="el-icon-star-off" style="font-size:20px"></i>
+              <span>收藏</span>
             </div>
-            <div
-              class="btnItem"
+            <el-tooltip
               v-else
-              @click="handleMore({ title: '取消收藏', id: detailsData.userId })"
+              class="item"
+              effect="dark"
+              content="点击取消收藏"
+              placement="right-end"
             >
-              <i class="el-icon-star-on" style='font-size:20px'></i>
-              <span>已收藏</span>
-            </div>
+              <div
+                class="btnItem"
+                @click="
+                  handleMore({ title: '取消收藏', id: detailsData.userId })
+                "
+              >
+                <i class="el-icon-star-on" style="font-size:20px"></i>
+
+                <span class="hoverCollect">已收藏</span>
+              </div>
+            </el-tooltip>
           </div>
           <div class="mainBtns">
             <div class="longBtn" @click="handleInterview(detailsData.userId)">
@@ -611,7 +627,15 @@ export default {
   background-color: #fff;
   border-radius: 50px;
 }
-
+.gander_img_sh {
+  position: absolute;
+  top: 0;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+  background-color: #fff;
+  border-radius: 50px;
+}
 .d_main_box_sh {
   flex: 1;
 }
@@ -860,7 +884,7 @@ export default {
 .radioBox {
   margin-bottom: 10px;
   display: flex;
-    flex-wrap: wrap;
+  flex-wrap: wrap;
   align-items: center;
   span {
     margin-right: 10px;
@@ -914,20 +938,19 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  margin-bottom:20px;
+  margin-bottom: 20px;
 }
 .btnItem {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
- color: #999;
- cursor: pointer;
+  color: #999;
+  cursor: pointer;
   span {
     font-size: 14px;
     color: #666;
     padding-top: 10px;
-    
   }
 }
 .mainBtns {

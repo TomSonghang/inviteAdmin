@@ -1,7 +1,7 @@
 <template>
   <div class="contextWrap">
     <el-dialog
-      width="30%"
+      width="32%"
       :title="interviewTag ? '修改面试时间' : '邀请面试'"
       :visible.sync="outerVisible"
     >
@@ -277,7 +277,7 @@
           </el-input>
         </div>
       </div>
-      <div class="table">
+      <div class="table" v-loading="loading">
         <el-table
           :data="tableData"
           :header-cell-style="{ background: '#F8FAFB', color: '#4D586A' }"
@@ -316,7 +316,17 @@
 
           <el-table-column label="基本信息" width="250px">
             <template slot-scope="scope">
-              <div class="realText">
+              <div
+                class="realText pointer"
+                @click="
+                  handleView({
+                    id: scope.row.userId,
+                    row: scope.row.row,
+                    status: scope.row.status,
+                    resumeId: scope.row.resumeId,
+                  })
+                "
+              >
                 <span>{{ scope.row.age }}岁 ·</span>
                 <span>{{ scope.row.educationalBackground }} ·</span>
                 <span>{{ scope.row.workYears }} ·</span>
@@ -328,7 +338,15 @@
           <el-table-column label="最近工作经历" width="300px">
             <template slot-scope="scope">
               <div
-                class="realText"
+                class="realText pointer"
+                @click="
+                  handleView({
+                    id: scope.row.userId,
+                    row: scope.row.row,
+                    status: scope.row.status,
+                    resumeId: scope.row.resumeId,
+                  })
+                "
                 v-if="scope.row.workExperienceInfo.length > 0"
               >
                 <span>{{
@@ -340,11 +358,23 @@
             </template>
           </el-table-column>
 
-          <el-table-column
-            prop="phone"
-            label="联系方式"
-            width="150px"
-          ></el-table-column>
+          <el-table-column prop="phone" label="联系方式" width="150px">
+            <template slot-scope="scope">
+              <div
+                class="realText pointer"
+                @click="
+                  handleView({
+                    id: scope.row.userId,
+                    row: scope.row.row,
+                    status: scope.row.status,
+                    resumeId: scope.row.resumeId,
+                  })
+                "
+              >
+                {{ scope.row.phone }}
+              </div>
+            </template>
+          </el-table-column>
 
           <el-table-column
             prop="postName"
@@ -490,6 +520,7 @@ import resumeFun from "@/mixins/resumeFun";
 export default {
   data() {
     return {
+      loading: true,
       liItem: [
         {
           id: 3,
@@ -580,8 +611,8 @@ export default {
       this.workYears = "工作经验";
       this.jobType = "工作类型";
       this.jobStatus = "求职状态";
-      this.pageIndex = 1;
-      this.resumeType = 3;
+      this.interViewTime = "";
+      //this.resumeType = 3;
       this.key = "";
       this._GetResumemanagement();
     },
@@ -654,6 +685,7 @@ export default {
         if (res.status === Code.SUCCESS_CODE) {
           this.total = res.data.totalCount;
           this.tableData = res.data.resumeList;
+          this.loading = false;
         }
       });
     },
