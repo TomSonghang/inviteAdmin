@@ -193,7 +193,13 @@
           <el-button
             type="primary"
             class="companyBg"
-            @click="handleView({ id: item.fromUserId, row: item.row })"
+            @click="
+              handleView({
+                id: item.fromUserId,
+                row: item.row,
+                orderby: orderby,
+              })
+            "
             >查看简历</el-button
           >
         </div>

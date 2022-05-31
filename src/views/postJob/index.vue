@@ -598,6 +598,7 @@ export default {
     },
 
     _JobAddOrEditInit() {
+      debugger
       //职位编辑详情
       let data = {
         action: "edit",
@@ -631,6 +632,14 @@ export default {
 
           if (welfare) {
             this.welfare = welfare.split(",");
+          }
+          if (jobDescription) {
+            //详情需要换换行符
+            jobDescription = jobDescription.replace(/\$@\$/g, "\r\n");
+          }
+          if (requirements) {
+            //详情需要换换行符;
+            requirements = requirements.replace(/\$@\$/g, "\r\n");
           }
           this.serviceCode = serviceCode == "1001" ? "普通职位" : "精品职位";
           this.action = "edit";

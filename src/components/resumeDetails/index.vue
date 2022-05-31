@@ -738,7 +738,7 @@ export default {
 
 .yx_item_sh > p {
   float: left;
-  width: 33%;
+  width: 50%;
   padding-bottom: 15px;
 }
 

@@ -719,6 +719,10 @@ export default {
             })
             teamStyle = newArr
           }
+          if(companyInformation){
+            //公司介绍需要换换行符
+            companyInformation= companyInformation.replace(/\$@\$/g,'\r\n')
+          }
           this.path = path;
           this.companyName = companyName;
           this.companyType = companyType;

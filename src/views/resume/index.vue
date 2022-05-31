@@ -260,6 +260,7 @@
             v-model="interViewTime"
             type="date"
             placeholder="选择面试日期"
+            value-format="yyyy-MM-dd"
             style="margin-right: 10px;width: 300px;"
           ></el-date-picker>
           <el-input
@@ -292,6 +293,11 @@
                     row: scope.row.row,
                     status: scope.row.status,
                     resumeId: scope.row.resumeId,
+                    interViewTime,
+                    jobType,
+                    workYears,
+                    educationalBackground,
+                    resumeType,
                   })
                 "
               >
@@ -324,6 +330,11 @@
                     row: scope.row.row,
                     status: scope.row.status,
                     resumeId: scope.row.resumeId,
+                    interViewTime,
+                    jobType,
+                    workYears,
+                    educationalBackground,
+                    resumeType,
                   })
                 "
               >
@@ -345,6 +356,11 @@
                     row: scope.row.row,
                     status: scope.row.status,
                     resumeId: scope.row.resumeId,
+                    interViewTime,
+                    jobType,
+                    workYears,
+                    educationalBackground,
+                    resumeType,
                   })
                 "
                 v-if="scope.row.workExperienceInfo.length > 0"
@@ -368,6 +384,11 @@
                     row: scope.row.row,
                     status: scope.row.status,
                     resumeId: scope.row.resumeId,
+                    interViewTime,
+                    jobType,
+                    workYears,
+                    educationalBackground,
+                    resumeType,
                   })
                 "
               >
@@ -560,6 +581,7 @@ export default {
       pageIndex: 1,
       key: "",
       postType: "应聘岗位", //应聘岗位
+      postTypeId: "", //职位ID
       educationalBackground: "学历", //学历
       workYears: "工作经验",
       jobType: "工作类型",
@@ -578,8 +600,14 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
+      debugger;
       if (to.query.date) {
         vm.interViewTime = to.query.date;
+      }
+      if (to.query.position) {
+        //应聘职位
+        vm.postType = to.query.position;
+        vm.postTypeId = to.query.positionId;
       }
       vm.activeItem = Number(to.query.status) || 0;
       vm.resumeType = vm.liItem[vm.activeItem].id;
@@ -657,11 +685,22 @@ export default {
     _GetResumemanagement() {
       //列表数据
 
+      let postType = "";
+      if (this.postTypeArray.length == 0 && this.postTypeId != "") {
+        postType = this.postTypeId;
+      } else {
+        this.postTypeArray.forEach((item) => {
+          if (item.postName == this.postType) {
+            postType = item.id;
+          }
+        });
+      }
       let data = {
         resumeType: this.resumeType,
         pageIndex: this.pageIndex,
         key: this.key,
-        postType: this.postType == "应聘岗位" ? "" : this.postType, //应聘岗位
+        // postType: this.postType == "应聘岗位" ? "" : this.postType, //应聘岗位
+        postType,
         educationalBackground:
           this.educationalBackground == "学历" ||
           this.educationalBackground == "不限"

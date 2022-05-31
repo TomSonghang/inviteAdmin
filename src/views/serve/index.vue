@@ -2,8 +2,14 @@
   <div class="contextWrap">
     <el-dialog title="金币明细" :visible.sync="dialogTableVisible">
       <el-table :data="goldData">
-        <el-table-column property="createDateTime" label="时间"></el-table-column>
-        <el-table-column property="goldType" label="用途/来源"></el-table-column>
+        <el-table-column
+          property="createDateTime"
+          label="时间"
+        ></el-table-column>
+        <el-table-column
+          property="goldType"
+          label="用途/来源"
+        ></el-table-column>
         <el-table-column property="inOrOut" label="数量"></el-table-column>
       </el-table>
       <el-pagination
@@ -19,8 +25,16 @@
 
     <el-dialog title="购买记录" :visible.sync="dialogTableVisible1">
       <el-table :data="buyData">
-        <el-table-column property="codeName" label="类型" width="300"></el-table-column>
-        <el-table-column property="createDateTime" label="时间" width="250"></el-table-column>
+        <el-table-column
+          property="codeName"
+          label="类型"
+          width="300"
+        ></el-table-column>
+        <el-table-column
+          property="createDateTime"
+          label="时间"
+          width="250"
+        ></el-table-column>
         <el-table-column property="type" label="方式">
           <template slot-scope="scope">
             <span>{{ scope.row.type | typeWay }}</span>
@@ -55,23 +69,46 @@
       ></el-pagination>
     </el-dialog>
 
-    <el-dialog title="支付购买" :visible.sync="dialogTableVisiblePay" destroy-on-close>
-      <pay-buy :paydata="paydata" :type="tag ? 2 : 4" @closedShow="closedShow"></pay-buy>
+    <el-dialog
+      title="支付购买"
+      :visible.sync="dialogTableVisiblePay"
+      destroy-on-close
+      @close="closePay"
+    >
+      <pay-buy
+        :paydata="paydata"
+        :type="tag ? 2 : 4"
+        @closedShow="closedShow"
+        ref="pay"
+      ></pay-buy>
     </el-dialog>
-    <tab-item :liItem="liItem" @checkStatu="checkStatu" :active="activeItem"></tab-item>
+
+    <div class="fixDiv">
+      <tab-item
+        :liItem="liItem"
+        @checkStatu="checkStatu"
+        :active="activeItem"
+      ></tab-item>
+    </div>
     <div class="main">
       <div class="left">
         <template v-if="serviceType === 1">
           <div class="contextBox" v-for="item in serve1">
             <div class="serveList">
               <div class="listItem1">
-                <div class="serveItem" v-for="todo in item.subService.slice(0, 5)">
+                <div
+                  class="serveItem"
+                  v-for="todo in item.subService.slice(0, 5)"
+                >
                   <p class="title">{{ todo.codeName }}</p>
                   <p class="descript">{{ todo.rmb }}元 / {{ todo.cost }}金币</p>
                 </div>
               </div>
               <div class="listItem1">
-                <div class="serveItem" v-for="todo in item.subService.slice(5, 10)">
+                <div
+                  class="serveItem"
+                  v-for="todo in item.subService.slice(5, 10)"
+                >
                   <p class="title">{{ todo.codeName }}</p>
                   <p class="descript">{{ todo.rmb }}元 / {{ todo.cost }}金币</p>
                 </div>
@@ -80,15 +117,31 @@
 
             <div class="buyBox">
               <div class="iconImg">
-                <el-image :src="item.icoUrl" width="96px" height="140px"></el-image>
+                <el-image
+                  :src="item.icoUrl"
+                  width="96px"
+                  height="140px"
+                ></el-image>
               </div>
               <div class="checkItem">{{ item.codeName }}VIP套餐</div>
               <el-button
                 type="danger"
-                @click="handleBuy({ code: item.code, moneyOff: item.rmb, servicecode: item.code, type: 1 })"
-              >购买套餐</el-button>
-              <div class="oldPrice">总价值 {{ item.firstRMB }}元/{{ item.firstCost }}金币</div>
-              <div class="newPrice">现价 {{ item.rmb }}元/{{ item.cost }}金币</div>
+                @click="
+                  handleBuy({
+                    code: item.code,
+                    moneyOff: item.rmb,
+                    servicecode: item.code,
+                    type: 1,
+                  })
+                "
+                >购买套餐</el-button
+              >
+              <div class="oldPrice">
+                总价值 {{ item.firstRMB }}元/{{ item.firstCost }}金币
+              </div>
+              <div class="newPrice">
+                现价 {{ item.rmb }}元/{{ item.cost }}金币
+              </div>
             </div>
           </div>
         </template>
@@ -98,15 +151,25 @@
             <div class="listBox">
               <div class="list_l">
                 <div class="postName">{{ item.codeName }}</div>
-                <div class="oldPrice">原价 {{ item.firstRMB }}元/{{ item.firstCost }}金币</div>
+                <div class="oldPrice">
+                  原价 {{ item.firstRMB }}元/{{ item.firstCost }}金币
+                </div>
               </div>
               <div class="list_r">
                 <div class="newPrice">{{ item.rmb }}元/{{ item.cost }}金币</div>
                 <el-button
                   type="primary"
                   class="companyBg"
-                  @click="handleBuy({ code: item.code, moneyOff: item.rmb, servicecode: item.code, type: 2 })"
-                >购买</el-button>
+                  @click="
+                    handleBuy({
+                      code: item.code,
+                      moneyOff: item.rmb,
+                      servicecode: item.code,
+                      type: 2,
+                    })
+                  "
+                  >购买</el-button
+                >
               </div>
             </div>
           </div>
@@ -117,21 +180,31 @@
             <div class="listBox">
               <div class="list_l">
                 <div class="postName">{{ item.codeName }}</div>
-                <div class="oldPrice">原价 {{ item.firstRMB }}元/{{ item.firstCost }}金币</div>
+                <div class="oldPrice">
+                  原价 {{ item.firstRMB }}元/{{ item.firstCost }}金币
+                </div>
               </div>
               <div class="list_r">
                 <div class="newPrice">{{ item.rmb }}元/{{ item.cost }}金币</div>
                 <el-button
                   type="primary"
                   class="companyBg"
-                  @click="handleBuy({ code: item.code, moneyOff: item.rmb, servicecode: item.code, type: 2 })"
-                >购买</el-button>
+                  @click="
+                    handleBuy({
+                      code: item.code,
+                      moneyOff: item.rmb,
+                      servicecode: item.code,
+                      type: 2,
+                    })
+                  "
+                  >购买</el-button
+                >
               </div>
             </div>
           </div>
         </template>
       </div>
-      <div class="right">
+      <div class="right" :style="{ right: `${acrollRight}px` }">
         <div class="myGold">
           <div class="cell">
             <span>我的金币</span>
@@ -155,13 +228,19 @@
           <p class="userP">可用服务</p>
           <el-collapse v-model="activeNames" @change="handleChange" accordion>
             <el-collapse-item title="剩余服务" :name="1">
-              <div v-for="item in useServe1">{{ item.surplus }}{{ item.unit }}{{ item.codeName }}</div>
+              <div v-for="item in useServe1">
+                {{ item.surplus }}{{ item.unit }}{{ item.codeName }}
+              </div>
             </el-collapse-item>
             <el-collapse-item title="招聘服务" :name="2">
-              <div v-for="item in useServe2">{{ item.surplus }}{{ item.unit }}{{ item.codeName }}</div>
+              <div v-for="item in useServe2">
+                {{ item.surplus }}{{ item.unit }}{{ item.codeName }}
+              </div>
             </el-collapse-item>
             <el-collapse-item title="广告服务" :name="3">
-              <div v-for="item in useServe3">{{ item.surplus }}{{ item.unit }}{{ item.codeName }}</div>
+              <div v-for="item in useServe3">
+                {{ item.surplus }}{{ item.unit }}{{ item.codeName }}
+              </div>
             </el-collapse-item>
           </el-collapse>
         </div>
@@ -192,191 +271,225 @@
 </template>
 
 <script>
-import payBuy from '@/components/payBuy/index'
-import discountCard from '@/components/discountCard/index'
-import tabItem from '@/components/tabItem/index'
+import payBuy from "@/components/payBuy/index";
+import discountCard from "@/components/discountCard/index";
+import tabItem from "@/components/tabItem/index";
 import Code from "@/api/statusCode";
-import { GetPackageService, GetMyGoldInfo, GetMyPackageService, BuyServiceRecord, GetMyCardTicketList, GetServiceInitData, BuyGoldIntroduce } from '@/api/serve'
+import {
+  GetPackageService,
+  GetMyGoldInfo,
+  GetMyPackageService,
+  BuyServiceRecord,
+  GetMyCardTicketList,
+  GetServiceInitData,
+  BuyGoldIntroduce,
+} from "@/api/serve";
 export default {
   name: "Serve",
   data() {
     return {
+      acrollRight: 240,
       activeNames: [],
-      liItem: [{
-        id: 1,
-        name: "招聘套餐",
-      },
-      {
-        id: 2,
-        name: "招聘服务",
-      },
-      {
-        id: 3,
-        name: "广告服务",
-      }],
+      liItem: [
+        {
+          id: 1,
+          name: "招聘套餐",
+        },
+        {
+          id: 2,
+          name: "招聘服务",
+        },
+        {
+          id: 3,
+          name: "广告服务",
+        },
+      ],
       activeItem: 0,
       serviceType: 1,
-      serve1: [],     //套餐
-      serve2: [],   //招聘服务
-      serve3: [],     //广告服务
-      dialogTableVisible: false,  //金币明细
+      serve1: [], //套餐
+      serve2: [], //招聘服务
+      serve3: [], //广告服务
+      dialogTableVisible: false, //金币明细
       goldData: [],
       pageNo: 1,
       total: 0,
-      cardList: [],    //优惠券
-      cardTotal: 0,   //优惠券总数量
-      pageNoCard: 1,//分页
+      cardList: [], //优惠券
+      cardTotal: 0, //优惠券总数量
+      pageNoCard: 1, //分页
 
-      serviceType1: 2,  //可用服务
+      serviceType1: 2, //可用服务
       useServe1: [],
       useServe2: [],
       useServe3: [],
 
       dialogTableVisible1: false,
       buyData: [],
-      pageNo1: 1,   //购买记录
+      pageNo1: 1, //购买记录
       total1: 0,
 
-      dialogTableVisibleCard: false,   //优惠券
+      dialogTableVisibleCard: false, //优惠券
 
       dialogTableVisiblePay: false,
-      paydata: {},  //支付数据
+      paydata: {}, //支付数据
 
-      code: "",//（注： 1、0表示通用券 2、某个服务券对应相应的code 3、-1表示金币券 4、-2表示炒更团券）
+      code: "", //（注： 1、0表示通用券 2、某个服务券对应相应的code 3、-1表示金币券 4、-2表示炒更团券）
       moneyOff: "",
-      cardTicketId: 0,//券ID 选了优惠券之后的操作需要传券ID，否则传0给后台
-      servicecode: "",//套餐编码
-      type: 1,//1：套餐 2：单独服务 3：套餐下的子服务
-      tag: true,  //true等于套餐，false等于金币
-      wealth: 0   //可用金币
-
-    }
+      cardTicketId: 0, //券ID 选了优惠券之后的操作需要传券ID，否则传0给后台
+      servicecode: "", //套餐编码
+      type: 1, //1：套餐 2：单独服务 3：套餐下的子服务
+      tag: true, //true等于套餐，false等于金币
+      wealth: 0, //可用金币
+    };
   },
   mounted() {
-    this._GetPackageService();//套餐服务
+    this._GetPackageService(); //套餐服务
 
-    this._GetMyPackageService(1)   //剩余服务
-    this._GetMyPackageService(2)   //剩余服务
-    this._GetMyPackageService(3)   //剩余服务
+    this._GetMyPackageService(1); //剩余服务
+    this._GetMyPackageService(2); //剩余服务
+    this._GetMyPackageService(3); //剩余服务
+
+    window.addEventListener("resize", this.handleWindow, true); //监听屏幕缩放
   },
   methods: {
-    handleBuyGold() {    //购买金币
-      this.tag = false
-      this._BuyGoldIntroduce()
+    // 滚动对应高亮
+    handleWindow(e) {
+      var windowWidth = document.documentElement.clientWidth;
+      console.log((windowWidth - 165 - 1200 - 43) / 2);
+  
+      //console.log(this.acrollRight);
+      // 执行代码
+      // if (windowWidth > 600) {
+      //   this.acrollRight = (windowWidth - 106) / 2;
+      // }
+    },
+
+    handleBuyGold() {
+      //购买金币
+      this.tag = false;
+      this._BuyGoldIntroduce();
     },
     _BuyGoldIntroduce() {
-      BuyGoldIntroduce({}).then(res => {
+      BuyGoldIntroduce({}).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.paydata = res.data[0];
-          this.dialogTableVisiblePay = true
+          this.dialogTableVisiblePay = true;
         }
-      })
+      });
+    },
+    closePay() {
+      this.$refs.pay?.clearTimer();
     },
     closedShow() {
-      this.dialogTableVisiblePay = false
+      this.dialogTableVisiblePay = false;
     },
-    handleBuy(data) {    //购买
-      let {
-        code, moneyOff, servicecode, type
-      } = data;
+    handleBuy(data) {
+      //购买
+      let { code, moneyOff, servicecode, type } = data;
       this.code = code;
       this.moneyOff = moneyOff;
       this.servicecode = servicecode;
       this.type = type;
-      this.tag = true  //打开的支付为套餐
+      this.tag = true; //打开的支付为套餐
 
       this._GetServiceInitData();
-
     },
     _GetServiceInitData() {
       let data = {
-        code: this.code,    //券code 服务code （注： 1、0表示通用券 2、某个服务券对应相应的code 3、-1表示金币券 4、-2表示炒更团券
+        code: this.code, //券code 服务code （注： 1、0表示通用券 2、某个服务券对应相应的code 3、-1表示金币券 4、-2表示炒更团券
         moneyOff: this.moneyOff,
         cardTicketId: this.cardTicketId,
         servicecode: this.servicecode,
-        type: this.type
-      }
-      GetServiceInitData(data).then(res => {
+        type: this.type,
+      };
+      GetServiceInitData(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.paydata = res.data;
-          this.dialogTableVisiblePay = true
+          this.dialogTableVisiblePay = true;
         }
-
-      })
+      });
     },
-    handlePage1(e) {    //购买记录分页
+    handlePage1(e) {
+      //购买记录分页
       this.pageNo1 = e;
       this._BuyServiceRecord();
     },
-    handlePageCard(e) {   //优惠券分页
+    handlePageCard(e) {
+      //优惠券分页
       this.pageNoCard = e;
       this._GetMyCardTicketList();
     },
-    getPriceCard() {     //获取优惠券
+    getPriceCard() {
+      //获取优惠券
       this.dialogTableVisibleCard = true;
-      this._GetMyCardTicketList()
+      this._GetMyCardTicketList();
     },
     _GetMyCardTicketList() {
       let data = {
-        pageNo: this.pageNoCard
-      }
-      GetMyCardTicketList(data).then(res => {
+        pageNo: this.pageNoCard,
+      };
+      GetMyCardTicketList(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.cardList = res.data.datas;
-          this.cardTotal = res.data.totalCount
+          this.cardTotal = res.data.totalCount;
         }
-      })
+      });
     },
-    _GetPackageService() {    //获取套餐服务
+    _GetPackageService() {
+      //获取套餐服务
       let data = {
         serviceType: this.serviceType,
-        pageIndex: 1
-      }
-      if ((this.serviceType == 1 && this.serve1.length == 0) || (this.serviceType == 2 && this.serve2.length == 0) || (this.serviceType == 3 && this.serve3.length == 0)) {
-        GetPackageService(data).then(res => {
-
+        pageIndex: 1,
+      };
+      if (
+        (this.serviceType == 1 && this.serve1.length == 0) ||
+        (this.serviceType == 2 && this.serve2.length == 0) ||
+        (this.serviceType == 3 && this.serve3.length == 0)
+      ) {
+        GetPackageService(data).then((res) => {
           if (res.status === Code.SUCCESS_CODE) {
-            this.wealth = res.data.wealth
+            this.wealth = res.data.wealth;
             if (this.serviceType === 1) {
-              this.serve1 = res.data.datas
+              this.serve1 = res.data.datas;
             } else if (this.serviceType === 2) {
-              this.serve2 = res.data.datas
+              this.serve2 = res.data.datas;
             } else if (this.serviceType === 3) {
-              this.serve3 = res.data.datas
+              this.serve3 = res.data.datas;
             }
           }
-        })
+        });
       }
     },
-    checkStatu({ inx, id }) {   //切换TAB
-      this.activeItem = inx
+    checkStatu({ inx, id }) {
+      //切换TAB
+      this.activeItem = inx;
       this.serviceType = id;
-      this._GetPackageService()
+      this._GetPackageService();
     },
-    handleChange(val) {   //手风琴可用服务
-      this.serviceType1 = val
-
+    handleChange(val) {
+      //手风琴可用服务
+      this.serviceType1 = val;
     },
-    _GetMyGoldInfo() {    //获取金币明细
+    _GetMyGoldInfo() {
+      //获取金币明细
       let data = {
-        pageIndex: this.pageNo
-      }
-      GetMyGoldInfo(data).then(res => {
+        pageIndex: this.pageNo,
+      };
+      GetMyGoldInfo(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
-          this.goldData = res.data.datas
-          this.total = res.data.totalCount
+          this.goldData = res.data.datas;
+          this.total = res.data.totalCount;
         }
-
-      })
+      });
     },
-    _GetMyPackageService(type) {   //可用服务
+    _GetMyPackageService(type) {
+      //可用服务
       let data = {
         pageNo: 1,
-        serviceType: type
-      }
-      GetMyPackageService(data).then(res => {
+        serviceType: type,
+      };
+      GetMyPackageService(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
-          console.log(this)
+          console.log(this);
           if (type === 1) {
             this.useServe1 = res.data.datas;
           } else if (type === 2) {
@@ -385,29 +498,33 @@ export default {
             this.useServe3 = res.data.datas;
           }
         }
-      })
+      });
     },
-    handleBuyMore() {     //购买记录
+    handleBuyMore() {
+      //购买记录
       this.dialogTableVisible1 = true;
-      this._BuyServiceRecord()
+      this._BuyServiceRecord();
     },
-    _BuyServiceRecord() {    //服务记录
+    _BuyServiceRecord() {
+      //服务记录
       let data = {
-        pageIndex: this.pageNo1
-      }
-      BuyServiceRecord(data).then(res => {
+        pageIndex: this.pageNo1,
+      };
+      BuyServiceRecord(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.buyData = res.data.datas;
-          this.total1 = res.data.recordCount
+          this.total1 = res.data.recordCount;
           this.dialogTableVisible1 = true;
         }
-      })
+      });
     },
-    handleGoldMore() {    //金币明细
-      this._GetMyGoldInfo()
-      this.dialogTableVisible = true
+    handleGoldMore() {
+      //金币明细
+      this._GetMyGoldInfo();
+      this.dialogTableVisible = true;
     },
-    handlePage(e) {   //金币明细分页
+    handlePage(e) {
+      //金币明细分页
       this.pageNo = e;
       this._GetMyGoldInfo();
     },
@@ -433,9 +550,9 @@ export default {
         default:
           return "未知状态";
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="less" scoped>
@@ -443,14 +560,13 @@ export default {
   width: 1200px;
   margin: 0 auto;
   .main {
-    margin-top: 30px;
+    padding-top: 50px;
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     .left {
       flex-basis: 870px;
-      max-height: 850px;
-      overflow-y: auto;
+
       .contextBox {
         height: 340px;
         margin-bottom: 20px;
@@ -515,7 +631,9 @@ export default {
       }
     }
     .right {
-      flex-basis: 320px;
+      width: 320px;
+      position: fixed;
+      top: 135px;
     }
     .myGold {
       background-color: #fff;
@@ -631,5 +749,16 @@ export default {
 .cardContent {
   margin-right: 20px;
   margin-bottom: 20px;
+}
+
+.fixDiv {
+  position: fixed;
+  top: 50px;
+  height: 80px;
+  background-color: #f0f3f4;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  z-index: 10;
 }
 </style>

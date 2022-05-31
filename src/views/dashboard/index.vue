@@ -3,12 +3,21 @@
     <el-dialog title="面试安排" :visible.sync="dialogTableVisible">
       <el-calendar>
         <!-- 这里使用的是 2.5 slot 语法，对于新项目请使用 2.6 slot 语法-->
-        <template slot="dateCell" slot-scope="{date, data}">
-          <p>{{ data.day.split('-').slice(1).join('-') }}</p>
+        <template slot="dateCell" slot-scope="{ date, data }">
+          <p>
+            {{
+              data.day
+                .split("-")
+                .slice(1)
+                .join("-")
+            }}
+          </p>
           <div v-for="(item, index) in dateArr" :key="index">
             <div v-if="item.indexOf(data.day) != -1">
               <p class="is-selected">今日有面试 ✔️</p>
-              <el-button size="mini" round @click="hanldeInviewMore(3, item)">查看详情</el-button>
+              <el-button size="mini" round @click="hanldeInviewMore(3, item)"
+                >查看详情</el-button
+              >
             </div>
           </div>
         </template>
@@ -22,7 +31,13 @@
       <div class="bottom">
         <div class="title">
           <div>招聘进展</div>
-          <el-button type="primary" icon="el-icon-plus" @click="handlePost" class="companyBg">发布职位</el-button>
+          <el-button
+            type="primary"
+            icon="el-icon-plus"
+            @click="handlePost"
+            class="companyBg"
+            >发布职位</el-button
+          >
         </div>
         <div class="table">
           <el-table
@@ -47,6 +62,20 @@
                   <p>{{ publishPosition.newresumeCount }}</p>
                 </div>
               </template>
+
+              <template slot-scope="scope">
+                <span
+                  class="cursor"
+                  @click="
+                    handleResume({
+                      position: scope.row.postName,
+                      positionId: scope.row.id,
+                      status: 1,
+                    })
+                  "
+                  >{{ scope.row.newresumeCount }}</span
+                >
+              </template>
             </el-table-column>
             <el-table-column align="center" prop="undisposedCount">
               <template slot="header">
@@ -54,6 +83,20 @@
                   <p class="table-name">待处理</p>
                   <p>{{ publishPosition.undisposedCount }}</p>
                 </div>
+              </template>
+
+              <template slot-scope="scope">
+                <span
+                  class="cursor"
+                  @click="
+                    handleResume({
+                      position: scope.row.postName,
+                      positionId: scope.row.id,
+                      status: 2,
+                    })
+                  "
+                  >{{ scope.row.undisposedCount }}</span
+                >
               </template>
             </el-table-column>
             <el-table-column align="center" prop="intervieCount">
@@ -63,6 +106,20 @@
                   <p>{{ publishPosition.intervieCount }}</p>
                 </div>
               </template>
+
+              <template slot-scope="scope">
+                <span
+                  class="cursor"
+                  @click="
+                    handleResume({
+                      position: scope.row.postName,
+                      positionId: scope.row.id,
+                      status: 3,
+                    })
+                  "
+                  >{{ scope.row.intervieCount }}</span
+                >
+              </template>
             </el-table-column>
             <el-table-column align="center" prop="hireCount">
               <template slot="header">
@@ -71,6 +128,20 @@
                   <p>{{ publishPosition.hireCount }}</p>
                 </div>
               </template>
+
+              <template slot-scope="scope">
+                <span
+                  class="cursor"
+                  @click="
+                    handleResume({
+                      position: scope.row.postName,
+                      positionId: scope.row.id,
+                      status: 4,
+                    })
+                  "
+                  >{{ scope.row.hireCount }}</span
+                >
+              </template>
             </el-table-column>
             <el-table-column align="center" prop="notSuitableCount">
               <template slot="header">
@@ -78,6 +149,20 @@
                   <p class="table-name">不合适</p>
                   <p>{{ publishPosition.notSuitableCount }}</p>
                 </div>
+              </template>
+
+              <template slot-scope="scope">
+                <span
+                  class="cursor"
+                  @click="
+                    handleResume({
+                      position: scope.row.postName,
+                      positionId: scope.row.id,
+                      status: 5,
+                    })
+                  "
+                  >{{ scope.row.notSuitableCount }}</span
+                >
               </template>
             </el-table-column>
           </el-table>
@@ -88,17 +173,27 @@
       <div class="resume">
         <div class="resumeTitle">新投递简历({{ newResume.count }})</div>
         <div class="user_list" v-if="newResume.count != 0">
-          <div v-for="(item, index) in newResume.datas" class="userBox" :key="item.id">
+          <div
+            v-for="(item, index) in newResume.datas"
+            class="userBox"
+            :key="item.id"
+          >
             <div class="u_left">
               <div class="userImg">
-                <el-image :src="item.headPath" width="42px" height="42px"></el-image>
+                <el-image
+                  :src="item.headPath"
+                  width="42px"
+                  height="42px"
+                ></el-image>
               </div>
               <div>
                 <p class="userName">{{ item.realName }}</p>
                 <p class="userPost">{{ item.postName }}</p>
               </div>
             </div>
-            <el-button round plain size="small" @click="handleDoit(item.id)">去处理</el-button>
+            <el-button round plain size="small" @click="handleDoit(item.id)"
+              >去处理</el-button
+            >
           </div>
         </div>
         <div class="user_list" v-else>
@@ -133,10 +228,7 @@
   </div>
 </template>
 <script>
-import {
-  EnterpriseWorkStand,
-  InterviewMore
-} from "@/api/dashboard";
+import { EnterpriseWorkStand, InterviewMore } from "@/api/dashboard";
 import Code from "@/api/statusCode";
 import PageMain from "../../layout/components/pageMain/index.vue";
 export default {
@@ -148,19 +240,19 @@ export default {
       publishPosition: {},
       newResume: {},
       todayInterview: {},
-      dialogTableVisible: false,  //日历
-      moreInterview: [],   //面试安排
-    }
+      dialogTableVisible: false, //日历
+      moreInterview: [], //面试安排
+    };
   },
   computed: {
     dateArr() {
       return this.moreInterview.reduce((a, b) => {
         if (!a.includes(b.interviewTime)) {
-          a.push(b.interviewTime)
+          a.push(b.interviewTime);
         }
-        return a
-      }, [])
-    }
+        return a;
+      }, []);
+    },
   },
   methods: {
     handleDoit() {
@@ -168,70 +260,86 @@ export default {
       this.$router.push({
         name: "Resume",
         query: {
-          status: 1
-        }
-      })
+          status: 1,
+        },
+      });
     },
     hanldeInviewMore(status, date) {
-      this.dialogTableVisible = false
+      this.dialogTableVisible = false;
       this.$router.push({
-        name: "Resume", query: {
+        name: "Resume",
+        query: {
           status,
-          date
-        }
-      })
+          date,
+        },
+      });
     },
-    handleOpen(e) {      //跳转
+    handleOpen(e) {
+      //跳转
 
-      if (e === 0) {      //岗位招聘
-        this.$router.push({ name: "Position" })
+      if (e === 0) {
+        //岗位招聘
+        this.$router.push({ name: "Position" });
       } else {
         this.$router.push({
-          name: "Resume", query: {
-            status: e
-          }
-        })
+          name: "Resume",
+          query: {
+            status: e,
+          },
+        });
       }
     },
-    handleBanner() {     //点击广告图
-      this.$router.push({ name: "Serve" })
+    handleResume({ positionId, position, status }) {
+      //点数字跳转
+      this.$router.push({
+        name: "Resume",
+        query: {
+          positionId,
+          position,
+          status,
+        },
+      });
     },
-    handlePost() {      //发布职位
-      this.$router.push({ name: "PostJob" })
+    handleBanner() {
+      //点击广告图
+      this.$router.push({ name: "Serve" });
     },
-    handleMore() {     //查看更多
-      this.dialogTableVisible = true
+    handlePost() {
+      //发布职位
+      this.$router.push({ name: "PostJob" });
+    },
+    handleMore() {
+      //查看更多
+      this.dialogTableVisible = true;
     },
     _InterviewMore() {
-      InterviewMore({}).then(res => {
+      InterviewMore({}).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           //面试安排
-          this.moreInterview = res.data
+          this.moreInterview = res.data;
         }
-      })
+      });
     },
     _EnterpriseWorkStand() {
-      EnterpriseWorkStand().then(res => {
+      EnterpriseWorkStand().then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
-
           this.tableData = res.data.publishPosition.datas;
           this.bannerImg = res.data.imageUrl;
           this.publishPosition = res.data.publishPosition;
           this.newResume = res.data.newResume;
-          this.todayInterview = res.data.todayInterview
+          this.todayInterview = res.data.todayInterview;
         }
-      })
+      });
     },
   },
   components: {
-    PageMain
+    PageMain,
   },
   mounted() {
-    this._EnterpriseWorkStand()
-    this._InterviewMore()
-  }
+    this._EnterpriseWorkStand();
+    this._InterviewMore();
+  },
 };
-
 </script>
 
 <style scoped lang="less">
@@ -365,4 +473,3 @@ export default {
   background: #13b5b1;
 }
 </style>
-

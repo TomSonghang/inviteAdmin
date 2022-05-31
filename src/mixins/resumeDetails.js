@@ -42,15 +42,15 @@ export default {
           { required: true, message: "请输入联系地址", trigger: "blur" },
         ],
       },
+      resumeType: 3,
+      interViewTime: "",
     };
   },
   mounted() {
-
     this._GetPositionDropDownList(); //发布的职位列表
   },
   methods: {
     _GetPositionDropDownList() {
-      
       //筛选职位
       GetPositionDropDownList({}).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
@@ -146,7 +146,26 @@ export default {
       this._ResumeUpOrDownDetails();
     },
     handleView(data) {
-      let { id, row, status, resumeId } = data;
+      debugger
+      let {
+        id,
+        row,
+        status,
+        resumeId,
+        interViewTime,
+        jobType,
+        workYears,
+        educationalBackground,
+        resumeType,
+        orderby,
+      } = data;
+      this.interViewTime = interViewTime || "";
+      this.jobType = jobType || "";
+      this.workYears = workYears || "";
+      this.educationalBackground = educationalBackground || "";
+      this.resumeType = resumeType || 0;
+
+      this.orderby = orderby || "";
 
       //查看简历
       this.resumeId = resumeId || ""; //简历ID
@@ -160,7 +179,7 @@ export default {
       //获取简历详情
 
       let data = {
-        //为什么写了很多 || ，那是因为搜索人才和建立人才共用方法
+        //为什么写了很多 || ，那是因为搜索人才和简历人才共用方法
         userId: this.flag ? "" : this.userId, //flag有值代表是点击了左右键
         key: this.key, //推荐关键字        //cnm
         strGender: this.gender, //strGender
@@ -184,6 +203,12 @@ export default {
         searchType: this.searchType, //(1简历搜索，2人才搜索)
         jobStatus: this.jobStatus == "求职状态" ? "" : this.jobStatus, //求职状态(只有简历管理才需要传递)
         resumeId: this.flag ? "" : this.resumeId, //简历ID(只有简历管理才需要传递)
+
+        //后期需要新增的
+        orderby: this.orderby,
+
+        interViewTime: this.interViewTime,
+        resumeType: this.resumeType,
       };
       ResumeUpOrDownDetails(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
