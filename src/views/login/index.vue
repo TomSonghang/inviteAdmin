@@ -23,7 +23,10 @@
       <img src="@/assets/login-bg/loginBg.png" alt />
     </div>
     <div class="loginBox">
-      <div class="loginH2">点金台招聘后台</div>
+      <div class="logoWrap">
+        <img src="@/assets/images/logo-web.png" alt class="logoWeb" />
+      </div>
+      <div class="loginH2">企业招聘后台</div>
 
       <div class="loginCon">
         <div class="titleDiv">
@@ -35,7 +38,11 @@
         <el-form :model="ruleForm" :rules="rules" ref="loginForm">
           <template v-if="active == 0">
             <el-form-item prop="userId">
-              <el-input placeholder="请输入账号" prefix-icon="el-icon-lock" v-model="ruleForm.userId"></el-input>
+              <el-input
+                placeholder="请输入账号"
+                prefix-icon="el-icon-lock"
+                v-model="ruleForm.userId"
+              ></el-input>
             </el-form-item>
             <el-form-item prop="userPwd">
               <el-input
@@ -48,19 +55,50 @@
           </template>
           <template v-else>
             <el-form-item prop="userId">
-              <el-input placeholder="请输入手机号" prefix-icon="el-icon-mobile" v-model="ruleForm.userId"></el-input>
+              <el-input
+                placeholder="请输入手机号"
+                prefix-icon="el-icon-mobile"
+                v-model="ruleForm.userId"
+              ></el-input>
             </el-form-item>
             <div class="vifCode">
               <el-form-item prop="userPwd">
-                <el-input placeholder="请输入验证码" prefix-icon="el-icon-key" v-model="ruleForm.userPwd"></el-input>
+                <el-input
+                  placeholder="请输入验证码"
+                  prefix-icon="el-icon-key"
+                  v-model="ruleForm.userPwd"
+                ></el-input>
               </el-form-item>
-              <el-button type="primary" round class="getCodeBtn" @click="getCode">获取验证码</el-button>
+              <el-button
+                type="primary"
+                round
+                :disabled="disabled"
+                class="getCodeBtn"
+                @click="getCode"
+                >获取验证码</el-button
+              >
             </div>
           </template>
-          <el-button type="primary" class="loginBtn" @click="loginYz('loginForm')">登录</el-button>
+          <el-button
+            type="primary"
+            class="loginBtn"
+            @click="loginYz('loginForm')"
+            >登录</el-button
+          >
         </el-form>
       </div>
-      <div class="titleBox">温馨提示：下载点金台APP并成功注册企业用户后方可使用。</div>
+      <div class="titleBox">
+        <span>温馨提示：下载点金台APP并成功注册企业用户后方可使用。</span>
+      </div>
+      <div class="downApp">
+        <el-popover placement="right" width="288" trigger="hover">
+          <div>
+            <div style="text-align: center;" class="scleCode">扫码下载App</div>
+            <img src="@/assets/images/APP.png" alt />
+          </div>
+          <div slot="reference">下载点金台APP</div>
+        </el-popover>
+      </div>
     </div>
   </div>
 </template>
@@ -73,49 +111,66 @@ import MD5 from "js-md5";
 export default {
   data() {
     return {
+      disabled: false,
       notifyObj: null,
       text: "向右滑动",
       showSlide: false,
       ruleForm: {
         userId: "",
         userPwd: "",
-        loginType: ''
+        loginType: "",
       },
       rules: {
         userId: [
-          { required: true, message: "请输入用户名/手机号", trigger: "blur" }
+          { required: true, message: "请输入用户名/手机号", trigger: "blur" },
         ],
-        password: [{ required: true, message: "请输入密码/验证码", trigger: "blur" }]
+        password: [
+          { required: true, message: "请输入密码/验证码", trigger: "blur" },
+        ],
       },
-      active: 0  //0是账号登录  1是短信登录
+      active: 0, //0是账号登录  1是短信登录
     };
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
-    getCode() {      //获取验证码
+    getCode() {
+      //获取验证码
       if (this.ruleForm.userId) {
-        this._GetLoginSecurityCode()
+        this._GetLoginSecurityCode();
       } else {
-        this.$message('请输入手机号');
+        this.$message("请输入手机号");
       }
-
     },
     _GetLoginSecurityCode() {
+      this.disabled = true;
       let data = {
-        phoneNo: this.ruleForm.userId
-      }
-      GetLoginSecurityCode(data).then(res => {
+        phoneNo: this.ruleForm.userId,
+      };
+      GetLoginSecurityCode(data).then((res) => {
         if (res.status === Code.SUCCESS_CODE) {
           this.$message({
-            message: '验证码发送成功！',
-            type: 'success'
+            message: "验证码发送成功！",
+            type: "success",
           });
+          this.secondsSixty();
+        } else {
+          this.$message({
+            message: res.message,
+            type: "warning",
+          });
+          this.disabled = false;
         }
-      })
+      });
+    },
+    secondsSixty() {
+      let timer = null;
+      timer = setTimeout(() => {
+        this.disabled = false;
+        clearTimeout(timer);
+      }, 60000);
     },
     loginYz(from) {
-      this.$refs[from].validate(valid => {
+      this.$refs[from].validate((valid) => {
         if (valid) {
           this.showSlide = true; //滑动验证
         } else {
@@ -133,33 +188,35 @@ export default {
     refresh() {
       this.$refs.slideDiv.reset();
     },
-    changeLoginWay(e) {   //选择登录模式
-      if (e.target.innerText == '账号登录') {
-        this.active = 0
-      } else if (e.target.innerText == '短信登录') {
-        this.active = 1
+    changeLoginWay(e) {
+      //选择登录模式
+      if (e.target.innerText == "账号登录") {
+        this.active = 0;
+      } else if (e.target.innerText == "短信登录") {
+        this.active = 1;
       } else {
-        this.active = 0
+        this.active = 0;
       }
-      this.ruleForm.userPwd = ''
+      this.ruleForm.userPwd = "";
     },
     _login() {
-      if (this.active == 0) {   //账号登录，需要加密
+      if (this.active == 0) {
+        //账号登录，需要加密
         this.ruleForm.userPwd = MD5(this.ruleForm.userPwd); //MD5
         this.ruleForm.userPwd = this.ruleForm.userPwd.toUpperCase(); //大写
       }
       console.log(this.ruleForm);
-      this.ruleForm.loginType = this.active ? 'phonecode' : 'password';
+      this.ruleForm.loginType = this.active ? "phonecode" : "password";
       this.$store
         .dispatch("user/_login", this.ruleForm)
-        .then(res => {
+        .then((res) => {
           console.log(res);
           if (res.status !== 1000) {
             this.refresh();
           } else {
             console.log(this.$route);
             console.log(`rouer:${this.$route.query.redirect}`);
-            this.$router.push(this.$route.query.redirect).catch(e => {
+            this.$router.push(this.$route.query.redirect).catch((e) => {
               console.log("重定向错误" + e);
             });
             if (this.notifyObj) {
@@ -168,7 +225,7 @@ export default {
             this.notifyObj = null;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           this.refresh();
           this.$message.error(error);
         });
@@ -189,6 +246,35 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.logoWrap {
+  margin-bottom: 25px;
+  img {
+    display: block;
+    margin: 0 auto;
+  }
+  .logoWeb {
+    margin-top: 5px;
+    width: 250px;
+    height: auto;
+  }
+}
+.downApp {
+  text-decoration: underline;
+  cursor: pointer;
+  color: #999;
+  text-align: center;
+  font-size: 12px;
+  padding-top: 12px;
+  &:hover {
+    color: #13b5b1;
+  }
+}
+.scleCode {
+  text-align: center;
+  padding-bottom: 10px;
+  font-size: 16px;
+  color: #13b5b1;
+}
 .title_box {
   display: flex;
   align-items: center;
@@ -225,7 +311,7 @@ export default {
   width: 450px;
   margin-left: -225px;
   position: absolute;
-  top: 25%;
+  top: 16%;
   left: 50%;
   // margin-top: -150px;
 }

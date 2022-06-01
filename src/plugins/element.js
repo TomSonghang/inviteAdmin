@@ -55,6 +55,7 @@ import {
   Checkbox,
   checkboxGroup,
   Loading,
+  Link,
 } from "element-ui";
 
 Message.install = () => {
@@ -123,3 +124,4 @@ Vue.use(Checkbox);
 Vue.use(checkboxGroup);
 
 Vue.use(Loading.directive);
+Vue.use(Link);

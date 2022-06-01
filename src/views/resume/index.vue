@@ -600,6 +600,7 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
+      console.log(to);
       debugger;
       if (to.query.date) {
         vm.interViewTime = to.query.date;

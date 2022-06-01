@@ -283,7 +283,7 @@
               <span>自我介绍</span>
             </div>
             <div class="zw_description_sh">
-              {{ detailsData.selfIntroduction }}
+              {{ detailsData.selfIntroduction | regular }}
             </div>
           </div>
           <!--自我介绍结束-->
@@ -514,7 +514,11 @@ export default {
     this.height = document.body.clientWidth;
     this.screenHeight = window.screen.availHeight - 200;
   },
-
+  filters: {
+    regular(str) {
+      return str.replace(/\$@\$/g, "\r\n");
+    },
+  },
   methods: {
     closeMask() {
       document.documentElement.style.overflow = "scroll";
@@ -755,6 +759,7 @@ export default {
 .zw_description_sh {
   font-size: 14px;
   color: #666;
+  white-space: pre-line;
 }
 
 .jl_wrap_sh {

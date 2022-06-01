@@ -158,7 +158,7 @@
             <span>{{ item.postName }}·{{ item.jobType }}</span>
           </div>
 
-          <div class="descript">{{ item.selfIntroduction }}</div>
+          <div class="descript">{{ item.selfIntroduction | regular }}</div>
         </div>
 
         <div class="timeLine">
@@ -270,6 +270,11 @@ export default {
         .replace(/dataId/g, "value")
         .replace(/jobtype/g, "children");
       return JSON.parse(data);
+    },
+  },
+  filters: {
+    regular(str) {
+      return str.replace(/\$@\$/g, " ");
     },
   },
   mixins: [fixData, details],
