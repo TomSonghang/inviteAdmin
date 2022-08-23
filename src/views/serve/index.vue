@@ -72,7 +72,6 @@
     <el-dialog
       title="支付购买"
       :visible.sync="dialogTableVisiblePay"
-      destroy-on-close
       @close="closePay"
     >
       <pay-buy
@@ -355,7 +354,7 @@ export default {
     handleWindow(e) {
       var windowWidth = document.documentElement.clientWidth;
       console.log((windowWidth - 165 - 1200 - 43) / 2);
-  
+
       //console.log(this.acrollRight);
       // 执行代码
       // if (windowWidth > 600) {
@@ -373,6 +372,9 @@ export default {
         if (res.status === Code.SUCCESS_CODE) {
           this.paydata = res.data[0];
           this.dialogTableVisiblePay = true;
+          setTimeout(() => {
+            this.$refs.pay?.refreshCode(); //刷新付款二维码
+          }, 500);
         }
       });
     },
@@ -405,6 +407,9 @@ export default {
         if (res.status === Code.SUCCESS_CODE) {
           this.paydata = res.data;
           this.dialogTableVisiblePay = true;
+          setTimeout(() => {
+            this.$refs.pay?.refreshCode(); //刷新付款二维码
+          }, 500);
         }
       });
     },

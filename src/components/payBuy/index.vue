@@ -433,7 +433,6 @@ export default {
         // foreground: '#ff0'
       });
       this.timerFun(); //生成定时器
-      debugger;
     },
     timerFun() {
       //查询支付定时器
@@ -447,6 +446,7 @@ export default {
       this.timer && clearInterval(this.timer);
     },
     refreshCode() {
+      console.log("刷新付款吗");
       //刷新付款码
       if (this.type === 3) {
         //兼职

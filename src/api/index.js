@@ -17,7 +17,11 @@ let loading = null;
 
 $axios.interceptors.request.use(
   (config) => {
-    if (config.url != "/api/Enterprise/PayStatus") {
+    if (
+      config.url == "/api/Enterprise/PayStatus" ||
+      config.url == "/api/Enterprise/ServiceOrGoldPayment"
+    ) {
+    } else {
       //支付不需要提示
       loading = Loading.service({ text: "拼命加载中" });
     }
